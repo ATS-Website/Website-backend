@@ -1,6 +1,7 @@
 aes-cipher==2.0.0
 asgiref==3.5.2
 backports.zoneinfo==0.2.1
+decouple==0.0.7
 Django==4.1.2
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
