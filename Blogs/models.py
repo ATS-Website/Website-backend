@@ -70,7 +70,7 @@ class Comment(models.Model):
    your_comment= models.TextField()
    article=models.ForeignKey(BlogArticle, on_delete=models.SET_NULL, null=True)
    created_at=models.DateTimeField(auto_now_add=True)
-   is_active=models.BooleanField(default=False)
+   is_active=models.BooleanField(default=True)
 
    objects = models.Manager()
    active_objects = ActiveManager()

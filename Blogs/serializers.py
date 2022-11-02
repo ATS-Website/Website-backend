@@ -27,8 +27,8 @@ class CommentSerializer(ModelSerializer):
 class NewsArticleSerializer(ModelSerializer):
    class Meta:
       model=NewsArticle
-      fields=  ['id', 'article_title', 'article_intro', 'article_description',
-      'created_at', 'updated_at', 'tags', 'author', 'image',
+      fields=  ['id', 'news_title', 'news_intro', 'news_description',
+      'category', 'author', 'image',
       'is_active',]
       
 
