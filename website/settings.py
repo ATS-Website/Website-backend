@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "Support",
     "Tech_Stars",
     "rest_framework",
-    "rest_framework_simplejwt",
+    'rest_framework_simplejwt',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -81,15 +82,15 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "ATS_Website",
-        "USER": "Django_ATS",
-        "HOST": "localhost",
-        "PORT": "5432",
-        "PASSWORD": "1234567890"
+        'NAME': 'ATS_Website',
+        'USER': 'Django_ATS',
+        'PASSWORD': '1234567890',
+        'PORT': '5432',
+        'HOST': 'localhost',
+
     }
 }
 
@@ -138,6 +139,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = "Accounts.Account"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -145,9 +147,10 @@ REST_FRAMEWORK = {
     )
 }
 
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,

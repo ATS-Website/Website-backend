@@ -26,3 +26,6 @@ class ContactUs(models.Model):
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
+
+    # def short_message(self):
+    #     return self.message[:30]
