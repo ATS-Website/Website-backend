@@ -1,9 +1,6 @@
 
+import jwt
 
-from Accounts.api.renderers import CustomRenderer
-from Accounts.api.serializers import RegisterationSerializer, ResetPasswordSerializer
-from Accounts.api.utils import Utils
-from Accounts.models import Account
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
@@ -16,16 +13,20 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 # Create your views here.
 
-
 from django.shortcuts import render
 from django.urls import reverse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import JsonResponse
+from Accounts.api.renderers import CustomRenderer
+from Accounts.api.serializers import RegisterationSerializer, ResetPasswordSerializer
+from Accounts.api.utils import Utils
+from Accounts.models import Account
 
 from .serializers import LoginSerializer, RegisterationSerializer, ChangePasswordSerializer, UserSerializer, SetNewPasswordSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
+from rest_framework.renderers import BrowsableAPIRenderer
 from django.contrib.auth.models import User
 from django.conf import settings
 from .permissions import IsAdmin
@@ -39,7 +40,7 @@ class LogoutView(APIView):
 
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
-    renderer_classes = [CustomRenderer]
+    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
 class ChangePasswordAV(generics.UpdateAPIView):
@@ -50,7 +51,8 @@ class ChangePasswordAV(generics.UpdateAPIView):
 
 class RegistrationView(generics.CreateAPIView):
     serializer_class = RegisterationSerializer
-    renderer_classes = [CustomRenderer]
+    permission_classes = [IsAdmin]
+    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
     def post(self, request, *args, **kwargs):
         serializer = RegisterationSerializer(data=request.data)

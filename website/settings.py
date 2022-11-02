@@ -38,13 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # internal apps
     "Accounts",
     "Blogs",
     "Support",
     "Tech_Stars",
+    # "Search",
+    # thirdparty services
     "rest_framework",
     'rest_framework_simplejwt',
     'drf_yasg',
+    # external api
+    'algoliasearch_django',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +90,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'website',
         'USER': 'postgres',
-        'PASSWORD': 'root',
+        'PASSWORD': config('DB_PASSWORD'),
         'PORT': '5432',
         'HOST': 'localhost',
 
@@ -149,12 +154,9 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAuthenticated',  # new
         # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # new
     ],
-    # 'EXCEPTION_HANDLER': 'utils.exceptions_handler.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
     ],
 
 }
@@ -162,4 +164,10 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2000),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
+}
+
+ALGOLIA = {
+    'APPLICATION_ID': config('ALG_APPLICATION_ID'),
+    'API_KEY': config('ALG_API_KEY'),
+    'INDEX_PREFIX': 'cfe',
 }
