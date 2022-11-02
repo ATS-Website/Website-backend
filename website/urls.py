@@ -41,14 +41,16 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    path('web-admin', admin.site.urls),
+    path('web-admin/', admin.site.urls),
 
     path('api/v1/account/', include("Accounts.api.urls")),
+    path("api/v1/tech-stars/", include("Tech_Stars.urls")),
+    path("api/v1/support/", include("Support.urls")),
     path('', schema_view.with_ui('swagger',
                                  cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',
                                        cache_timeout=0), name='schema-redoc'),
-]
 
+]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,6 +1,7 @@
 */migrations
 __pycache__/
 .idea/
+.env/
 # Created by https://www.toptal.com/developers/gitignore/api/pythonvanilla
 # Edit at https://www.toptal.com/developers/gitignore?templates=pythonvanilla
 
@@ -128,3 +129,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+

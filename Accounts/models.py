@@ -57,7 +57,7 @@ class Account(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True, db_index=True)
     last_name = models.CharField(max_length=50)
     gender = models.CharField(
-        max_length=100, choices=GENDER_CHOICES, default="MALE")
+        max_length=100, choices=GENDER_CHOICES, default="MALE", null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
