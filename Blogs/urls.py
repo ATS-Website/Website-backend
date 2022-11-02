@@ -17,8 +17,8 @@ urlpatterns = [
    path('news-list/', views.NewsArticleListCreateAPIView.as_view(), name="news_list_create"),
    path('news-update/<int:pk>/', views.NewsArticleRetrieveUpdateAPIView.as_view(), name='news_update'),
    path('news-delete/<int:pk>/', views.news_delete, name='news_delete'),
-   path('news-comment_list/', views.NewsCommentListCreateAPIView.as_view(), name="news_comment_list_create"),
-   path('news-comment_delete/<int:pk>/', views.newscomment_delete, name='news_comment_delete'),
+   path('news-comment-list/', views.NewsCommentListCreateAPIView.as_view(), name="news_comment_list_create"),
+   path('news-comment-delete/<int:pk>/', views.newscomment_delete, name='news_comment_delete'),
 
    path('gallery-list/', views.GalleryListCreateAPIView.as_view(), name="gallery_list_create"),
    path('gallery-update/<int:pk>/', views.GalleryRetrieveUpdateAPIView.as_view(), name='gallery_update'),
