@@ -5,15 +5,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
-from django.db.models import Q
+from .mixins import AdminOrReadOnlyMixin
+from .permissions import IsAdminOrReadOnly
 from Blogs.serializers import *
 import datetime
 
-class BlogArticleListCreateAPIView(generics.ListCreateAPIView):
+
+class BlogArticleListCreateAPIView(AdminOrReadOnlyMixin, generics.ListCreateAPIView):
    queryset= BlogArticle.active_objects.all()
    serializer_class= BlogArticleSerializer
 
-class BlogArticleRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+class BlogArticleRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateAPIView):
    queryset= BlogArticle.active_objects.all()
    serializer_class= BlogArticleSerializer
    lookup_field= "pk"
@@ -43,12 +45,12 @@ def comment_delete(request, pk):
 
 
 # AUTHOR
-class AuthorListCreateAPIView(generics.ListCreateAPIView):
+class AuthorListCreateAPIView(AdminOrReadOnlyMixin, generics.ListCreateAPIView):
    queryset= Author.objects.all()
    serializer_class= AuthorSerializer
 
 
-class AuthorRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+class AuthorRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateAPIView):
    queryset= Author.objects.all()
    serializer_class= AuthorSerializer
    lookup_field= "pk"
@@ -65,11 +67,11 @@ def author_delete(request, pk):
 # author restore
 
 # NEWS
-class NewsArticleListCreateAPIView(generics.ListCreateAPIView):
+class NewsArticleListCreateAPIView(AdminOrReadOnlyMixin, generics.ListCreateAPIView):
    queryset= NewsArticle.active_objects.all()
    serializer_class= NewsArticleSerializer
 
-class NewsArticleRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+class NewsArticleRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateAPIView):
    queryset= NewsArticle.objects.all()
    serializer_class= NewsArticleSerializer
    lookup_field= "pk"
@@ -100,11 +102,11 @@ def newscomment_delete(request, pk):
 
 
 # Gallery
-class GalleryListCreateAPIView(generics.ListCreateAPIView):
+class GalleryListCreateAPIView(AdminOrReadOnlyMixin, generics.ListCreateAPIView):
    queryset= Gallery.objects.all()
    serializer_class= GallerySerializer
 
-class GalleryRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+class GalleryRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateAPIView):
    queryset= Gallery.objects.all()
    serializer_class= GallerySerializer
    lookup_field= "pk"

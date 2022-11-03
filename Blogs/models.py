@@ -118,7 +118,7 @@ class NewsComment(models.Model):
    your_comment= models.CharField(max_length= 100, blank=False, null=False)
    article=models.ForeignKey(NewsArticle, on_delete=models.SET_NULL, null=True)
    created_at=models.DateTimeField(auto_now_add=True)
-   is_active=models.BooleanField(default=False)
+   is_active=models.BooleanField(default=True)
 
    objects = models.Manager()
    active_objects = ActiveManager()
