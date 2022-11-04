@@ -4,4 +4,4 @@ from .permissions import IsAdminOrReadOnly
 
 
 class AdminOrReadOnlyMixin:
-   permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)

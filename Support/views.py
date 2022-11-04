@@ -46,4 +46,3 @@ class ContactUsDetailsUpdateDeleteAPIView(AdminOrReadOnlyMixin, RetrieveUpdateDe
         instance.is_active = False
         instance.save()
         return super().delete(request, *args, **kwargs)
-

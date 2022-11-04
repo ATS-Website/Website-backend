@@ -1,4 +1,4 @@
-from ..models import Account
+from .models import Account
 from rest_framework.permissions import (
     DjangoModelPermissions, IsAdminUser, BasePermission, SAFE_METHODS)
 

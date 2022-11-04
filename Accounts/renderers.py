@@ -19,5 +19,6 @@ class CustomRenderer(JSONRenderer):
                 response["message"] = data["detail"]
             except KeyError:
                 response["data"] = data
+                response["message"] = "An Error ocurred"
 
         return super(CustomRenderer, self).render(response, accepted_media_type, renderer_context)
