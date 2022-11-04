@@ -7,11 +7,11 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('admin/login', views.LoginView.as_view(), name='admin-login'),
-    # path('ts/login', views.LoginView.as_view(), name='ts-login'),
-    # path('applicant/login', views.LoginView.as_view(), name='applicant-login'),
     path('token/refresh', TokenRefreshView.as_view(), name='token-refresh'),
     path('admin/register', views.RegistrationView.as_view(), name='admin-register'),
     path('ts/register', views.RegistrationView.as_view(), name='ts-register'),
+    # path('ts/login', views.LoginView.as_view(), name='ts-login'),
+    # path('applicant/login', views.LoginView.as_view(), name='applicant-login'),
     # path('applicant/register', views.ApplicantRegistrationAV.as_view(),
     #      name='applicant-register'),
 
@@ -27,7 +27,5 @@ urlpatterns = [
          name='reset-password'),
     path('password-reset-complete/', views.SetNewPasswordAV.as_view(),
          name='password-reset-complete'),
-
     path('users/', views.AccountsRetrieveAV.as_view(), name='users'),
-    # path('', views.GetRouteAV.as_view(), name='get-routes'),
 ]

@@ -89,16 +89,16 @@ class Testimonial(models.Model):
 #     return id2string
 
 
-# @receiver(post_save, sender=TechStar)
-# def set_tech_star_id(sender, instance, created, **kwargs):
-#     if created:
-#         tech_star = TechStar.objects.all().last()
-#
-#         if tech_star is not None:
-#             get_id = int(tech_star.tech_star_id[-4::]) + 1
-#             instance.tech_star_id = f"ATS-{str(get_id).zfill(4)}"
-#             instance.save()
-#
-#         else:
-#             instance.tech_star_id = f"ATS-0001"
-#             instance.save()
+@receiver(post_save, sender=TechStar)
+def set_tech_star_id(sender, instance, created, **kwargs):
+    if created:
+        tech_star = TechStar.objects.all().last()
+
+        if tech_star is not None:
+            get_id = int(tech_star.tech_star_id[-4::]) + 1
+            instance.tech_star_id = f"ATS-{str(get_id).zfill(4)}"
+            instance.save()
+
+        else:
+            instance.tech_star_id = f"ATS-0001"
+            instance.save()

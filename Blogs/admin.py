@@ -4,7 +4,7 @@ from Blogs.models import *
 
 
 admin.site.register(BlogArticle)
-admin.site.register(Tags)
+admin.site.register(Tag)
 admin.site.register(Comment)
 admin.site.register(Author)
 admin.site.register(NewsArticle)
