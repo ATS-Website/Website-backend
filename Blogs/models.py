@@ -40,10 +40,10 @@ class Tags(models.Model):
       return self.name_of_tags 
 
 
-class BlogArticle(models.Model):
-   article_title= models.CharField(max_length= 250, blank=False, null=False)
-   article_intro = models.CharField(max_length=400)
-   article_description= models.TextField()
+class Blog(models.Model):
+   blog_title= models.CharField(max_length= 250, blank=False, null=False)
+   blog_intro = models.CharField(max_length=400)
+   blog_description= models.TextField()
    created_at= models.DateTimeField(auto_now_add=True)
    updated_at=models.DateTimeField(auto_now=True)
    tags = models.ManyToManyField(Tags, default=["news", "entertainment"])
@@ -65,10 +65,10 @@ class BlogArticle(models.Model):
 
 
 
-class Comment(models.Model):
+class BlogComment(models.Model):
    commenter_name= models.CharField(max_length= 100, blank=False, null=False)
    your_comment= models.TextField()
-   article=models.ForeignKey(BlogArticle, on_delete=models.SET_NULL, null=True)
+   article=models.ForeignKey(Blog, on_delete=models.SET_NULL, null=True)
    created_at=models.DateTimeField(auto_now_add=True)
    is_active=models.BooleanField(default=True)
 
@@ -90,7 +90,10 @@ class Category(models.Model):
    def __str__(self):
       return self.category_name
 
-class NewsArticle(models.Model):
+   def category_news(self):
+      return News.active_objects.filter(category_id=self.id)
+
+class News(models.Model):
    news_title= models.CharField(max_length= 250, blank=False, null=False)
    news_intro = models.CharField(max_length=400)
    news_description= models.TextField()
@@ -116,7 +119,7 @@ class NewsArticle(models.Model):
 class NewsComment(models.Model):
    commenter_name= models.CharField(max_length= 100, blank=False, null=False)
    your_comment= models.CharField(max_length= 100, blank=False, null=False)
-   article=models.ForeignKey(NewsArticle, on_delete=models.SET_NULL, null=True)
+   news=models.ForeignKey(News, on_delete=models.SET_NULL, null=True)
    created_at=models.DateTimeField(auto_now_add=True)
    is_active=models.BooleanField(default=True)
 

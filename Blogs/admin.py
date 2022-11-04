@@ -3,11 +3,11 @@ from Blogs.models import *
 # Register your models here.
 
 
-admin.site.register(BlogArticle)
+admin.site.register(Blog)
 admin.site.register(Tags)
-admin.site.register(Comment)
+admin.site.register(BlogComment)
 admin.site.register(Author)
-admin.site.register(NewsArticle)
+admin.site.register(News)
 admin.site.register(Category)
 admin.site.register(NewsComment)
 admin.site.register(NewsLetterSubscription)

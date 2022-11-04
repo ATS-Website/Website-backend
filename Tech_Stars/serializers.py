@@ -74,7 +74,7 @@ class TechStarSerializer(ModelSerializer):
 class TechStarDetailSerializer(ModelSerializer):
     class Meta:
         model = TechStar
-        fields = (
+        fields = ( 
             "id",
             "tech_star_id",
             "full_name",

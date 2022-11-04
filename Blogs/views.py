@@ -1,45 +1,47 @@
 from django.shortcuts import render
 from Blogs.models import *
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
 from .mixins import AdminOrReadOnlyMixin
 from .permissions import IsAdminOrReadOnly
+from rest_framework.permissions import IsAdminUser
 from Blogs.serializers import *
-import datetime
 
 
-class BlogArticleListCreateAPIView(AdminOrReadOnlyMixin, generics.ListCreateAPIView):
-   queryset= BlogArticle.active_objects.all()
-   serializer_class= BlogArticleSerializer
+class BlogListCreateAPIView(AdminOrReadOnlyMixin, generics.ListCreateAPIView):
+   queryset= Blog.active_objects.all()
+   serializer_class= BlogSerializer
 
-class BlogArticleRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateAPIView):
-   queryset= BlogArticle.active_objects.all()
-   serializer_class= BlogArticleSerializer
+class BlogRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateAPIView):
+   queryset= Blog.active_objects.all()
+   serializer_class= BlogSerializer
    lookup_field= "pk"
 
 
 @api_view(['DELETE'])
-def article_delete(request, pk):
-   article_delete= BlogArticle.active_objects.get(pk=pk)
-   article_delete.is_active=False
-   article_delete.save()
+@permission_classes([IsAdminUser])
+def blog_delete(request, pk):
+   blog_delete= Blog.active_objects.get(pk=pk)
+   blog_delete.is_active=False
+   blog_delete.save()
 
    return Response('comment was deleted')
 
 
 # COMMENTS
-class CommentListCreateAPIView(generics.ListCreateAPIView):
-   queryset= Comment.active_objects.all()
-   serializer_class= CommentSerializer
+class BlogCommentListCreateAPIView(generics.ListCreateAPIView):
+   queryset= BlogComment.active_objects.all()
+   serializer_class= BlogCommentSerializer
 
 @api_view(['DELETE'])
-def comment_delete(request, pk):
-   comment_delete= Comment.active_objects.get(pk=pk)
-   comment_delete.is_active=False
-   comment_delete.save()
+@permission_classes([IsAdminUser])
+def blogcomment_delete(request, pk):
+   blogcomment_delete= BlogComment.active_objects.get(pk=pk)
+   blogcomment_delete.is_active=False
+   blogcomment_delete.save()
 
    return Response('comment was deleted')
 
@@ -57,6 +59,7 @@ class AuthorRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateA
 
 
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser])
 def author_delete(request, pk):
    author= Author.objects.get(pk=pk)
    author.is_active=False
@@ -67,19 +70,20 @@ def author_delete(request, pk):
 # author restore
 
 # NEWS
-class NewsArticleListCreateAPIView(AdminOrReadOnlyMixin, generics.ListCreateAPIView):
-   queryset= NewsArticle.active_objects.all()
-   serializer_class= NewsArticleSerializer
+class NewsListCreateAPIView(AdminOrReadOnlyMixin, generics.ListCreateAPIView):
+   queryset= News.active_objects.all()
+   serializer_class= NewsSerializer
 
-class NewsArticleRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateAPIView):
-   queryset= NewsArticle.objects.all()
-   serializer_class= NewsArticleSerializer
+class NewsRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateAPIView):
+   queryset= News.active_objects.all()
+   serializer_class= NewsSerializer
    lookup_field= "pk"
 
 
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser])
 def news_delete(request, pk):
-   news= NewsArticle.active_objects.get(pk=pk)
+   news= News.active_objects.get(pk=pk)
    news.is_active=False
    news.save()
 
@@ -93,6 +97,7 @@ class NewsCommentListCreateAPIView(generics.ListCreateAPIView):
 
 
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser])
 def newscomment_delete(request, pk):
    newscomment_delete= NewsComment.active_objects.get(pk=pk)
    newscomment_delete.is_active=False
@@ -112,6 +117,7 @@ class GalleryRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdate
    lookup_field= "pk"
 
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser])
 def gallery_delete(request, pk):
    gallery= Gallery.objects.get(pk=pk)
    gallery.is_active=False
@@ -132,6 +138,7 @@ class NewsLetterSubscriptionRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView
 
 
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser])
 def newslettersubscription_delete(request, pk):
    newsLetter= NewsLetterSubscription.objects.get(pk=pk)
    newsLetter.is_active=False

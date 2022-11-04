@@ -1,32 +1,35 @@
 from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
 from Blogs.models import *
 
 class AuthorSerializer(ModelSerializer):
+   
    class Meta:
       model= Author
       fields= ['id',
          'first_name', 'last_name', 'email',
          'author_bio', 'author_profile_pics',
+         
       ]
 
-class BlogArticleSerializer(ModelSerializer):
+class BlogSerializer(ModelSerializer):
    class Meta:
-      model= BlogArticle
-      fields= ['id', 'article_title', 'article_intro', 'article_description',
+      model= Blog
+      fields= ['id', 'blog_title', 'blog_intro', 'blog_description',
       'created_at', 'updated_at', 'tags', 'author', 'image',
       'is_active',]
 
 
-class CommentSerializer(ModelSerializer):
+class BlogCommentSerializer(ModelSerializer):
    class Meta:
-      model= Comment
+      model= BlogComment
       fields= ['id', 'commenter_name', 'your_comment', 'created_at' ]
 
 
 # NEWS SERIALIZER
-class NewsArticleSerializer(ModelSerializer):
+class NewsSerializer(ModelSerializer):
    class Meta:
-      model=NewsArticle
+      model=News
       fields=  ['id', 'news_title', 'news_intro', 'news_description',
       'category', 'author', 'image',
       'is_active',]
