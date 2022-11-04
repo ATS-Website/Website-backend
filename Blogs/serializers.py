@@ -46,9 +46,11 @@ class NewsArticleSerializer(ModelSerializer):
 
 
 class NewsCommentSerializer(ModelSerializer):
+    news_article = NewsArticleSerializer(read_only=True)
+
     class Meta:
         model = NewsComment
-        fields = ['id', 'name', 'description', 'created_at']
+        fields = ['id', 'name', 'description', 'news_article', 'created_at']
 
 # GALLERY
 

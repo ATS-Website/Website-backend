@@ -1,5 +1,5 @@
 from algoliasearch_django import raw_search
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from Blogs.models import *
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
@@ -132,7 +132,7 @@ class NewsArticleRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUp
 
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAdminUser])
-@renderer_classes(CustomRenderer,)
+@renderer_classes((CustomRenderer,))
 def news_delete(request, pk):
     news = NewsArticle.active_objects.get(pk=pk)
     news.is_active = False
@@ -144,20 +144,46 @@ def news_delete(request, pk):
 # NEWSCOMMENT
 class NewsCommentListCreateAPIView(generics.ListCreateAPIView):
     queryset = NewsComment.active_objects.all()[:10]
-    renderer_classes = [CustomRenderer]
+    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
     serializer_class = NewsCommentSerializer
+
+    def post(self, request, *args, **kwargs):
+        news_article = get_object_or_404(
+            NewsArticle, pk=self.kwargs.get('pk', None))
+        serializer = self.serializer_class(
+            data=request.data, context={'request': request})
+        print(serializer.is_valid())
+        if serializer.is_valid():
+            serializer.save(news_article=news_article)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NewsCommentRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = NewsCommentListCreateAPIView
+    queryset = NewsComment.active_objects.all()
+    renderer_classes = [CustomRenderer, ]
+
+    def get(self, request, *args, **kwargs):
+        newscomment = NewsComment.active_objects.get(
+            news_article__pk=self.kwargs.get('news_pk', None), pk=self.kwargs.get('pk', None))
+
+        serializer = self.serializer_class(newscomment)
+        if serializer.is_valid():
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAdminUser])
-@renderer_classes(CustomRenderer,)
+@renderer_classes((CustomRenderer,))
 def newscomment_delete(request, news_pk, pk):
     newscomment = NewsComment.active_objects.get(
-        news_article=news_pk, pk=pk)
+        news_article__pk=news_pk, pk=pk)
     newscomment.is_active = False
     newscomment.save()
 
-    return Response({"message": 'The Comment on the New was sucessfully deleted'}, status=status.HTTP_204_NO_CONTENT)
+    return Response({"message": 'The Comment on the News was sucessfully deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 
 # Gallery
