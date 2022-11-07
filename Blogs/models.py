@@ -39,8 +39,7 @@ class Author(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=15,
-                            help_text="Enter a suitable tag to help find the post",)
+    name = models.CharField(max_length=15, help_text="Enter a suitable tag to help find the post",)
 
     def __str__(self):
         return self.name
@@ -52,7 +51,7 @@ class BlogArticle(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    tags = models.ManyToManyField(Tag, default=["news", "entertainment"])
+    tags = models.ManyToManyField(Tag)
     author = models.ForeignKey(Author, null=True, on_delete=models.SET_NULL)
     image = models.ImageField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -115,8 +114,7 @@ class NewsArticle(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
     image = models.ImageField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -140,8 +138,7 @@ class NewsArticle(models.Model):
 class NewsComment(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     description = models.CharField(max_length=100, blank=False, null=False)
-    news_article = models.ForeignKey(
-        NewsArticle, on_delete=models.SET_NULL, null=True)
+    news_article = models.ForeignKey(NewsArticle, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
@@ -157,14 +154,26 @@ class NewsComment(models.Model):
 
 # NEWSLETTER
 class NewsLetterSubscription(models.Model):
-    email = models.EmailField(models.Model)
+    email = models.EmailField()
 
     def __str__(self):
         return self.email
 
+class NewsLetter(models.Model):
+    title =models.CharField(max_length=200)
+    content= models.TextField()
+    created_at= models.DateTimeField(auto_now_add=True)
+    newslettersubscription = models.ForeignKey(NewsLetterSubscription, on_delete=models.SET_NULL, null=True)
+
+    def send_letter(self):
+        return 
+
+
+
 # GALLERY
-
-
 class Gallery(models.Model):
     image = models.ImageField()
     text = models.CharField(max_length=250, blank=True, null=True)
+
+
+

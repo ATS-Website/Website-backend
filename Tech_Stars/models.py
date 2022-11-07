@@ -65,7 +65,7 @@ class TechStar(models.Model):
 # class Attendance(models.Model):
 #     STATUS_CHOICES = (
 #         ("Fraudulent", "Fraudulent"),
-#         ("Successful", "Successful")
+#         ("Successful", "Successful") 
 #     )
 #     user = models.ForeignKey(TechStar, on_delete=models.SET_NULL, null=True)
 #     check_in = models.DateTimeField()
