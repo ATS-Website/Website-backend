@@ -7,13 +7,16 @@ from Blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
                          CategoryListCreateAPIView, CategoryDetailUpdateDeleteAPIView,
                          NewsLetterSubscriptionRetrieveUpdateDeleteAPIView, NewsLetterSubscriptionListCreateAPIView,
                          SendNewsLetter, NewsLetterListCreateAPIView, NewsLetterDetailsUpdateDeleteAPIView,
-                         SearchNewsView, SearchBlogView
+                         SearchNewsView, SearchBlogView, BlogArticleCommentListAPIView,
+                         ViewsListCreateAPIView
                          )
 
 app_name = 'Blogs'
+
 urlpatterns = [
     path('blogs', BlogArticleListCreateAPIView.as_view(), name="blog_list_create"),
     path('blogs/<int:pk>', BlogArticleRetrieveUpdateDeleteAPIView.as_view(), name="blog_detail_update"),
+    path("blogs-comments/<int:pk>", BlogArticleCommentListAPIView.as_view(), name="blog_comments"),
 
     path('comment', CommentListCreateAPIView.as_view(), name="comment_list_create"),
     path('comment/<int:pk>', CommentDetailsUpdateDeleteAPIView.as_view(), name='comment_detail_update_delete'),
@@ -33,6 +36,8 @@ urlpatterns = [
          name="news_list_create"),
     path('news/<int:pk>',
          NewsArticleRetrieveUpdateDeleteAPIView.as_view(), name='news_detail_update'),
+
+    path("views", ViewsListCreateAPIView.as_view(), name="views_list_create"),
 
     #
     # path('gallery', views.GalleryListCreateAPIView.as_view(),

@@ -34,3 +34,15 @@ def new_send_mail_func(context, subscribers: list):
     except Exception as e:
         print(e)
         return False
+
+
+def time_taken_to_read(title: str, content: str):
+    word_count = len(list((title + content).split()))
+    total = (word_count // 200)
+    if total < 1:
+        return "less than a minute read"
+    return f"{total} Minute Read"
+
+
+# def get_month_and_day(date_time):
+#     return f"{date_time.}"

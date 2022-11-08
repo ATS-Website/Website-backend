@@ -5,6 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import generics, permissions
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
@@ -68,17 +69,6 @@ class BlogArticleRetrieveUpdateDeleteAPIView(AdminOrReadOnlyMixin, CustomRetriev
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
-# @api_view(['DELETE'])
-# @permission_classes([permissions.IsAdminUser])
-# @renderer_classes(CustomRenderer,)
-# def blog_delete(request, pk):
-#     blog_delete = BlogArticle.active_objects.get(pk=pk)
-#     blog_delete.is_active = False
-#     blog_delete.save()
-
-#     return Response({"message": 'Blog was deleted'}, status=status.HTTP_204_NO_CONTENT)
-
-
 # COMMENTS
 class CommentListCreateAPIView(AdminOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = Comment.active_objects.all()
@@ -133,17 +123,6 @@ class GalleryRetrieveUpdateAPIView(AdminOrReadOnlyMixin, CustomRetrieveUpdateAPI
     lookup_field = "pk"
 
 
-# @api_view(['DELETE'])
-# @permission_classes([permissions.IsAdminUser])
-# @renderer_classes(CustomRenderer, )
-# def gallery_delete(request, pk):
-#     gallery = Gallery.objects.get(pk=pk)
-#     gallery.is_active = False
-#     gallery.save()
-#
-#     return Response({"message": 'The Image was sucessfully deleted'}, status=status.HTTP_204_NO_CONTENT)
-
-
 # Newsletter
 
 
@@ -173,17 +152,6 @@ class SendNewsLetter(APIView):
         new_send_mail_func(vars(news_letter), self.get_object())
 
         return Response("Messages Sent Successfully", status=HTTP_201_CREATED)
-
-
-# @api_view(['DELETE'])
-# @permission_classes([permissions.IsAdminUser])
-# @renderer_classes(CustomRenderer, )
-# def newslettersubscription_delete(request, pk):
-#     newsLetter = NewsLetterSubscription.objects.get(pk=pk)
-#     newsLetter.is_active = False
-#     newsLetter.save()
-#
-#     return Response({"message": 'The Subscription was sucessfully annulled'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class CategoryListCreateAPIView(AdminOrReadOnlyMixin, CustomListCreateAPIView):
@@ -221,4 +189,17 @@ class NewsLetterListCreateAPIView(AdminOrReadOnlyMixin, CustomListCreateAPIView)
 class NewsLetterDetailsUpdateDeleteAPIView(AdminOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = NewsLetter.active_objects.all()
     serializer_class = NewsLetterDetailSerializer
-    renderer_classes = (CustomRenderer, )
+    renderer_classes = (CustomRenderer,)
+
+
+class BlogArticleCommentListAPIView(APIView):
+    def get(self, *args, **kwargs):
+        queryset = Comment.active_objects.filter(blog_article_id=kwargs["pk"])
+        serializer = CommentSerializer(queryset, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)
+
+
+class ViewsListCreateAPIView(CreateAPIView):
+    queryset = Views.active_objects.all()
+    serializer_class = BlogViewsSerializer
+    renderer_classes = (CustomRenderer,)

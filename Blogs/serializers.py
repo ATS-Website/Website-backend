@@ -29,20 +29,15 @@ class BlogArticleSerializer(ModelSerializer):
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'intro', 'description',
-                  'created_at', 'tags', 'author', 'url', 'image',
+                  'created_at', 'tags', 'author', 'url', 'image', "min_read", "author_fullname"
                   ]
+
+        extra_kwargs = {
+            "author": {"write_only": True}
+        }
 
     def get_url(self, obj):
         return self.context.get("request").build_absolute_uri("/api/v1/blogs/") + str(obj.pk)
-
-
-class BlogArticleDetailSerializer(ModelSerializer):
-
-    class Meta:
-        model = BlogArticle
-        fields = ['id', 'title', 'intro', 'description',
-                  'created_at', 'tags', 'author',  'image',
-                  ]
 
 
 class CommentSerializer(ModelSerializer):
@@ -50,11 +45,22 @@ class CommentSerializer(ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'name', 'description', "blog_article",'created_at', "url")
+        fields = ('id', 'name', 'description', "blog_article", 'created_at', "url")
+
+
+class BlogArticleDetailSerializer(ModelSerializer):
+    more_comments = HyperlinkedIdentityField(view_name="Blogs:blog_comments", read_only=True)
+    few_comments = CommentSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = BlogArticle
+        fields = ['id', 'title', 'description',
+                  'created_at', 'tags', 'author', 'image', "likes_count", "comment_count", "views_count",
+                  "min_read", "author_fullname", "few_comments", "more_comments"
+                  ]
 
 
 class CommentDetailSerializer(ModelSerializer):
-
     class Meta:
         model = Comment
         fields = ('id', 'name', 'description', "blog_article", 'created_at')
@@ -75,12 +81,12 @@ class NewsArticleSerializer(ModelSerializer):
 
 
 class NewsArticleDetailSerializer(ModelSerializer):
-
     class Meta:
         model = NewsArticle
         fields = ['id', 'title', 'intro', 'description', 'created_at',
                   'category', 'author', 'image'
                   ]
+
 
 #
 # class NewsCommentSerializer(ModelSerializer):
@@ -112,10 +118,9 @@ class NewsLetterSubscriptionSerializer(ModelSerializer):
 
 
 class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
-
     class Meta:
         model = NewsLetterSubscription
-        fields = ('id', 'email', )
+        fields = ('id', 'email',)
 
 
 class CategorySerializer(ModelSerializer):
@@ -161,7 +166,6 @@ class NewsLetterSerializer(ModelSerializer):
 
 
 class NewsLetterDetailSerializer(ModelSerializer):
-
     class Meta:
         model = NewsLetter
         fields = (
@@ -170,3 +174,22 @@ class NewsLetterDetailSerializer(ModelSerializer):
             "content",
             "subject"
         )
+
+
+class BlogViewsSerializer(ModelSerializer):
+    class Meta:
+        model = Views
+        fields = (
+            "blog_article",
+            "viewer_ip"
+        )
+
+    def create(self, validated_data):
+        blog_article = validated_data.get("blog_article")
+        ip = validated_data.get("viewer_ip")
+
+        view = Views.active_objects.get_or_create(blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+        if ip not in view.viewer_ip:
+            view.viewer_ip.append(ip)
+            view.save()
+        return view
