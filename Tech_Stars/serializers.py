@@ -2,7 +2,7 @@ from rest_framework.serializers import (ModelSerializer, HyperlinkedIdentityFiel
                                         Serializer, CharField
                                         )
 
-from .models import TechStar, Testimonial, ResumptionAndClosingTime, Attendance, OfficeLocation
+from .models import TechStar, Testimonial, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 
 
 class TechStarSerializer(ModelSerializer):
@@ -139,5 +139,29 @@ class OfficeLocationSerializer(ModelSerializer):
             "latitude_2",
             "longitude_1",
             "longitude_2",
+        )
+
+
+class XpertOfTheWeekSerializer(ModelSerializer):
+    url = HyperlinkedIdentityField(view_name="Tech_Stars:xpert_detail_update_delete", read_only=True)
+
+    class Meta:
+        model = XpertOfTheWeek
+        fields = (
+            "tech_star",
+            "interview",
+            "url"
+        )
+        extra_kwargs = {
+            "interview": {"write_only": True}
+        }
+
+
+class XpertOfTheWeekDetailSerializer(ModelSerializer):
+    class Meta:
+        model = XpertOfTheWeek
+        fields = (
+            "tech_star",
+            "interview"
         )
 

@@ -6,7 +6,7 @@ from .views import (
                     GenerateAttendanceQRCode, ResumptionAndClosingTimeCreateAPIView,
                     ResumptionAndClosingTimeDetailsUpdateDetailAPIView, RecordAttendanceAPIView,
                     AttendanceListAPIView, OfficeLocationCreateAPIView, OfficeLocationDetailsUpdateAPIView,
-                    TestimonialFrontpageListAPIView
+                    TestimonialFrontpageListAPIView, XpertOfTheWeekListCreateAPIView, XpertOfTheWeekDetailUpdateDeleteAPIView
                     )
 
 
@@ -29,6 +29,10 @@ urlpatterns = [
 
     path("office-location-create/", OfficeLocationCreateAPIView.as_view(), name="office_location_create"),
     path("office-location-detail-update/", OfficeLocationDetailsUpdateAPIView.as_view(), name="office_location_detail_update"),
+
+
+    path("Xpert-Of-the-week-list-create/", XpertOfTheWeekListCreateAPIView.as_view(), name="xpert_list_create"),
+    path("Xpert-of-the-week-detail-update-destroy/<int:pk>", XpertOfTheWeekDetailUpdateDeleteAPIView.as_view(), name="xpert_detail_update_delete")
 
 
 

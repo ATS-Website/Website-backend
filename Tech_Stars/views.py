@@ -10,18 +10,17 @@ from rest_framework.generics import ListAPIView
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
-import qrcode
 
-from .permissions import IsAdminOrReadOnly
 from .serializers import (
-                          TestimonialSerializer, TestimonialDetailSerializer,
-                          TechStarSerializer, TechStarDetailSerializer,
-                          BarcodeSerializer, ResumptionAndClosingTimeSerializer, AttendanceSerializer,
-                          OfficeLocationSerializer, TestimonialFrontpageSerializer
-                          )
+    TestimonialSerializer, TestimonialDetailSerializer,
+    TechStarSerializer, TechStarDetailSerializer,
+    BarcodeSerializer, ResumptionAndClosingTimeSerializer, AttendanceSerializer,
+    OfficeLocationSerializer, TestimonialFrontpageSerializer, XpertOfTheWeekSerializer,
+    XpertOfTheWeekDetailSerializer
+)
 from .renderers import CustomRenderer
-from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance, OfficeLocation
-from .mixins import (AdminOrReadOnlyMixin, CustomListCreateAPIView,
+from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
+from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView,
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView
                      )
@@ -42,26 +41,20 @@ def create_attendance(tech_star, date_time, device_id):
     return serializer.data
 
 
-class TechStarListCreateAPIView(AdminOrReadOnlyMixin, CustomListCreateAPIView):
+class TechStarListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = TechStarSerializer
     queryset = TechStar.active_objects.all()
     renderer_classes = (CustomRenderer,)
     model = "TechStar"
 
 
-class TechStarDetailsUpdateDeleteAPIView(AdminOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
+class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     serializer_class = TechStarDetailSerializer
     queryset = TechStar.active_objects.all()
     renderer_classes = (CustomRenderer,)
 
-    # def delete(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     instance.is_active = True
-    #     instance.save()
-    #     return super().delete(request, *args, **kwargs)
 
-
-class TestimonialListCreateAPIView(AdminOrReadOnlyMixin, CustomListCreateAPIView):
+class TestimonialListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = TestimonialSerializer
     queryset = Testimonial.active_objects.all()
     renderer_classes = (CustomRenderer,)
@@ -79,26 +72,21 @@ class TestimonialFrontpageListAPIView(ListAPIView):
         return Response(serializer.data, status=HTTP_200_OK)
 
 
-class TestimonialDetailUpdateDeleteView(AdminOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
+class TestimonialDetailUpdateDeleteView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     serializer_class = TestimonialDetailSerializer
     queryset = Testimonial.active_objects.all()
     renderer_classes = (CustomRenderer,)
 
-    # def delete(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     instance.is_active = True
-    #     instance.save()
-    #     return super().delete(request, *args, **kwargs)
 
-
-class ResumptionAndClosingTimeCreateAPIView(CustomListCreateAPIView):
+class ResumptionAndClosingTimeCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
     permission_classes = (IsAuthenticated,)
     renderer_classes = (CustomRenderer,)
     queryset = ResumptionAndClosingTime.objects.all()
 
 
-class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(CustomRetrieveUpdateAPIView):
+class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManagerOrReadOnlyMixin,
+                                                         CustomRetrieveUpdateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
     permission_classes = (IsAuthenticated,)
     renderer_classes = (CustomRenderer,)
@@ -143,7 +131,7 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
         raise ValidationError("Out of Time Range !")
 
 
-class RecordAttendanceAPIView(CustomCreateAPIView):
+class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCreateAPIView):
     renderer_classes = (CustomRenderer,)
     serializer_class = AttendanceSerializer
 
@@ -201,10 +189,9 @@ class RecordAttendanceAPIView(CustomCreateAPIView):
         raise ValidationError("Out of Location Range")
 
 
-class AttendanceUpdateAPIView(CustomRetrieveUpdateAPIView):
+class AttendanceUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
     queryset = Attendance.active_objects.all()
     serializer_class = AttendanceSerializer
-    permission_classes = (IsAuthenticated,)
     renderer_classes = (CustomRenderer,)
 
 
@@ -215,17 +202,27 @@ class AttendanceListAPIView(ListAPIView):
     permission_classes = (IsAuthenticated,)
 
 
-class OfficeLocationCreateAPIView(CustomListCreateAPIView):
+class OfficeLocationCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = OfficeLocationSerializer
-    permission_classes = (IsAuthenticated,)
     renderer_classes = (CustomRenderer,)
     queryset = OfficeLocation.objects.all()
 
 
-class OfficeLocationDetailsUpdateAPIView(CustomRetrieveUpdateAPIView):
+class OfficeLocationDetailsUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
     serializer_class = OfficeLocationSerializer
-    permission_classes = (IsAuthenticated,)
     renderer_classes = (CustomRenderer,)
 
     def get_object(self):
         return OfficeLocation.objects.all().first()
+
+
+class XpertOfTheWeekListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
+    serializer_class = XpertOfTheWeekSerializer
+    renderer_classes = (CustomRenderer, )
+    queryset = XpertOfTheWeek.active_objects.all()
+
+
+class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
+    serializer_class = XpertOfTheWeekDetailSerializer
+    renderer_classes = (CustomRenderer, )
+    queryset = XpertOfTheWeek.active_objects.all()

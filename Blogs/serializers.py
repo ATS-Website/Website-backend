@@ -193,3 +193,26 @@ class BlogViewsSerializer(ModelSerializer):
             view.viewer_ip.append(ip)
             view.save()
         return view
+
+
+class LikeSerializer(ModelSerializer):
+    class Meta:
+        model = Likes
+        fields = (
+            "blog_article",
+            "ip_address"
+        )
+
+    def create(self, validated_data):
+        blog_article = validated_data.get("blog_article")
+        ip = validated_data.get("ip_address")
+
+        view = Likes.active_objects.get_or_create(blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+        if ip not in view.ip_address:
+            view.ip_address.append(ip)
+        else:
+            view.ip_address.remove(ip)
+
+        view.save()
+        return view
+

@@ -126,22 +126,20 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        unique_together = ("name", "description", "blog_article", "is_active")
 
     def __str__(self):
         return 'Comment {} by {}'.format(self.name, self.description)
 
 
 class Likes(models.Model):
-    ip_address = models.CharField(max_length=100, null=True)
     blog_article = models.ForeignKey(BlogArticle, on_delete=models.SET_NULL, null=True)
+    ip_address = models.JSONField(default=_json_list())
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
-
-    class Meta:
-        unique_together = ("ip_address", "blog_article")
 
 
 class Views(models.Model):

@@ -1,14 +1,13 @@
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from .permissions import IsAdminOrReadOnly
 
+from .permissions import IsAdminOrMembershipManagerOrReadOnly
 from .utils import write_log_csv
 
 
-class AdminOrReadOnlyMixin:
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+class AdminOrMembershipManagerOrReadOnlyMixin:
+    permission_classes = (IsAdminOrMembershipManagerOrReadOnly, )
 
 
 class CustomListCreateAPIView(ListCreateAPIView):

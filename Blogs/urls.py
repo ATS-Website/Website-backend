@@ -8,7 +8,7 @@ from Blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
                          NewsLetterSubscriptionRetrieveUpdateDeleteAPIView, NewsLetterSubscriptionListCreateAPIView,
                          SendNewsLetter, NewsLetterListCreateAPIView, NewsLetterDetailsUpdateDeleteAPIView,
                          SearchNewsView, SearchBlogView, BlogArticleCommentListAPIView,
-                         ViewsListCreateAPIView
+                         ViewsListCreateAPIView, LikesCreateAPIView
                          )
 
 app_name = 'Blogs'
@@ -38,6 +38,7 @@ urlpatterns = [
          NewsArticleRetrieveUpdateDeleteAPIView.as_view(), name='news_detail_update'),
 
     path("views", ViewsListCreateAPIView.as_view(), name="views_list_create"),
+    path("likes", LikesCreateAPIView.as_view(), name="likes_list_create"),
 
     #
     # path('gallery', views.GalleryListCreateAPIView.as_view(),

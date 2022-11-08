@@ -44,5 +44,3 @@ def time_taken_to_read(title: str, content: str):
     return f"{total} Minute Read"
 
 
-# def get_month_and_day(date_time):
-#     return f"{date_time.}"
