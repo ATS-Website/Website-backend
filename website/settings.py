@@ -13,47 +13,28 @@ from decouple import config
 import os
 from datetime import timedelta
 from pathlib import Path
-<< << << < HEAD
-
-== == == =
-
->>>>>> > origin/abraham_dev
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-<< << << < HEAD
-
-# Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = config("DEBUG", cast=bool)
-
-ALLOWED_HOSTS = []
-
-
-== == == =
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")
 #
 # # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = decouple.config("DEBUG", cast=bool)
 
 # SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
-DEBUG = config("DEBUG", cast=bool, default=False)
+DEBUG = True
+# DEBUG = config("DEBUG", cast=bool, default=True)
+
 
 ALLOWED_HOSTS = []
-
->>>>>> > origin/abraham_dev
-# Application definition
+# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = [
+#     'localhost',
+#     '127.0.0.1',
+#     '111.222.333.444',
+#     'mywebsite.example']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -73,10 +54,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     # external api
     'algoliasearch_django',
-    << << << < HEAD
-    == == == =
     "cloudinary_storage",
-    >>>>>> > origin/abraham_dev
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -109,34 +88,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'website.wsgi.application'
 
-<< << << < HEAD
 
-== == == =
->>>>>> > origin/abraham_dev
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        << << << < HEAD
         'NAME': 'Website',
         'USER': 'postgres',
         'PASSWORD': config('DB_PASSWORD'),
-        == == == =
-        'NAME': 'ATS_Website',
-        'USER': 'Django_ATS',
-        'PASSWORD': '1234567890',
-        >>>>>> > origin/abraham_dev
         'PORT': '5432',
         'HOST': 'localhost',
 
     }
 }
 
-<< << << < HEAD
-
-== == == =
->>>>>> > origin/abraham_dev
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -171,9 +137,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIR = os.path.join(BASE_DIR, "static")
-
+# STATIC_URL = '/static/'
+# STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
-# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -194,7 +162,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.renderers.BrowsableAPIRenderer',
     # ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 2
+    'PAGE_SIZE': 10
 
 }
 
@@ -222,7 +190,9 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": config("CLOUD_NAME"),
     "API_KEY": config("CLOUD_API_KEY"),
-    "API_SECRET": config("CLOUD_API_SECRET")
+    "API_SECRET": config("CLOUD_API_SECRET"),
+    'STATIC_IMAGES_EXTENSIONS': ['jpg', 'jpe', 'jpeg', 'jpc', 'jp2', 'j2k', 'wdp', 'jxr',
+                                 'hdp', 'png', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'ico'],
+    'STATIC_VIDEOS_EXTENSIONS': ['mp4', 'webm', 'flv', 'mov', 'ogv', '3gp', '3g2', 'wmv',
+                                 'mpeg', 'flv', 'mkv', 'avi'],
 }
-
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"

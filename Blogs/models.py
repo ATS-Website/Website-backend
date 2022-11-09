@@ -1,6 +1,9 @@
 from .utils import time_taken_to_read
 import datetime
 from django.contrib.auth.models import User
+from cloudinary_storage.storage import VideoMediaCloudinaryStorage
+from cloudinary_storage.validators import validate_video
+
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.dispatch import receiver
@@ -64,7 +67,8 @@ class BlogArticle(models.Model):
     tags = models.ManyToManyField(Tag, limit_choices_to={"is_active": True})
     author = models.ForeignKey(
         Author, null=True, on_delete=models.SET_NULL, default="anonymous")
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(
+        blank=True, upload_to='media/blog_article/images/', null=True)
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
@@ -174,7 +178,8 @@ class NewsArticle(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(
+        blank=True, upload_to='media/news_article/images/', null=True,)
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
@@ -213,9 +218,13 @@ class NewsComment(models.Model):
         return 'Comment {} by {}' .format(self.description, self.name)
 
 
-# NEWSLETTER
+# NEWSLETTER# NEWSLETTER
 class NewsLetterSubscription(models.Model):
-    email = models.EmailField(models.Model)
+    email = models.EmailField(null=True, unique=True)
+    is_active = models.BooleanField(default=True)
+
+    objects = models.Manager()
+    active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
     def __str__(self):
@@ -238,8 +247,10 @@ class NewsLetter(models.Model):
 
 
 class Gallery(models.Model):
-    image = models.ImageField(blank=True, upload_to="gallery/", null=True)
-    video = models.FileField(blank=True, upload_to="gallery/", null=True)
+    image = models.ImageField(
+        blank=True, upload_to="gallery/images/", null=True)
+    video = models.FileField(blank=True, upload_to="gallery/videos/",
+                             null=True, storage=VideoMediaCloudinaryStorage(), validators=[validate_video])
     text = models.CharField(max_length=250, null=True)
     date_added = models.DateField(auto_now_add=True, null=True)
     is_active = models.BooleanField(default=True)

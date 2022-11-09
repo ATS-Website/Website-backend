@@ -119,7 +119,12 @@ class NewsArticleDetailSerializer(ModelSerializer):
 class GallerySerializer(ModelSerializer):
     class Meta:
         model = Gallery
-        fields = ['id', 'image', 'text']
+        fields = ['image', 'video', 'text', ]
+        extra_kwargs = {
+            "image": {"write_only": True},
+            "video": {"write_only": True},
+            "text": {"write_only": True},
+        }
 
 # NEWSLETTER
 

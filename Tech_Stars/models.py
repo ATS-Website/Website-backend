@@ -5,10 +5,6 @@ from django.db import models
 from django.core.exceptions import ValidationError
 import datetime
 
-<< << << < HEAD
-== == == =
->>>>>> > origin/abraham_dev
-
 
 # Create your models here.
 
@@ -39,14 +35,8 @@ class TechStar(models.Model):
     official_email = models.EmailField(null=True, unique=True, blank=True)
     favorite_meal = models.CharField(max_length=50)
     favorite_quote = models.TextField(null=True)
-
-
-<< << << < HEAD
-   year = models.CharField(max_length=15, null=True, choices=YEAR_CHOICES)
-== == == =
-   cohort = models.CharField(max_length=500, null=True)
->>>>>> > origin/abraham_dev
-   date_created = models.DateTimeField(auto_now_add=True)
+    cohort = models.CharField(max_length=500, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
     device_id = models.CharField(max_length=200, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
@@ -55,7 +45,6 @@ class TechStar(models.Model):
     inactive_objects = InActiveManager()
 
 
-<< << << < HEAD
 #
 # class Attendance(models.Model):
 #     STATUS_CHOICES = (
@@ -66,7 +55,6 @@ class TechStar(models.Model):
 #     check_in = models.DateTimeField()
 #     check_out = models.DateTimeField()
 #     location = models.CharField(max_length=300, null=True)
-== == == =
 
 
 class Attendance(models.Model):
@@ -91,9 +79,6 @@ class Attendance(models.Model):
         ordering = ("-date_created",)
 
 
->>>>>> > origin/abraham_dev
-
-
 class Testimonial(models.Model):
     tech_star = models.ForeignKey(
         TechStar, on_delete=models.SET_NULL, null=True)
@@ -105,8 +90,6 @@ class Testimonial(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
-
-<< << << < HEAD
 
 # def id_creator_checker(number: int):
 #     get_id = number + 1
@@ -128,9 +111,7 @@ def set_tech_star_id(sender, instance, created, **kwargs):
             instance.tech_star_id = f"ATS-0001"
             instance.save()
 
-
-== == == =
-   def tech_star_full_name(self):
+    def tech_star_full_name(self):
         return self.tech_star.full_name
 
     def tech_star_profile_picture(self):
@@ -180,4 +161,3 @@ class XpertOfTheWeek(models.Model):
 
     class Meta:
         ordering = ("-date_created", )
->>>>>> > origin/abraham_dev

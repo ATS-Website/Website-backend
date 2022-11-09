@@ -113,16 +113,23 @@ class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView)
 
 # Gallery
 class GalleryListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
-    queryset = Gallery.objects.all()
+    queryset = Gallery.active_objects.all()
+    renderer_classes = [CustomRenderer]
     serializer_class = GallerySerializer
 
 
 class GalleryRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
-    queryset = Gallery.objects.all()
+    queryset = Gallery.active_objects.all()
+    renderer_classes = [CustomRenderer]
     serializer_class = GallerySerializer
     lookup_field = "pk"
 
 
+# class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
+#     queryset = NewsLetterSubscription.objects.all()
+#     serializer_class = NewsLetterSubscriptionDetailSerializer
+#     renderer_classes = [CustomRenderer, ]
+#     lookup_field = "pk"
 # Newsletter
 
 
