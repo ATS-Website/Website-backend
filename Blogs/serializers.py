@@ -3,8 +3,21 @@ from rest_framework import serializers
 from .models import *
 
 
+class SearchBlogSerializer(ModelSerializer):
+    class Meta:
+        model = BlogArticle
+        fields = ('id', 'title', 'intro', 'description')
+
+
+class SearchBlogSerializer(ModelSerializer):
+    class Meta:
+        model = NewsArticle
+        fields = ('id', 'title', 'intro', 'description')
+
+
 class AuthorSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:author_detail_update", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:author_detail_update", read_only=True)
 
     class Meta:
         model = Author
@@ -41,15 +54,18 @@ class BlogArticleSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:comment_detail_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:comment_detail_update_delete", read_only=True)
 
     class Meta:
         model = Comment
-        fields = ('id', 'name', 'description', "blog_article", 'created_at', "url")
+        fields = ('id', 'name', 'description',
+                  "blog_article", 'created_at', "url")
 
 
 class BlogArticleDetailSerializer(ModelSerializer):
-    more_comments = HyperlinkedIdentityField(view_name="Blogs:blog_comments", read_only=True)
+    more_comments = HyperlinkedIdentityField(
+        view_name="Blogs:blog_comments", read_only=True)
     few_comments = CommentSerializer(read_only=True, many=True)
 
     class Meta:
@@ -109,7 +125,8 @@ class GallerySerializer(ModelSerializer):
 
 
 class NewsLetterSubscriptionSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:newsletter_subscription_detail_update", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:newsletter_subscription_detail_update", read_only=True)
 
     class Meta:
         model = NewsLetterSubscription
@@ -123,7 +140,8 @@ class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
 
 
 class CategorySerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:category_detail_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:category_detail_update_delete", read_only=True)
 
     class Meta:
         model = Category
@@ -137,7 +155,8 @@ class CategoryDetailSerializer(ModelSerializer):
 
 
 class TagSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:tag_detail_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:tag_detail_update_delete", read_only=True)
 
     class Meta:
         model = Tag
@@ -151,7 +170,8 @@ class TagDetailSerializer(ModelSerializer):
 
 
 class NewsLetterSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:newsletter_details_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:newsletter_details_update_delete", read_only=True)
 
     class Meta:
         model = NewsLetter
@@ -187,7 +207,8 @@ class BlogViewsSerializer(ModelSerializer):
         blog_article = validated_data.get("blog_article")
         ip = validated_data.get("viewer_ip")
 
-        view = Views.active_objects.get_or_create(blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+        view = Views.active_objects.get_or_create(
+            blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
         if ip not in view.viewer_ip:
             view.viewer_ip.append(ip)
             view.save()
@@ -206,7 +227,8 @@ class LikeSerializer(ModelSerializer):
         blog_article = validated_data.get("blog_article")
         ip = validated_data.get("ip_address")
 
-        view = Likes.active_objects.get_or_create(blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+        view = Likes.active_objects.get_or_create(
+            blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
         if ip not in view.ip_address:
             view.ip_address.append(ip)
         else:
@@ -214,4 +236,3 @@ class LikeSerializer(ModelSerializer):
 
         view.save()
         return view
-
