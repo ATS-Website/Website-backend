@@ -1,10 +1,13 @@
 */migrations
 __pycache__/
 .idea/
-.env/
+*/.env
+.env
+env
+admin_activity_logs.csv
+*/enc_dec
 # Created by https://www.toptal.com/developers/gitignore/api/pythonvanilla
 # Edit at https://www.toptal.com/developers/gitignore?templates=pythonvanilla
-
 # C extensions
 *.so
 

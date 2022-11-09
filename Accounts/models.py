@@ -62,7 +62,13 @@ class Account(AbstractBaseUser):
     email = models.EmailField(max_length=100, unique=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
+<<<<<<< HEAD
     is_admin = models.BooleanField(default=False)
+=======
+    is_admin = models.BooleanField(default=True)
+    is_content_manager = models.BooleanField(default=False)
+    is_membership_manager = models.BooleanField(default=False)
+>>>>>>> origin/abraham_dev
     is_superadmin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

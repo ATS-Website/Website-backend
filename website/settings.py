@@ -9,15 +9,20 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+from decouple import config
 import os
 from datetime import timedelta
 from pathlib import Path
-from decouple import config
+<< << << < HEAD
 
+== == == =
+
+>>>>>> > origin/abraham_dev
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+<< << << < HEAD
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -32,6 +37,22 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+== == == =
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+
+# # SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = config("SECRET_KEY")
+#
+# # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = decouple.config("DEBUG", cast=bool)
+
+# SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
+DEBUG = config("DEBUG", cast=bool, default=False)
+
+ALLOWED_HOSTS = []
+
+>>>>>> > origin/abraham_dev
 # Application definition
 
 INSTALLED_APPS = [
@@ -52,6 +73,10 @@ INSTALLED_APPS = [
     'drf_yasg',
     # external api
     'algoliasearch_django',
+    << << << < HEAD
+    == == == =
+    "cloudinary_storage",
+    >>>>>> > origin/abraham_dev
 ]
 
 MIDDLEWARE = [
@@ -84,22 +109,34 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'website.wsgi.application'
 
+<< << << < HEAD
 
+== == == =
+>>>>>> > origin/abraham_dev
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        << << << < HEAD
         'NAME': 'Website',
         'USER': 'postgres',
         'PASSWORD': config('DB_PASSWORD'),
+        == == == =
+        'NAME': 'ATS_Website',
+        'USER': 'Django_ATS',
+        'PASSWORD': '1234567890',
+        >>>>>> > origin/abraham_dev
         'PORT': '5432',
         'HOST': 'localhost',
 
     }
 }
 
+<< << << < HEAD
 
+== == == =
+>>>>>> > origin/abraham_dev
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -118,7 +155,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -130,7 +166,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -138,7 +173,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIR = os.path.join(BASE_DIR, "static")
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -174,3 +209,20 @@ ALGOLIA = {
     'API_KEY': config('ALG_API_KEY'),
     'INDEX_PREFIX': 'ats',
 }
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
+EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool)
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = config("EMAIL_PORT", cast=int)
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUD_NAME"),
+    "API_KEY": config("CLOUD_API_KEY"),
+    "API_SECRET": config("CLOUD_API_SECRET")
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
