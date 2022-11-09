@@ -3,6 +3,18 @@ from rest_framework import serializers
 from .models import *
 
 
+class SearchBlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogArticle
+        fields = ("id", "title", "intro", "description")
+
+
+class SearchNewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewsArticle
+        fields = ("id", "title", "intro", "description")
+
+
 class AuthorSerializer(ModelSerializer):
     class Meta:
         model = Author

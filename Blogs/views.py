@@ -18,6 +18,7 @@ from . import client
 
 class SearchBlogView(generics.ListAPIView):
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
+    serializer_class = SearchBlogSerializer
 
     def get(self, request, *args, **kwargs):
         query = request.GET.get("q")
@@ -34,6 +35,7 @@ class SearchBlogView(generics.ListAPIView):
 
 class SearchNewsView(generics.ListAPIView):
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
+    serializer_class = SearchNewSerializer
 
     def get(self, request, *args, **kwargs):
         query = request.GET.get("q")
@@ -60,7 +62,7 @@ class BlogArticleRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUp
 
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAdminUser])
-@renderer_classes(CustomRenderer,)
+@renderer_classes([CustomRenderer, ])
 def article_delete(request, pk):
     article_delete = BlogArticle.active_objects.get(pk=pk)
     article_delete.is_active = False
@@ -78,7 +80,7 @@ class CommentListCreateAPIView(generics.ListCreateAPIView):
 
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAdminUser])
-@renderer_classes(CustomRenderer,)
+@renderer_classes([CustomRenderer, ])
 def comment_delete(request, blog_pk, pk):
     comment = Comment.active_objects.get(blog_article__pk=blog_pk, pk=pk)
     comment.is_active = False
@@ -103,7 +105,7 @@ class AuthorRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdateA
 
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAdminUser])
-@renderer_classes(CustomRenderer,)
+@renderer_classes([CustomRenderer, ])
 def author_delete(request, pk):
     author = Author.objects.get(pk=pk)
     author.is_active = False
@@ -200,7 +202,7 @@ class GalleryRetrieveUpdateAPIView(AdminOrReadOnlyMixin, generics.RetrieveUpdate
 
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAdminUser])
-@renderer_classes(CustomRenderer,)
+@renderer_classes([CustomRenderer, ])
 def gallery_delete(request, pk):
     gallery = Gallery.objects.get(pk=pk)
     gallery.is_active = False
@@ -226,7 +228,7 @@ class NewsLetterSubscriptionRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView
 
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAdminUser])
-@renderer_classes(CustomRenderer,)
+@renderer_classes([CustomRenderer, ])
 def newslettersubscription_delete(request, pk):
     newsLetter = NewsLetterSubscription.objects.get(pk=pk)
     newsLetter.is_active = False
