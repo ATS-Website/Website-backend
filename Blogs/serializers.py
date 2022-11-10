@@ -3,8 +3,21 @@ from rest_framework import serializers
 from .models import *
 
 
+class SearchBlogSerializer(ModelSerializer):
+    class Meta:
+        model = BlogArticle
+        fields = ('id', 'title', 'intro', 'description')
+
+
+class SearchBlogSerializer(ModelSerializer):
+    class Meta:
+        model = NewsArticle
+        fields = ('id', 'title', 'intro', 'description')
+
+
 class AuthorSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:author_detail_update", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:author_detail_update", read_only=True)
 
     class Meta:
         model = Author
@@ -29,9 +42,8 @@ class BlogArticleSerializer(ModelSerializer):
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'intro', 'description',
-                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname"
+                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname",
                   ]
-
         extra_kwargs = {
             "author": {"write_only": True}
         }
@@ -41,23 +53,25 @@ class BlogArticleSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:comment_detail_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:comment_detail_update_delete", read_only=True)
 
     class Meta:
         model = Comment
-        fields = ('id', 'name', 'description', "blog_article", 'created_at', "url")
+        fields = ('id', 'name', 'description',
+                  "blog_article", 'created_at', "url")
 
 
 class BlogArticleDetailSerializer(ModelSerializer):
-    more_comments = HyperlinkedIdentityField(view_name="Blogs:blog_comments", read_only=True)
+    more_comments = HyperlinkedIdentityField(
+        view_name="Blogs:blog_comments", read_only=True)
     few_comments = CommentSerializer(read_only=True, many=True)
 
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'description',
                   'created_at', 'author', 'image', "likes_count", "comment_count", "views_count",
-                  "min_read", "author_fullname", "few_comments", "more_comments"
-                  ]
+                  "min_read", "author_fullname", "few_comments", "more_comments", ]
 
 
 class CommentDetailSerializer(ModelSerializer):
@@ -103,6 +117,7 @@ class NewsArticleDetailSerializer(ModelSerializer):
 class GallerySerializer(ModelSerializer):
     class Meta:
         model = Gallery
+
         fields = ['id', 'image', 'text']
 
 
@@ -110,7 +125,9 @@ class GallerySerializer(ModelSerializer):
 
 
 class NewsLetterSubscriptionSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:newsletter_subscription_detail_update", read_only=True)
+
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:newsletter_subscription_detail_update", read_only=True)
 
     class Meta:
         model = NewsLetterSubscription
@@ -124,7 +141,8 @@ class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
 
 
 class CategorySerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:category_detail_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:category_detail_update_delete", read_only=True)
 
     class Meta:
         model = Category
@@ -137,8 +155,24 @@ class CategoryDetailSerializer(ModelSerializer):
         fields = ['id', 'name']
 
 
+class TagSerializer(ModelSerializer):
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:tag_detail_update_delete", read_only=True)
+
+    class Meta:
+        model = Tag
+        fields = ['id', 'name', 'url']
+
+
+class TagDetailSerializer(ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'name', ]
+
+
 class NewsLetterSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Blogs:newsletter_details_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:newsletter_details_update_delete", read_only=True)
 
     class Meta:
         model = NewsLetter
@@ -173,12 +207,13 @@ class BlogViewsSerializer(ModelSerializer):
     def create(self, validated_data):
         blog_article = validated_data.get("blog_article")
         ip = validated_data.get("viewer_ip")
+        view = Views.active_objects.get_or_create(
+            blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
 
-        view = Views.active_objects.get_or_create(blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
         if ip not in view.viewer_ip:
             view.viewer_ip.append(ip)
             view.save()
-        return view
+            return view
 
 
 class LikeSerializer(ModelSerializer):
@@ -193,7 +228,9 @@ class LikeSerializer(ModelSerializer):
         blog_article = validated_data.get("blog_article")
         ip = validated_data.get("ip_address")
 
-        view = Likes.active_objects.get_or_create(blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+        view = Likes.active_objects.get_or_create(
+            blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+
         if ip not in view.ip_address:
             view.ip_address.append(ip)
         else:

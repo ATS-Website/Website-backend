@@ -31,4 +31,3 @@ class ContactUsDetailsUpdateDeleteAPIView(AdminOrReadOnlyMixin, CustomRetrieveUp
     queryset = ContactUs.active_objects.all()
     serializer_class = ContactUsDetailSerializer
     renderer_classes = (CustomRenderer,)
-

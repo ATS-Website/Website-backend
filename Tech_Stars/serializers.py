@@ -6,7 +6,8 @@ from .models import TechStar, Testimonial, ResumptionAndClosingTime, Attendance,
 
 
 class TechStarSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Tech_Stars:tech_star_details_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Tech_Stars:tech_star_details_update_delete", read_only=True)
 
     class Meta:
         model = TechStar
@@ -69,7 +70,9 @@ class TechStarDetailSerializer(ModelSerializer):
 
 
 class TestimonialSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Tech_Stars:testimonial_detail_update_delete", read_only=True)
+
+    url = HyperlinkedIdentityField(
+        view_name="Tech_Stars:testimonial_detail_update_delete", read_only=True)
 
     class Meta:
         model = Testimonial
@@ -143,7 +146,9 @@ class OfficeLocationSerializer(ModelSerializer):
 
 
 class XpertOfTheWeekSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Tech_Stars:xpert_detail_update_delete", read_only=True)
+
+    url = HyperlinkedIdentityField(
+        view_name="Tech_Stars:xpert_detail_update_delete", read_only=True)
 
     class Meta:
         model = XpertOfTheWeek
@@ -164,4 +169,3 @@ class XpertOfTheWeekDetailSerializer(ModelSerializer):
             "tech_star",
             "interview"
         )
-

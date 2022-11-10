@@ -3,13 +3,11 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.db import models
+from cloudinary_storage.validators import validate_video
+from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 from django.contrib.auth.models import User
 import datetime
-
 from .utils import time_taken_to_read
-
-
-# Create your models here.
 
 
 class ActiveManager(models.Manager):
@@ -46,6 +44,20 @@ class Author(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+# BLOGS
+
+
+class Tag(models.Model):
+    name = models.CharField(
+        max_length=15, help_text="Enter a suitable tag to help find the post", )
+    is_active = models.BooleanField(default=True)
+
+    objects = models.Manager()
+    active_objects = ActiveManager()
+    inactive_objects = InActiveManager()
+
+    def __str__(self):
+        return self.name
 
 
 # BLOGS
@@ -56,8 +68,15 @@ class BlogArticle(models.Model):
     description = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(Author, null=True, on_delete=models.SET_NULL, default="anonymous")
+    tags = models.ManyToManyField(Tag, limit_choices_to={"is_active": True})
+    author = models.ForeignKey(
+        Author, null=True, on_delete=models.SET_NULL, default="anonymous")
+    image = models.ImageField(
+        blank=True, upload_to='media/blog_article/images/', null=True)
+    author = models.ForeignKey(
+        Author, null=True, on_delete=models.SET_NULL, default="anonymous")
     image = models.ImageField(blank=True, null=True)
+
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
@@ -123,7 +142,8 @@ class Comment(models.Model):
 
 
 class Likes(models.Model):
-    blog_article = models.ForeignKey(BlogArticle, on_delete=models.SET_NULL, null=True)
+    blog_article = models.ForeignKey(
+        BlogArticle, on_delete=models.SET_NULL, null=True)
     ip_address = models.JSONField(default=_json_list())
     is_active = models.BooleanField(default=True)
 
@@ -133,7 +153,8 @@ class Likes(models.Model):
 
 
 class Views(models.Model):
-    blog_article = models.ForeignKey(BlogArticle, related_name="blog_views", on_delete=models.SET_NULL, null=True)
+    blog_article = models.ForeignKey(
+        BlogArticle, related_name="blog_views", on_delete=models.SET_NULL, null=True)
     viewer_ip = models.JSONField(default=_json_list())
     is_active = models.BooleanField(default=True)
 
@@ -151,6 +172,13 @@ class Category(models.Model):
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
+
+    def __str__(self):
+        return self.name
+
+
+class NewsArticle(models.Model):
+    title = models.CharField(max_length=250, blank=False, null=False)
 
     class Meta:
         unique_together = ("name", "is_active")
@@ -173,9 +201,13 @@ class NewsArticle(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
-    image = models.ImageField(blank=True, null=True)
+
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(
+        Author, on_delete=models.SET_NULL, null=True)
+    image = models.ImageField(
+        blank=True, upload_to='media/news_article/images/', null=True,)
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
@@ -193,7 +225,30 @@ class NewsArticle(models.Model):
         return self.title
 
 
-# NEWSLETTER
+class NewsComment(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    description = models.CharField(max_length=100, blank=False, null=False)
+    news_article = models.ForeignKey(
+        NewsArticle, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+# # NEWSLETTER
+# class NewsLetterSubscription(models.Model):
+#     email = models.EmailField(null=True, unique=True)
+#     is_active = models.BooleanField(default=True)
+
+#     objects = models.Manager()
+#     active_objects = ActiveManager()
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return 'Comment {} by {}' .format(self.description, self.name)
+
+
+# NEWSLETTER# NEWSLETTER
+
+
 class NewsLetterSubscription(models.Model):
     email = models.EmailField(null=True, unique=True)
     is_active = models.BooleanField(default=True)
@@ -218,12 +273,17 @@ class NewsLetter(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    def __str__(self) -> str:
+        return self.title
+
     # GALLERY
 
 
 class Gallery(models.Model):
-    image = models.ImageField(blank=True, upload_to="gallery/", null=True)
-    video = models.FileField(blank=True, upload_to="gallery/", null=True)
+    image = models.ImageField(
+        blank=True, upload_to="gallery/images/", null=True)
+    # video = models.FileField(blank=True, upload_to="gallery/videos/",
+    #                          null=True, storage=VideoMediaCloudinaryStorage(),validator=[validate_])
     text = models.CharField(max_length=250, null=True)
     date_added = models.DateField(auto_now_add=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -233,6 +293,7 @@ class Gallery(models.Model):
     inactive_objects = InActiveManager()
 
     def save(self, *args, **kwargs):
-        if self.image is None and self.video is None:
-            raise ValidationError("Both Image and Video Field cannot be empty !")
+        if self.image is None:
+            raise ValidationError(
+                "Image cannot be empty !")
         return super(Gallery, self).save(*args, **kwargs)

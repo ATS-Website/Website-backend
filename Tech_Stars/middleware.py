@@ -1,7 +1,7 @@
 from django.utils.deprecation import MiddlewareMixin
 import json
 
-from .enc_dec.encryption_decryption import aes_encrypt
+# from .enc_dec.encryption_decryption import aes_encrypt
 from .utils import write_server_logs
 
 
@@ -24,8 +24,10 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
         # print(vars(response))
         # print(vars(request))
         try:
-            url = str(vars(response).get("renderer_context").get("request"))[33:-1]
-            status_code = str(vars(response).get("renderer_context").get("response"))[22:25]
+            url = str(vars(response).get(
+                "renderer_context").get("request"))[33:-1]
+            status_code = str(vars(response).get(
+                "renderer_context").get("response"))[22:25]
             write_server_logs(url, status_code)
         except:
             pass

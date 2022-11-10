@@ -9,30 +9,32 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+from decouple import config
 import os
 from datetime import timedelta
 from pathlib import Path
 
-from decouple import config
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")
 #
 # # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = decouple.config("DEBUG", cast=bool)
 
 # SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
-DEBUG = config("DEBUG", cast=bool, default=False)
+DEBUG = True
+# DEBUG = config("DEBUG", cast=bool, default=True)
+
 
 ALLOWED_HOSTS = []
-
-# Application definition
+# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = [
+#     'localhost',
+#     '127.0.0.1',
+#     '111.222.333.444',
+#     'mywebsite.example']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -53,6 +55,7 @@ INSTALLED_APPS = [
     # external api
     'algoliasearch_django',
     "cloudinary_storage",
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -63,7 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "Tech_Stars.middleware.EncryptionAndDecryptionMiddleware"
+    "Tech_Stars.middleware.EncryptionAndDecryptionMiddleware",
 ]
 
 ROOT_URLCONF = 'website.urls'
@@ -91,9 +94,9 @@ WSGI_APPLICATION = 'website.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ATS_Website',
-        'USER': 'Django_ATS',
-        'PASSWORD': '1234567890',
+        'NAME': 'Website',
+        'USER': 'postgres',
+        'PASSWORD': config('DB_PASSWORD'),
         'PORT': '5432',
         'HOST': 'localhost',
 
@@ -134,9 +137,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIR = os.path.join(BASE_DIR, "static")
-
+# STATIC_URL = '/static/'
+# STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
-# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -145,48 +150,35 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "Accounts.Account"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.IsAuthenticated',  # new
+        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # new
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+        # 'Accounts.authentications.RequestAuthentication'
+    ],
+    # 'DEFAULT_RENDERER_CLASSES': (
+    #     'rest_framework.renderers.BrowsableAPIRenderer',
+    # ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+
 }
 
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': False,
-
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'JWK_URL': None,
-    'LEEWAY': 0,
-
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
-
-    'JTI_CLAIM': 'jti',
-
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2000),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
 }
 
 ALGOLIA = {
-    'APPLICATION_ID': config("ALGOLIA_APPLICATION_ID"),
-    'API_KEY': config("ALGOLIA_API_KEY"),
+    'APPLICATION_ID': config('ALG_APPLICATION_ID'),
+    'API_KEY': config('ALG_API_KEY'),
     'INDEX_PREFIX': 'ats',
 }
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
@@ -199,7 +191,8 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": config("CLOUD_NAME"),
     "API_KEY": config("CLOUD_API_KEY"),
-    "API_SECRET": config("CLOUD_API_SECRET")
-}
+    "API_SECRET": config("CLOUD_API_SECRET"),
+    'STATIC_IMAGES_EXTENSIONS': ['jpg', 'jpe', 'jpeg', 'jpc', 'jp2', 'j2k', 'wdp', 'jxr',
+                                 'hdp', 'png', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'ico'],
 
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+}

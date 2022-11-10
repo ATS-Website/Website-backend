@@ -13,7 +13,8 @@ def new_send_mail_func(context, subscribers: list):
     Send mail function to the specified email
     """
     try:
-        message_template = strip_tags(render_to_string("newsletter.html", context))
+        message_template = strip_tags(
+            render_to_string("newsletter.html", context))
 
         subject = context.get('subject')
         print(subject)
@@ -42,5 +43,3 @@ def time_taken_to_read(title: str, content: str):
     if total < 1:
         return "less than a minute read"
     return f"{total} Minute Read"
-
-

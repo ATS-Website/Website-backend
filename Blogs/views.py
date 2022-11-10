@@ -12,6 +12,7 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_2
 from rest_framework.views import APIView
 
 from Accounts.renderers import CustomRenderer
+from Accounts.permissions import IsValidRequestAPIKey
 
 from Tech_Stars.mixins import (CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView,
                                CustomRetrieveUpdateAPIView, CustomCreateAPIView
@@ -57,9 +58,10 @@ class SearchNewsView(generics.ListAPIView):
         return Response(results, status=HTTP_200_OK)
 
 
-class BlogArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
+class BlogArticleListCreateAPIView (AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = BlogArticle.active_objects.all()
     serializer_class = BlogArticleSerializer
+    permission_classes = [IsValidRequestAPIKey, ]
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
@@ -107,23 +109,22 @@ class NewsArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomL
 class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView):
     queryset = NewsArticle.active_objects.all()
     serializer_class = NewsArticleDetailSerializer
-    renderer_classes = [CustomRenderer]
-    lookup_field = "pk"
+    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
+    # lookup_field = "pk"
 
 
 # Gallery
 class GalleryListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
-    queryset = Gallery.objects.all()
+    queryset = Gallery.active_objects.all()
+    renderer_classes = [CustomRenderer]
     serializer_class = GallerySerializer
 
 
 class GalleryRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
-    queryset = Gallery.objects.all()
+    queryset = Gallery.active_objects.all()
+    renderer_classes = [CustomRenderer]
     serializer_class = GallerySerializer
     lookup_field = "pk"
-
-
-# Newsletter
 
 
 class NewsLetterSubscriptionListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
@@ -165,7 +166,20 @@ class CategoryListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomList
 class CategoryDetailUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = Category.active_objects.all()
     serializer_class = CategoryDetailSerializer
-    renderer_classes = (CustomRenderer,)
+    renderer_classes = (CustomRenderer, BrowsableAPIRenderer)
+
+
+# class TagListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
+#     queryset = Tag.active_objects.all()
+#     serializer_class = TagSerializer
+#     renderer_classes = [CustomRenderer, ]
+#     lookup_field = "pk"
+
+
+# class TagDetailUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
+#     queryset = Tag.active_objects.all()
+#     serializer_class = TagDetailSerializer
+#     renderer_classes = (CustomRenderer,)
 
 
 class NewsLetterListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
@@ -181,9 +195,10 @@ class NewsLetterDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
 
 
 class BlogArticleCommentListAPIView(APIView):
-    def get(self,request,  *args, **kwargs):
+    def get(self, request,  *args, **kwargs):
         queryset = Comment.active_objects.filter(blog_article_id=kwargs["pk"])
-        serializer = CommentSerializer(queryset, many=True, context={"request": request})
+        serializer = CommentSerializer(
+            queryset, many=True, context={"request": request})
         return Response(serializer.data, status=HTTP_200_OK)
 
 

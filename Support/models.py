@@ -7,7 +7,7 @@ from Tech_Stars.models import ActiveManager, InActiveManager
 
 
 class FrequentlyAskedQuestions(models.Model):
-    question = models.TextField(null=True,unique=True)
+    question = models.TextField(null=True, unique=True)
     answer = models.TextField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
