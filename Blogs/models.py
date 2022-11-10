@@ -152,11 +152,19 @@ class Category(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    class Meta:
+        unique_together = ("name", "is_active")
+
     def __str__(self):
         return self.name
 
     def category_news_count(self):
         return NewsArticle.active_objects.filter(category_id=self.id).count()
+
+    def save(self, *args, **kwargs):
+        if Category.active_objects.all().count() <= 6:
+            return super(Category, self).save(*args, **kwargs)
+        raise ValidationError("Categories cannot be more than 6 !")
 
 
 class NewsArticle(models.Model):

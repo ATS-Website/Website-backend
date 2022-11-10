@@ -181,9 +181,9 @@ class NewsLetterDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
 
 
 class BlogArticleCommentListAPIView(APIView):
-    def get(self, *args, **kwargs):
+    def get(self,request,  *args, **kwargs):
         queryset = Comment.active_objects.filter(blog_article_id=kwargs["pk"])
-        serializer = CommentSerializer(queryset, many=True)
+        serializer = CommentSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data, status=HTTP_200_OK)
 
 
@@ -202,7 +202,7 @@ class LikesCreateAPIView(CreateAPIView):
 class CategoryNewsCountAPIView(APIView):
     renderer_classes = (CustomRenderer,)
 
-    def get(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         queryset = Category.active_objects.all()[:6]
-        serializer = CategoryNewsCountSerializer(queryset, many=True)
+        serializer = CategoryNewsCountSerializer(queryset, many=True, )
         return Response(serializer.data, status=HTTP_200_OK)

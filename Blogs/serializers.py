@@ -29,7 +29,7 @@ class BlogArticleSerializer(ModelSerializer):
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'intro', 'description',
-                  'created_at', 'tags', 'author', 'url', 'image', "min_read", "author_fullname"
+                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname"
                   ]
 
         extra_kwargs = {
@@ -55,7 +55,7 @@ class BlogArticleDetailSerializer(ModelSerializer):
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'description',
-                  'created_at', 'tags', 'author', 'image', "likes_count", "comment_count", "views_count",
+                  'created_at', 'author', 'image', "likes_count", "comment_count", "views_count",
                   "min_read", "author_fullname", "few_comments", "more_comments"
                   ]
 
