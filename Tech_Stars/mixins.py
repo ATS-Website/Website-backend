@@ -2,12 +2,15 @@ from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUp
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
+
+from Accounts.permissions import IsValidRequestAPIKey
+
 from .permissions import IsAdminOrMembershipManagerOrReadOnly
 from .utils import write_log_csv
 
 
 class AdminOrMembershipManagerOrReadOnlyMixin:
-    permission_classes = (IsAdminOrMembershipManagerOrReadOnly, )
+    permission_classes = (IsValidRequestAPIKey, IsAdminOrMembershipManagerOrReadOnly, )
 
 
 class CustomListCreateAPIView(ListCreateAPIView):

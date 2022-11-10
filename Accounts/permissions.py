@@ -12,8 +12,7 @@ class IsAdmin(IsAdminUser):
     message = "You can't access this resource because you are'nt an Admin"
 
     def has_permission(self, request, view):
-        admin_perm = bool(request.user and request.user.is_staff)
-        return admin_perm
+        return bool(request.user.is_superadmin and request.user.is_authenticated)
 
 
 class IsValidRequestAPIKey(BasePermission):
@@ -25,25 +24,19 @@ class IsValidRequestAPIKey(BasePermission):
             raise PermissionDenied('Missing Hash Key')
         try:
             APP_API_KEY = request.META['HTTP_API_KEY']
-            print(APP_API_KEY)
         except:
             raise PermissionDenied('Missing API key ')
         try:
             request_ts = request.META['HTTP_REQUEST_TS']
-            print(request_ts)
         except:
             raise PermissionDenied('Missing Request Timestamp ')
 
         app_api_key = config('APP_API_KEY')
         app_secret_key = config('APP_SECRET_KEY')
-        print(app_api_key)
         try:
             to_hash = app_api_key + app_secret_key + request_ts
         except:
             return False
         hash = hashlib.sha256(to_hash.encode('utf8')).hexdigest()
-        print(hash, "Weldone")
-        print(hash_key)
 
         return hash == hash_key
-        # return True

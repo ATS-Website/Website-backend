@@ -151,17 +151,11 @@ AUTH_USER_MODEL = "Accounts.Account"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated',  # new
-        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # new
+        # 'Accounts.permissions.IsValidRequestAPIKey',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'Accounts.authentications.RequestAuthentication'
     ],
-    # 'DEFAULT_RENDERER_CLASSES': (
-    #     'rest_framework.renderers.BrowsableAPIRenderer',
-    # ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 
