@@ -7,7 +7,7 @@ from Tech_Stars.models import ActiveManager, InActiveManager
 
 
 class FrequentlyAskedQuestions(models.Model):
-    question = models.TextField(null=True)
+    question = models.TextField(null=True, unique=True)
     answer = models.TextField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
@@ -20,6 +20,7 @@ class FrequentlyAskedQuestions(models.Model):
 class ContactUs(models.Model):
     full_name = models.CharField(max_length=200, null=True)
     email = models.EmailField(null=True)
+    subject = models.CharField(max_length=500, null=True)
     message = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
 

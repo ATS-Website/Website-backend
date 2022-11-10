@@ -30,7 +30,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="ATS Websites API",
         default_version='v1',
-        description="A small API for Website Features By Samuel",
+        description="A small API for Website Features ",
         terms_of_service="https://www.spoti.com/policies/terms/",
         contact=openapi.Contact(email="contact@spoti.com",),
         license=openapi.License(name="BSD License"),

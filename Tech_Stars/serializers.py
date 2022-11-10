@@ -1,33 +1,13 @@
-from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+from rest_framework.serializers import (ModelSerializer, HyperlinkedIdentityField,
+                                        Serializer, CharField
+                                        )
 
-from .models import Program, TechStar, Testimonial
-
-
-class ProgramSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Tech_Stars:program_detail_update_delete", read_only=True)
-
-    class Meta:
-        model = Program
-        fields = (
-            "id",
-            "name",
-            "description",
-            "url",
-        )
-
-
-class ProgramDetailSerializer(ModelSerializer):
-    class Meta:
-        model = Program
-        fields = (
-            "id",
-            "name",
-            "description"
-        )
+from .models import TechStar, Testimonial, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 
 
 class TechStarSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Tech_Stars:tech_star_details_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Tech_Stars:tech_star_details_update_delete", read_only=True)
 
     class Meta:
         model = TechStar
@@ -35,12 +15,12 @@ class TechStarSerializer(ModelSerializer):
             "id",
             "tech_star_id",
             "full_name",
-            "program",
+            "course",
             "profile_picture",
             "self_description",
             "favorite_meal",
             "favorite_quote",
-            "year",
+            "cohort",
             "official_email",
             "url"
 
@@ -53,13 +33,10 @@ class TechStarSerializer(ModelSerializer):
         }
 
     def create(self, validated_data):
-        tech_star = TechStar.objects.filter()
+        tech_star = TechStar.objects.filter().last()
 
-        if tech_star[-1] is not None:
-            try:
-                get_id = int(tech_star[-1].tech_star_id[-4::]) + 1
-            except:
-                get_id = int(tech_star[-2].tech_star_id[-4::]) + 1
+        if tech_star is not None:
+            get_id = int(tech_star.tech_star_id[-4::]) + 1
 
             id2string = f"ATS-{str(get_id).zfill(4)}"
 
@@ -78,9 +55,9 @@ class TechStarDetailSerializer(ModelSerializer):
             "id",
             "tech_star_id",
             "full_name",
-            "program",
+            "course",
             "profile_picture",
-            "year",
+            "cohort",
             "self_description",
             "favorite_meal",
             "favorite_quote",
@@ -93,7 +70,8 @@ class TechStarDetailSerializer(ModelSerializer):
 
 
 class TestimonialSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Tech_Stars:testimonial_detail_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Tech_Stars:testimonial_detail_update_delete", read_only=True)
 
     class Meta:
         model = Testimonial
@@ -112,4 +90,80 @@ class TestimonialDetailSerializer(ModelSerializer):
             "id",
             "tech_star",
             "testimonial"
+        )
+
+
+class TestimonialFrontpageSerializer(ModelSerializer):
+    class Meta:
+        model = Testimonial
+        fields = (
+            "id",
+            "tech_star_full_name",
+            "testimonial",
+            # "tech_star_profile_picture",
+            "tech_star_cohort",
+            "tech_star_course"
+
+        )
+
+
+class BarcodeSerializer(Serializer):
+    file_type = CharField(max_length=10)
+    image_base64 = CharField(max_length=500)
+
+
+class ResumptionAndClosingTimeSerializer(ModelSerializer):
+    class Meta:
+        model = ResumptionAndClosingTime
+        fields = (
+            "open_time",
+            "close_time"
+        )
+
+
+class AttendanceSerializer(ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = (
+            "id",
+            "status",
+            "tech_star",
+            "check_in",
+            "check_out",
+        )
+
+
+class OfficeLocationSerializer(ModelSerializer):
+    class Meta:
+        model = OfficeLocation
+        fields = (
+            "latitude_1",
+            "latitude_2",
+            "longitude_1",
+            "longitude_2",
+        )
+
+
+class XpertOfTheWeekSerializer(ModelSerializer):
+    url = HyperlinkedIdentityField(
+        view_name="Tech_Stars:xpert_detail_update_delete", read_only=True)
+
+    class Meta:
+        model = XpertOfTheWeek
+        fields = (
+            "tech_star",
+            "interview",
+            "url"
+        )
+        extra_kwargs = {
+            "interview": {"write_only": True}
+        }
+
+
+class XpertOfTheWeekDetailSerializer(ModelSerializer):
+    class Meta:
+        model = XpertOfTheWeek
+        fields = (
+            "tech_star",
+            "interview"
         )
