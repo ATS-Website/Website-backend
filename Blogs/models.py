@@ -1,14 +1,13 @@
-from .utils import time_taken_to_read
-import datetime
-from django.contrib.auth.models import User
-from cloudinary_storage.storage import VideoMediaCloudinaryStorage
-from cloudinary_storage.validators import validate_video
-
-from django.db import models
-from django.template.defaultfilters import slugify
-from django.dispatch import receiver
-from django.db.models.signals import pre_save
 from django.core.exceptions import ValidationError
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.template.defaultfilters import slugify
+from django.db import models
+from cloudinary_storage.validators import validate_video
+from cloudinary_storage.storage import VideoMediaCloudinaryStorage
+from django.contrib.auth.models import User
+import datetime
+from .utils import time_taken_to_read
 
 
 class ActiveManager(models.Manager):
@@ -32,6 +31,9 @@ class Author(models.Model):
     last_name = models.CharField(max_length=200)
     email = models.EmailField()
     bio = models.TextField()
+    twitter_link = models.CharField(max_length=900, null=True, blank=True)
+    facebook_link = models.CharField(max_length=500, null=True, blank=True)
+    instagram_link = models.CharField(max_length=500, null=True, blank=True)
     profile_pics = models.ImageField(
         upload_to="media/profile_pic/", blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -42,7 +44,6 @@ class Author(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
-
 # BLOGS
 
 
@@ -59,6 +60,9 @@ class Tag(models.Model):
         return self.name
 
 
+# BLOGS
+
+
 class BlogArticle(models.Model):
     title = models.CharField(max_length=250, blank=False, null=False)
     description = models.TextField(null=True)
@@ -69,6 +73,10 @@ class BlogArticle(models.Model):
         Author, null=True, on_delete=models.SET_NULL, default="anonymous")
     image = models.ImageField(
         blank=True, upload_to='media/blog_article/images/', null=True)
+    author = models.ForeignKey(
+        Author, null=True, on_delete=models.SET_NULL, default="anonymous")
+    image = models.ImageField(blank=True, null=True)
+
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
@@ -171,13 +179,33 @@ class Category(models.Model):
 
 class NewsArticle(models.Model):
     title = models.CharField(max_length=250, blank=False, null=False)
+
+    class Meta:
+        unique_together = ("name", "is_active")
+
+    def __str__(self):
+        return self.name
+
+    def category_news_count(self):
+        return NewsArticle.active_objects.filter(category_id=self.id).count()
+
+    def save(self, *args, **kwargs):
+        if Category.active_objects.all().count() <= 6:
+            return super(Category, self).save(*args, **kwargs)
+        raise ValidationError("Categories cannot be more than 6 !")
+
+
+class NewsArticle(models.Model):
+    title = models.CharField(max_length=250, null=True)
     intro = models.CharField(max_length=400)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)
-    author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(
+        Author, on_delete=models.SET_NULL, null=True)
     image = models.ImageField(
         blank=True, upload_to='media/news_article/images/', null=True,)
     is_active = models.BooleanField(default=True)
@@ -219,6 +247,8 @@ class NewsComment(models.Model):
 
 
 # NEWSLETTER# NEWSLETTER
+
+
 class NewsLetterSubscription(models.Model):
     email = models.EmailField(null=True, unique=True)
     is_active = models.BooleanField(default=True)
@@ -243,6 +273,9 @@ class NewsLetter(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    def __str__(self) -> str:
+        return self.title
+
     # GALLERY
 
 
@@ -260,7 +293,7 @@ class Gallery(models.Model):
     inactive_objects = InActiveManager()
 
     def save(self, *args, **kwargs):
-        if self.image is None and self.video is None:
+        if self.image is None:
             raise ValidationError(
-                "Both Image and Video Field cannot be empty !")
+                "Image cannot be empty !")
         return super(Gallery, self).save(*args, **kwargs)

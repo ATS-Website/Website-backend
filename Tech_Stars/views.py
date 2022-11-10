@@ -29,8 +29,7 @@ from .utils import generate_qr
 
 # Create your views here.
 def create_attendance(tech_star, date_time, device_id):
-    attendance = Attendance.active_objects.create(
-        tech_star=tech_star, check_in=date_time, )
+    attendance = Attendance.active_objects.create(tech_star=tech_star, check_in=date_time, )
 
     if device_id == tech_star.device_id:
         attendance.status = "Uncompleted"
@@ -163,11 +162,9 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                 tech_star.save()
 
             if open_time <= datetime.datetime.now().time() <= close_time:
-                tech_star_attendance = Attendance.active_objects.filter(
-                    tech_star_id=tech_star.id).first()
+                tech_star_attendance = Attendance.active_objects.filter(tech_star_id=tech_star.id).first()
                 if tech_star_attendance is not None:
-                    last_attendance_date = str(
-                        tech_star_attendance.check_in)[:10]
+                    last_attendance_date = str(tech_star_attendance.check_in)[:10]
                     if last_attendance_date == str(datetime.datetime.now().date()):
                         # print(date_time)
                         # print(tech_star_attendance.check_in)
@@ -184,8 +181,7 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                         tech_star_attendance.save()
                         attendance = self.get_serializer(tech_star_attendance)
                         return Response(attendance.data, status=HTTP_201_CREATED)
-                    attendance = create_attendance(
-                        tech_star, date_time, device_id)
+                    attendance = create_attendance(tech_star, date_time, device_id)
                     return Response(attendance, status=HTTP_201_CREATED)
                 attendance = create_attendance(tech_star, date_time, device_id)
                 return Response(attendance, status=HTTP_201_CREATED)

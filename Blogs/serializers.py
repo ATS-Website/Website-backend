@@ -23,7 +23,7 @@ class AuthorSerializer(ModelSerializer):
         model = Author
         fields = ['id',
                   'first_name', 'last_name', 'email',
-                  'bio', 'profile_pics', "url"
+                  'bio', 'profile_pics', "url", "twitter_link", "facebook_link", "instagram_link"
                   ]
 
 
@@ -42,9 +42,8 @@ class BlogArticleSerializer(ModelSerializer):
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'intro', 'description',
-                  'created_at', 'tags', 'author', 'url', 'image', "min_read", "author_fullname"
+                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname",
                   ]
-
         extra_kwargs = {
             "author": {"write_only": True}
         }
@@ -71,9 +70,8 @@ class BlogArticleDetailSerializer(ModelSerializer):
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'description',
-                  'created_at', 'tags', 'author', 'image', "likes_count", "comment_count", "views_count",
-                  "min_read", "author_fullname", "few_comments", "more_comments"
-                  ]
+                  'created_at', 'author', 'image', "likes_count", "comment_count", "views_count",
+                  "min_read", "author_fullname", "few_comments", "more_comments", ]
 
 
 class CommentDetailSerializer(ModelSerializer):
@@ -119,13 +117,15 @@ class NewsArticleDetailSerializer(ModelSerializer):
 class GallerySerializer(ModelSerializer):
     class Meta:
         model = Gallery
-        fields = ['image', 'text', ]
+
+        fields = ['id', 'image', 'text']
 
 
 # NEWSLETTER
 
 
 class NewsLetterSubscriptionSerializer(ModelSerializer):
+
     url = HyperlinkedIdentityField(
         view_name="Blogs:newsletter_subscription_detail_update", read_only=True)
 
@@ -207,13 +207,13 @@ class BlogViewsSerializer(ModelSerializer):
     def create(self, validated_data):
         blog_article = validated_data.get("blog_article")
         ip = validated_data.get("viewer_ip")
-
         view = Views.active_objects.get_or_create(
             blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+
         if ip not in view.viewer_ip:
             view.viewer_ip.append(ip)
             view.save()
-        return view
+            return view
 
 
 class LikeSerializer(ModelSerializer):
@@ -230,6 +230,7 @@ class LikeSerializer(ModelSerializer):
 
         view = Likes.active_objects.get_or_create(
             blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+
         if ip not in view.ip_address:
             view.ip_address.append(ip)
         else:
@@ -237,3 +238,12 @@ class LikeSerializer(ModelSerializer):
 
         view.save()
         return view
+
+
+class CategoryNewsCountSerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = (
+            "name",
+            "category_news_count"
+        )

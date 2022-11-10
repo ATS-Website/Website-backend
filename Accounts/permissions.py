@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import PermissionDenied
 from decouple import config
+from time import time
 import hashlib
 from .models import Account
 from rest_framework.permissions import (
@@ -21,24 +22,28 @@ class IsValidRequestAPIKey(BasePermission):
         try:
             hash_key = request.META['HTTP_HASH_KEY']
         except:
-            raise AuthenticationFailed('Missing Hash Key')
+            raise PermissionDenied('Missing Hash Key')
         try:
-            API_KEY = request.META['HTTP_API_KEY']
+            APP_API_KEY = request.META['HTTP_API_KEY']
+            print(APP_API_KEY)
         except:
-            raise AuthenticationFailed('Missing API key ')
+            raise PermissionDenied('Missing API key ')
         try:
             request_ts = request.META['HTTP_REQUEST_TS']
+            print(request_ts)
         except:
-            raise AuthenticationFailed('Missing Request Timestamp ')
+            raise PermissionDenied('Missing Request Timestamp ')
 
         app_api_key = config('APP_API_KEY')
         app_secret_key = config('APP_SECRET_KEY')
+        print(app_api_key)
         try:
-            de_hash = app_api_key + app_secret_key + request_ts
+            to_hash = app_api_key + app_secret_key + request_ts
         except:
             return False
-        hash = hashlib.sha256(de_hash.encode('utf8')).hexdigest()
+        hash = hashlib.sha256(to_hash.encode('utf8')).hexdigest()
+        print(hash, "Weldone")
+        print(hash_key)
 
-        # if hash != hash_key:
-        #     return False
         return hash == hash_key
+        # return True

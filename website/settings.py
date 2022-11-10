@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "Tech_Stars.middleware.EncryptionAndDecryptionMiddleware",
 ]
 
 ROOT_URLCONF = 'website.urls'
@@ -87,7 +88,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'website.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -157,6 +157,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'Accounts.authentications.RequestAuthentication'
     ],
     # 'DEFAULT_RENDERER_CLASSES': (
     #     'rest_framework.renderers.BrowsableAPIRenderer',

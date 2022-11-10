@@ -25,8 +25,8 @@ def generate_qr(text):
     return context
 
 
-def read_csv():
-    with open("admin_activity_logs.csv", "r") as x:
+def read_csv(file_name):
+    with open(file_name, "r") as x:
         read = csv.DictReader(x)
         return list(read)
 
@@ -43,9 +43,64 @@ def write_log_csv(event, admin, message):
             "Message": message,
         }
 
-        if len(read_csv()) < 1:
+        if len(read_csv("admin_activity_logs.csv")) < 1:
             write.writeheader()
             write.writerow(data)
         else:
             write.writerow(data)
+
+
+def write_server_logs(url: str, status_code: str):
+    if status_code.startswith("2"):
+        with open("access_server_logs.csv", "a", newline="\n") as x:
+            header = ["Date_Time", "url"]
+            write = csv.DictWriter(x, fieldnames=header)
+
+            data = {
+                "Date_Time": datetime.datetime.now(),
+                "url": url
+            }
+            if len(read_csv("access_server_logs.csv")) < 1:
+                write.writeheader()
+                write.writerow(data)
+            else:
+                write.writerow(data)
+    else:
+        with open("error_server_logs.csv", "a", newline="\n") as x:
+            header = ["Date_Time", "url"]
+            write = csv.DictWriter(x, fieldnames=header)
+
+            data = {
+                "Date_Time": datetime.datetime.now(),
+                "url": url
+            }
+            if len(read_csv("error_server_logs.csv")) < 1:
+                write.writeheader()
+                write.writerow(data)
+            else:
+                write.writerow(data)
+
+    with open("complete_server_logs.csv", "a", newline="\n") as y:
+        complete_header = ["Date_Time", "status", "url", "status_code"]
+        complete_write = csv.DictWriter(y, fieldnames=complete_header)
+
+        data = {
+            "Date_Time": datetime.datetime.now(),
+            "url": url,
+            "status_code": status_code
+        }
+
+        if status_code.startswith("2"):
+            data["status"] = "Info"
+        else:
+            data["status"] = "Error"
+
+        if len(read_csv("complete_server_logs.csv")) < 1:
+            complete_write.writeheader()
+            complete_write.writerow(data)
+        else:
+            complete_write.writerow(data)
+
+
+
 
