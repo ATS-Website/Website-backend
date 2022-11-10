@@ -249,8 +249,8 @@ class NewsLetter(models.Model):
 class Gallery(models.Model):
     image = models.ImageField(
         blank=True, upload_to="gallery/images/", null=True)
-    video = models.FileField(blank=True, upload_to="gallery/videos/",
-                             null=True, storage=VideoMediaCloudinaryStorage(), validators=[validate_video])
+    # video = models.FileField(blank=True, upload_to="gallery/videos/",
+    #                          null=True, storage=VideoMediaCloudinaryStorage(),validator=[validate_])
     text = models.CharField(max_length=250, null=True)
     date_added = models.DateField(auto_now_add=True, null=True)
     is_active = models.BooleanField(default=True)

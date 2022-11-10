@@ -102,12 +102,6 @@ urlpatterns = [
          name="gallery_list_create"),
     path('gallery/<int:pk>',
          views.GalleryRetrieveUpdateAPIView.as_view(), name='gallery_detail_update'),
-    #     path('gallery/<int:pk>/', views.gallery_delete, name='gallery_delete'),
-
-    #     path('gallery-list-create/', views.GalleryListCreateAPIView.as_view(),
-    #          name="gallery_list_create"),
-    #     path('gallery-detail-update/<int:pk>/', views.GalleryRetrieveUpdateAPIView.as_view(),
-    #          name='gallery_detail_update'), path('gallery-delete/<int:pk>/', views.gallery_delete, name='gallery_delete'),
     #
 
     path("newsletter", NewsLetterListCreateAPIView.as_view(),

@@ -125,14 +125,6 @@ class GalleryRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomR
     lookup_field = "pk"
 
 
-# class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
-#     queryset = NewsLetterSubscription.objects.all()
-#     serializer_class = NewsLetterSubscriptionDetailSerializer
-#     renderer_classes = [CustomRenderer, ]
-#     lookup_field = "pk"
-# Newsletter
-
-
 class NewsLetterSubscriptionListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = NewsLetterSubscription.objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
