@@ -21,6 +21,8 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
         #     break
 
         # print(aes_encrypt(json.dumps(response.data)))
+        # print(vars(response))
+        # print(vars(request))
         try:
             url = str(vars(response).get("renderer_context").get("request"))[33:-1]
             status_code = str(vars(response).get("renderer_context").get("response"))[22:25]
