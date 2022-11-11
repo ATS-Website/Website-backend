@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework import generics, permissions
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
+from rest_framework.parsers import FormParser, FileUploadParser, MultiPartParser
 
 from Accounts.renderers import CustomRenderer
 from Accounts.permissions import IsValidRequestAPIKey
@@ -61,7 +62,7 @@ class SearchNewsView(generics.ListAPIView):
 class BlogArticleListCreateAPIView (AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = BlogArticle.active_objects.all()
     serializer_class = BlogArticleSerializer
-    permission_classes = [IsValidRequestAPIKey, ]
+    # permission_classes = [IsValidRequestAPIKey, ]
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
@@ -117,12 +118,14 @@ class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView)
 class GalleryListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = Gallery.active_objects.all()
     renderer_classes = [CustomRenderer]
+    parser_classes = [FormParser, MultiPartParser]
     serializer_class = GallerySerializer
 
 
 class GalleryRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
     queryset = Gallery.active_objects.all()
     renderer_classes = [CustomRenderer]
+    parser_classes = [FormParser, MultiPartParser]
     serializer_class = GallerySerializer
     lookup_field = "pk"
 
@@ -195,6 +198,8 @@ class NewsLetterDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
 
 
 class BlogArticleCommentListAPIView(APIView):
+    renderer_classes = (CustomRenderer,)
+
     def get(self, request,  *args, **kwargs):
         queryset = Comment.active_objects.filter(blog_article_id=kwargs["pk"])
         serializer = CommentSerializer(

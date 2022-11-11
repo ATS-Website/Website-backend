@@ -170,12 +170,3 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
-
-
-# class TechStarUpdate(serializer.ModelSerializer):
-#     email = serializers.EmailField(required=True)
-#     password = serializers.CharField(max_length=100)
-
-#     class Meta:
-#         fields = ("email",)
-#         model = TechStar

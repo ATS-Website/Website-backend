@@ -28,8 +28,8 @@ DEBUG = True
 # DEBUG = config("DEBUG", cast=bool, default=True)
 
 
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = [
 #     'localhost',
 #     '127.0.0.1',
@@ -54,8 +54,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     # external api
     'algoliasearch_django',
-    "cloudinary_storage",
-    'cloudinary',
+    # "cloudinary_storage",
+    # 'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -140,7 +140,7 @@ STATICFILES_DIR = os.path.join(BASE_DIR, "static")
 # STATIC_URL = '/static/'
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+# DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
@@ -159,9 +159,10 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'Accounts.authentications.RequestAuthentication'
     ],
-    # 'DEFAULT_RENDERER_CLASSES': (
-    #     'rest_framework.renderers.BrowsableAPIRenderer',
-    # ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'Accounts.renderers.CustomRenderer'
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 

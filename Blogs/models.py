@@ -3,8 +3,6 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.db import models
-from cloudinary_storage.validators import validate_video
-from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 from django.contrib.auth.models import User
 import datetime
 from .utils import time_taken_to_read
@@ -75,7 +73,6 @@ class BlogArticle(models.Model):
         blank=True, upload_to='media/blog_article/images/', null=True)
     author = models.ForeignKey(
         Author, null=True, on_delete=models.SET_NULL, default="anonymous")
-    image = models.ImageField(blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
 
