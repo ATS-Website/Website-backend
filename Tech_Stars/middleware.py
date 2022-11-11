@@ -1,28 +1,22 @@
-from django.utils.deprecation import MiddlewareMixin
 import json
 
-# from .enc_dec.encryption_decryption import aes_encrypt
+from rest_framework.response import Response
+from django.utils.deprecation import MiddlewareMixin
+
+from Tech_Stars.renderers import CustomRenderer
+from .enc_dec.encryption_decryption import aes_encrypt
 from .utils import write_server_logs
 
 
 class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
+        # print(request.user)
+        # print(request.method)
+        # print(json.loads(request.body))
         pass
 
     def process_response(self, request, response):
-        # for the_key in response.data:
-        #     response.data[the_key] = aes_encrypt(response.data.get(the_key))
-        # print(type(response.data) == 'rest_framework.utils.serializer_helpers.ReturnList')
-        # print(type(str(type(response.data))))
-        # print(json.dumps(response.data))
-        # for items in json.dumps(response.data):
-        #     print(items)
-        #     break
-
-        # print(aes_encrypt(json.dumps(response.data)))
-        # print(vars(response))
-        # print(vars(request))
         try:
             url = str(vars(response).get(
                 "renderer_context").get("request"))[33:-1]
@@ -31,4 +25,12 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
             write_server_logs(url, status_code)
         except:
             pass
+
+        context = vars(response).get("renderer_context")
+        encrypted = aes_encrypt(json.dumps(response.data))
+        response = Response({encrypted})
+        response.accepted_renderer = CustomRenderer()
+        response.accepted_media_type = "application/json"
+        response.renderer_context = context
+        response.render()
         return response
