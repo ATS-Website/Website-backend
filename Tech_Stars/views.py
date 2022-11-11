@@ -3,7 +3,6 @@ import datetime
 import json
 import random
 
-from pandas import read_csv
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.exceptions import ValidationError
