@@ -31,6 +31,8 @@ from rest_framework.renderers import BrowsableAPIRenderer
 from django.contrib.auth.models import User
 from django.conf import settings
 from .permissions import IsAdmin
+from .mixins import IsAdminOrReadOnlyMixin
+from .permissions import IsValidRequestAPIKey
 
 
 class LogoutView(APIView):
@@ -39,18 +41,18 @@ class LogoutView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class LoginView(TokenObtainPairView):
+class LoginView(IsValidRequestAPIKey, TokenObtainPairView):
     serializer_class = LoginSerializer
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
-class ChangePasswordAV(generics.UpdateAPIView):
+class ChangePasswordAV(IsValidRequestAPIKey, generics.UpdateAPIView):
     queryset = Account.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = ChangePasswordSerializer
 
 
-class RegistrationView(generics.CreateAPIView):
+class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
     serializer_class = RegisterationSerializer
     # permission_classes = [IsAdmin]
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]

@@ -96,7 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'Website',
         'USER': 'postgres',
-        'PASSWORD': config('DB_PASSWORD'),
+        'PASSWORD': config("DB_PASSWORD"),
         'PORT': '5432',
         'HOST': 'localhost',
 
@@ -151,13 +151,10 @@ AUTH_USER_MODEL = "Accounts.Account"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated',  # new
-        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # new
+        # 'Accounts.permissions.IsValidRequestAPIKey',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'Accounts.authentications.RequestAuthentication'
     ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.BrowsableAPIRenderer',

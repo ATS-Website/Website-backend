@@ -1,4 +1,6 @@
 import datetime
+import itertools
+
 from algoliasearch_django import raw_search
 from django.shortcuts import render, get_object_or_404
 from rest_framework.exceptions import ValidationError
@@ -146,7 +148,7 @@ class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrR
 
 class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
     def get_object(self):
-        return list(NewsLetterSubscription.active_objects.all())
+        return [x.email for x in NewsLetterSubscription.active_objects.all()]
 
     def post(self, request, *args, **kwargs):
         try:

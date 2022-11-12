@@ -91,7 +91,7 @@ def write_server_logs(url: str, status_code: str):
         }
 
         if status_code.startswith("2"):
-            data["status"] = "Info"
+            data["status"] = "Success"
         else:
             data["status"] = "Error"
 

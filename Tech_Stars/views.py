@@ -1,12 +1,15 @@
+import csv
 import datetime
+import json
 import random
 
+# from pandas import read_csv
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
@@ -24,7 +27,8 @@ from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAP
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView
                      )
-from .utils import generate_qr
+from .utils import generate_qr, write_log_csv
+from Accounts.mixins import IsAdminOrReadOnlyMixin
 
 
 # Create your views here.
@@ -47,7 +51,6 @@ class TechStarListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomL
     parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
     renderer_classes = (CustomRenderer,)
-    model = "TechStar"
 
 
 class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
@@ -224,11 +227,34 @@ class OfficeLocationDetailsUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin
 
 class XpertOfTheWeekListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = XpertOfTheWeekSerializer
-    renderer_classes = (CustomRenderer, )
+    renderer_classes = (CustomRenderer,)
     queryset = XpertOfTheWeek.active_objects.all()
 
 
-class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
+class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin,
+                                              CustomRetrieveUpdateDestroyAPIView):
     serializer_class = XpertOfTheWeekDetailSerializer
-    renderer_classes = (CustomRenderer, )
+    renderer_classes = (CustomRenderer,)
     queryset = XpertOfTheWeek.active_objects.all()
+
+
+class WriteAdminLog(APIView):
+
+    def post(self, request, *args, **kwargs):
+        event = request.data.get('event')
+        admin = request.data.get("admin")
+        message = request.data.get("message")
+
+        if event is None or admin is None or message is None:
+            raise ValidationError("Incomplete Data")
+
+        write_log_csv(event, admin, message)
+
+        return Response("Activity logged successfully", status=HTTP_201_CREATED)
+
+
+class ReadAdminLog(IsAdminOrReadOnlyMixin, ListAPIView):
+    def get(self, *args, **kwargs):
+        with open("admin_activity_logs.csv", "r") as x:
+            read = json.dumps(list(csv.DictReader(x)))
+            return Response(read, status=HTTP_200_OK)

@@ -1,5 +1,9 @@
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
+from Accounts.permissions import IsValidRequestAPIKey
+
+
 class AdminOrReadOnlyMixin:
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    pass
+    # permission_classes = (IsValidRequestAPIKey, IsAuthenticatedOrReadOnly, )
