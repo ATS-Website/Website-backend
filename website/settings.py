@@ -100,11 +100,11 @@ WSGI_APPLICATION = 'website.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Website',
-        'USER': 'postgres',
+        'NAME': config("DB_NAME"),
+        'USER': config("DB_USER"),
         'PASSWORD': config("DB_PASSWORD"),
-        'PORT': '5432',
-        'HOST': 'localhost',
+        'PORT': config("DB_PORT"),
+        'HOST': config("DB_HOST"),
 
     }
 }
@@ -192,11 +192,11 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = config("EMAIL_PORT", cast=int)
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": config("CLOUD_NAME"),
-    "API_KEY": config("CLOUD_API_KEY"),
-    "API_SECRET": config("CLOUD_API_SECRET"),
-    'STATIC_IMAGES_EXTENSIONS': ['jpg', 'jpe', 'jpeg', 'jpc', 'jp2', 'j2k', 'wdp', 'jxr',
-                                 'hdp', 'png', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'ico'],
+# CLOUDINARY_STORAGE = {
+#     "CLOUD_NAME": config("CLOUD_NAME"),
+#     "API_KEY": config("CLOUD_API_KEY"),
+#     "API_SECRET": config("CLOUD_API_SECRET"),
+#     'STATIC_IMAGES_EXTENSIONS': ['jpg', 'jpe', 'jpeg', 'jpc', 'jp2', 'j2k', 'wdp', 'jxr',
+#                                  'hdp', 'png', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'ico'],
 
-}
+# }
