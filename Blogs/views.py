@@ -64,7 +64,6 @@ class SearchNewsView(generics.ListAPIView):
 class BlogArticleListCreateAPIView (AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = BlogArticle.active_objects.all()
     serializer_class = BlogArticleSerializer
-    # permission_classes = [IsValidRequestAPIKey, ]
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 

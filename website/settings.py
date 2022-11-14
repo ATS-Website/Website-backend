@@ -26,6 +26,7 @@ SECRET_KEY = config("SECRET_KEY")
 # SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
 DEBUG = True
 # DEBUG = config("DEBUG", cast=bool, default=True)
+ADMIN = config("ADMIN")
 
 
 # ALLOWED_HOSTS = []
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     "rest_framework",
     'rest_framework_simplejwt',
     'drf_yasg',
+    'corsheaders',
     # external api
     'algoliasearch_django',
     # "cloudinary_storage",
@@ -59,6 +61,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,9 +70,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "Tech_Stars.middleware.EncryptionAndDecryptionMiddleware",
+
 ]
 
 ROOT_URLCONF = 'website.urls'
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
     {

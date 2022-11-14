@@ -83,3 +83,13 @@ class Account(AbstractBaseUser):
 
     def __str__(self) -> str:
         return self.username
+
+
+class Profile(models.Model):
+    account = models.OneToOneField(
+        Account, on_delete=models.CASCADE, null=True)
+    avatar = models.ImageField(upload_to='accounts/images', null=True)
+    position = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return self.account.username

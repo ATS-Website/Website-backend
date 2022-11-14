@@ -13,7 +13,7 @@ from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnico
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from .models import Account
+from .models import Account, Profile
 
 
 class LoginSerializer(TokenObtainPairSerializer):
@@ -44,9 +44,77 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="profile")
+
     class Meta:
         fields = "__all__"
         model = Account
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='account.username')
+    position = serializers.CharField(allow_blank=True, required=False)
+    avatar = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Profile
+        fields = ('username', 'position', 'avatar',)
+        read_only_fields = ('username',)
+
+    def get_avatar(self, obj):
+        if obj.avatar:
+            return obj.avatar.url
+
+        return 'https://static.productionready.io/images/smiley-cyrus.jpg'
+
+
+class UpdateAccountSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(write_only=True)
+    email = serializers.EmailField(required=True)
+    position = serializers.CharField(source='profile.position', read_only=True)
+    avatar = serializers.CharField(source='profile.avatar', read_only=True)
+
+    class Meta:
+        model = Account
+        fields = ('username', 'first_name', 'last_name',
+                  'email', 'position', 'avatar', 'profile',)
+        # extra_kwargs = {
+        #     'first_name': {'required': True},
+        #     'last_name': {'required': True},
+        # }
+
+    def validate_email(self, value):
+        user = self.context.get('request').user
+        if Account.objects.exclude(pk=user.pk).filter(email__iexact=value).exists():
+            raise serializers.ValidationError(
+                {"email": "This email is already in use."})
+        return value
+
+    def validate_username(self, value):
+        user = self.context('request').user
+        if Account.objects.exclude(pk=user.pk).filter(username__iexact=value).exists():
+            raise serializers.ValidationError(
+                {"username": "This username is already in use."})
+        return value
+
+    def update(self, instance, validated_data):
+        profile = validated_data.pop('profile', {})
+
+        user = self.context.get('request').user
+        # if (not user.is_admin) or user.pk != instance.pk:
+        #     print(user.is_admin)
+        #     raise serializers.ValidationError(
+        #         {"authorize": "You dont have permission to access this user."})
+
+        for (key, value) in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+        for (key, value) in profile.items():
+            setattr(instance.profile, key, value)
+        print(instance.profile)
+        instance.profile.save()
+
+        return instance
 
 
 class SetNewPasswordSerializer(serializers.Serializer):

@@ -23,5 +23,16 @@ urlpatterns = [
          name='reset-password'),
     path('password-reset-complete/', views.SetNewPasswordAV.as_view(),
          name='password-reset-complete'),
-    path('users/', views.AccountsRetrieveAV.as_view(), name='users'),
+
+    path('profiles/<int:pk>/',
+         views.ProfileRetrieveAPIView.as_view(), name="profile"),
+    path('update-profile/<int:pk>/', views.UpdateProfileView.as_view(),
+         name='update-profile'),
+    path('me/', views.AccountRetrieveUpdateAPIView.as_view(), name='me'),
+    path('all', views.AccountsRetrieveAV.as_view(), name='admins'),
+    path('toggle-content-manager/<int:pk>', views.ToggleContentManager.as_view(),
+         name='toggle-content-manager'),
+    path('toggle-membership-manager/<int:pk>',
+         views.ToggleMembershipManager.as_view(), name='toggle-membership-manager'),
+
 ]
