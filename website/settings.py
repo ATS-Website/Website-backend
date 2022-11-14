@@ -26,10 +26,11 @@ SECRET_KEY = config("SECRET_KEY")
 # SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
 DEBUG = True
 # DEBUG = config("DEBUG", cast=bool, default=True)
+ADMIN = config("ADMIN")
 
 
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = [
 #     'localhost',
 #     '127.0.0.1',
@@ -52,13 +53,15 @@ INSTALLED_APPS = [
     "rest_framework",
     'rest_framework_simplejwt',
     'drf_yasg',
+    'corsheaders',
     # external api
     'algoliasearch_django',
-    "cloudinary_storage",
-    'cloudinary',
+    # "cloudinary_storage",
+    # 'cloudinary',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,9 +70,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "Tech_Stars.middleware.EncryptionAndDecryptionMiddleware",
+
 ]
 
 ROOT_URLCONF = 'website.urls'
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
     {
@@ -96,7 +102,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'Website',
         'USER': 'postgres',
-        'PASSWORD': config('DB_PASSWORD'),
+        'PASSWORD': config("DB_PASSWORD"),
         'PORT': '5432',
         'HOST': 'localhost',
 
@@ -140,7 +146,7 @@ STATICFILES_DIR = os.path.join(BASE_DIR, "static")
 # STATIC_URL = '/static/'
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+# DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
@@ -151,17 +157,15 @@ AUTH_USER_MODEL = "Accounts.Account"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated',  # new
-        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # new
+        # 'Accounts.permissions.IsValidRequestAPIKey',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'Accounts.authentications.RequestAuthentication'
     ],
-    # 'DEFAULT_RENDERER_CLASSES': (
-    #     'rest_framework.renderers.BrowsableAPIRenderer',
-    # ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'Accounts.renderers.CustomRenderer'
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 

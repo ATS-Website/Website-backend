@@ -6,7 +6,8 @@ from .views import (
     GenerateAttendanceQRCode, ResumptionAndClosingTimeCreateAPIView,
     ResumptionAndClosingTimeDetailsUpdateDetailAPIView, RecordAttendanceAPIView,
     AttendanceListAPIView, OfficeLocationCreateAPIView, OfficeLocationDetailsUpdateAPIView,
-    TestimonialFrontpageListAPIView, XpertOfTheWeekListCreateAPIView, XpertOfTheWeekDetailUpdateDeleteAPIView
+    TestimonialFrontpageListAPIView, XpertOfTheWeekListCreateAPIView, XpertOfTheWeekDetailUpdateDeleteAPIView,
+    ReadAdminLog, WriteAdminLog
 )
 
 
@@ -44,8 +45,11 @@ urlpatterns = [
 
     path("Xpert-Of-the-week-list-create/",
          XpertOfTheWeekListCreateAPIView.as_view(), name="xpert_list_create"),
-    path("Xpert-of-the-week-detail-update-destroy/<int:pk>",
-         XpertOfTheWeekDetailUpdateDeleteAPIView.as_view(), name="xpert_detail_update_delete")
+    path("Xpert-of-the-week-detail-update-destroy/<int:pk>/",
+         XpertOfTheWeekDetailUpdateDeleteAPIView.as_view(), name="xpert_detail_update_delete"),
+
+    path("read-admin-log/", ReadAdminLog.as_view(), name="read_admin_log"),
+    path("write-admin-log/", WriteAdminLog.as_view(), name="write_admin_log")
 
 
 
