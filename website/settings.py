@@ -192,6 +192,12 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = config("EMAIL_PORT", cast=int)
 
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "AFrica/Lagos"
+
 # CLOUDINARY_STORAGE = {
 #     "CLOUD_NAME": config("CLOUD_NAME"),
 #     "API_KEY": config("CLOUD_API_KEY"),

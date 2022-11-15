@@ -170,19 +170,6 @@ class Category(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
-    def __str__(self):
-        return self.name
-
-
-class NewsArticle(models.Model):
-    title = models.CharField(max_length=250, blank=False, null=False)
-
-    class Meta:
-        unique_together = ("name", "is_active")
-
-    def __str__(self):
-        return self.name
-
     def category_news_count(self):
         return NewsArticle.active_objects.filter(category_id=self.id).count()
 
@@ -190,6 +177,9 @@ class NewsArticle(models.Model):
         if Category.active_objects.all().count() <= 6:
             return super(Category, self).save(*args, **kwargs)
         raise ValidationError("Categories cannot be more than 6 !")
+
+    def __str__(self):
+        return self.name
 
 
 class NewsArticle(models.Model):
@@ -213,10 +203,6 @@ class NewsArticle(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-
-    def save(self, *args, **kwargs):
-        self.intro = self.description[:40]
-        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
