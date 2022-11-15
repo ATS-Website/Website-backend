@@ -46,9 +46,9 @@ look = {
     "self_description": "No Fear!",
     "favorite_meal": "Eba and beans"
 }
-test = aes_encrypt(str(look))
-print(test, "Book")
+# test = aes_encrypt(str(look))
+# print(test, "Book")
 
-test_2 = aes_decrypt(
-    "c5eiZD27WSQs3eiL1lLZzGE6VJDxAQGaKm3SJSPEqgzxC9LZLmDBFsz6xOaVqRM+s4pvVS3RpeGVmoikbrO0d4Yp9NLxdrO3DjdOiEmshmTK0R0gJtPUgCy9PMn6Ea/dr6AZWBGoYCyqBoti/7p8UlHfCXrb1udFiGljReUFBfWXvw5HUMTT0AWma5r+o63XdO6m09ssJHDhi5gcKs/uhw==")
-print(test_2)
+# test_2 = aes_decrypt(
+#     "c5eiZD27WSQs3eiL1lLZzGE6VJDxAQGaKm3SJSPEqgzxC9LZLmDBFsz6xOaVqRM+s4pvVS3RpeGVmoikbrO0d4Yp9NLxdrO3DjdOiEmshmTK0R0gJtPUgCy9PMn6Ea/dr6AZWBGoYCyqBoti/7p8UlHfCXrb1udFiGljReUFBfWXvw5HUMTT0AWma5r+o63XdO6m09ssJHDhi5gcKs/uhw==")
+# print(test_2)
