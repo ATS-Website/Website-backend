@@ -1,3 +1,4 @@
+//socket
 [Unit]
 Description=Website socket
 [Socket]
@@ -5,7 +6,7 @@ ListenStream=/home/afex-ats/www/run/website.sock
 [Install]
 WantedBy=sockets.target
 
-
+//service
 [Unit]
 Description=Website daemon
 Requires=ats_bk.socket
@@ -14,7 +15,7 @@ After=network.target
 User=afex-ats
 Group=www-data
 WorkingDirectory=/home/afex-ats/www/apps/website
-ExecStart=/home/afex-ats/envs/website_env/bin/gunicorn \
+ExecStart=/home/afex-ats/www/envs/website_env/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
           --bind unix:/home/afex-ats/www/run/website.sock \

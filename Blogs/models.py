@@ -42,6 +42,8 @@ class Author(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+
+
 # BLOGS
 
 
@@ -170,13 +172,6 @@ class Category(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
-    def __str__(self):
-        return self.name
-
-
-class NewsArticle(models.Model):
-    title = models.CharField(max_length=250, blank=False, null=False)
-
     class Meta:
         unique_together = ("name", "is_active")
 
@@ -192,6 +187,8 @@ class NewsArticle(models.Model):
         raise ValidationError("Categories cannot be more than 6 !")
 
 
+
+
 class NewsArticle(models.Model):
     title = models.CharField(max_length=250, null=True)
     intro = models.CharField(max_length=400)
@@ -204,7 +201,7 @@ class NewsArticle(models.Model):
     author = models.ForeignKey(
         Author, on_delete=models.SET_NULL, null=True)
     image = models.ImageField(
-        blank=True, upload_to='media/news_article/images/', null=True,)
+        blank=True, upload_to='media/news_article/images/', null=True, )
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
@@ -213,10 +210,6 @@ class NewsArticle(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-
-    def save(self, *args, **kwargs):
-        self.intro = self.description[:40]
-        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -228,19 +221,12 @@ class NewsComment(models.Model):
     news_article = models.ForeignKey(
         NewsArticle, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-# # NEWSLETTER
-# class NewsLetterSubscription(models.Model):
-#     email = models.EmailField(null=True, unique=True)
-#     is_active = models.BooleanField(default=True)
-
-#     objects = models.Manager()
-#     active_objects = ActiveManager()
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
-        return 'Comment {} by {}' .format(self.description, self.name)
+        return 'Comment {} by {}'.format(self.description, self.name)
 
 
 # NEWSLETTER# NEWSLETTER
