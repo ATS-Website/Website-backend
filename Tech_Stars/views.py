@@ -26,7 +26,7 @@ from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAP
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView
                      )
-from .utils import generate_qr, write_log_csv, decrypt_request
+from .utils import generate_qr, write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
 from Accounts.mixins import IsAdminOrReadOnlyMixin
 
@@ -35,6 +35,7 @@ from Accounts.mixins import IsAdminOrReadOnlyMixin
 
 
 timezone.activate(settings.TIME_ZONE)
+
 
 def create_attendance(tech_star, date_time, device_id):
     attendance = Attendance.active_objects.create(
@@ -50,7 +51,7 @@ def create_attendance(tech_star, date_time, device_id):
     return serializer.data
 
 
-class TechStarListCreateAPIView( CustomListCreateAPIView):
+class TechStarListCreateAPIView(CustomListCreateAPIView):
     serializer_class = TechStarSerializer
     parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
@@ -111,7 +112,8 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
     # parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
-        new_request = decrypt_request(request.data)
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
         time_check = ResumptionAndClosingTime.objects.all().first()
 
         # open_time = time_check.open_time
@@ -146,7 +148,8 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
     serializer_class = AttendanceSerializer
 
     def post(self, request, *args, **kwargs):
-        new_request = decrypt_request(request.data)
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
         latitude = float(new_request.get("latitude"))
         longitude = float(new_request.get("longitude"))
         office_location = OfficeLocation.objects.all().first()
@@ -173,9 +176,11 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                 tech_star.save()
 
             if open_time <= timezone.localtime(timezone.now()).time() <= close_time:
-                tech_star_attendance = Attendance.active_objects.filter(tech_star_id=tech_star.id).first()
+                tech_star_attendance = Attendance.active_objects.filter(
+                    tech_star_id=tech_star.id).first()
                 if tech_star_attendance is not None:
-                    last_attendance_date = str(tech_star_attendance.check_in)[:10]
+                    last_attendance_date = str(
+                        tech_star_attendance.check_in)[:10]
                     if last_attendance_date == str(timezone.localtime(timezone.now()).date()):
                         # print(date_time)
                         # print(tech_star_attendance.check_in)
@@ -243,7 +248,8 @@ class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnly
 
 class WriteAdminLog(APIView):
     def post(self, request, *args, **kwargs):
-        new_request = decrypt_request(request.data)
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
         event = new_request.get('event')
         admin = new_request.get("admin")
         message = new_request.get("message")
