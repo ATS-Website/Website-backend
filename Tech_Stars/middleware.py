@@ -11,6 +11,7 @@ from .utils import write_server_logs
 class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
+        # print(request._request__data)
         # print(request.user)
         # print(request.method)
         # print(json.loads(request.body))
@@ -23,7 +24,10 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
             print(url)
             status_code = str(vars(response).get(
                 "renderer_context").get("response"))[22:25]
-            write_server_logs(url, status_code)
+            if request.method == "POST" or request.method == "PUT":
+                write_server_logs(url, status_code, request.body)
+            else:
+                write_server_logs(url, status_code)
         except:
             pass
 

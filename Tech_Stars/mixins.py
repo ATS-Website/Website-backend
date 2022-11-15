@@ -1,3 +1,4 @@
+import json
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
@@ -6,6 +7,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CON
 from Accounts.permissions import IsValidRequestAPIKey
 
 from .permissions import IsAdminOrMembershipManagerOrReadOnly
+from .utils import decrypt_request
 from .utils import write_log_csv
 
 
@@ -17,8 +19,9 @@ class AdminOrMembershipManagerOrReadOnlyMixin:
 class CustomListCreateAPIView(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
-        # print(request.data)
-        serializer = self.get_serializer(data=request.data)
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
+        serializer = self.get_serializer(data=new_request)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -34,10 +37,12 @@ class CustomListCreateAPIView(ListCreateAPIView):
 class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(
-            instance, data=request.data, partial=partial)
+            instance, data=new_request, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         message_obj = serializer.data.get((list(serializer.data.keys())[1]))
@@ -59,7 +64,9 @@ class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class CustomCreateAPIView(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
+        serializer = self.get_serializer(data=new_request)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -72,10 +79,12 @@ class CustomCreateAPIView(CreateAPIView):
 class CustomRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(
-            instance, data=request.data, partial=partial)
+            instance, data=new_request, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         message_obj = serializer.data.get((list(serializer.data.keys())[1]))

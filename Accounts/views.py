@@ -32,6 +32,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .permissions import IsAdmin
 from .mixins import IsAdminOrReadOnlyMixin
+from .tasks import test_func
 from .permissions import IsValidRequestAPIKey
 from Tech_Stars.utils import write_log_csv
 from Tech_Stars.mixins import CustomRetrieveUpdateAPIView
@@ -270,3 +271,7 @@ class ToggleMembershipManager(APIView):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
         account.is_membership_manager = not account.is_membership_manager
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
+
+
+def test(request):
+    test_func.delay()
