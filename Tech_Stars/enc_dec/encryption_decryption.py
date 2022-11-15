@@ -33,15 +33,21 @@ iv = config("IV")
 
 
 def aes_encrypt(keyword):
-    return AESCipher(keyword, key, iv).encrypt()
+    return AESCipher(str(keyword), key, iv).encrypt()
 
 
 def aes_decrypt(keyword):
-    return AESCipher(keyword, key, iv).decrypt()
+    return AESCipher(str(keyword), key, iv).decrypt()
 
 
-# test = aes_encrypt("hello")
-# print(test)
+look = {
+    "full_name": "Adekunle Abraham",
+    "official_email": "loko873n@afexnigeria.com",
+    "self_description": "No Fear!",
+    "favorite_meal": "Eba and beans"
+}
+test = aes_encrypt(str(look))
+print(test)
 
 # test_2 = aes_decrypt("xLnb+mSMRThG4qVRg4ouPWmlkiSmBW8IaYosE/467q2tKx1d2tsu+PhKtWTnnvW6R7a5XNPPzyn2h/r7A/lgPQ==")
 # print(test_2)

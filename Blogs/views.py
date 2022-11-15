@@ -87,7 +87,7 @@ class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, Cu
 
 
 # AUTHOR
-class AuthorListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
+class AuthorListCreateAPIView( CustomListCreateAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     renderer_classes = [CustomRenderer]
