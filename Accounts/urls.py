@@ -10,14 +10,10 @@ urlpatterns = [
     path('token/refresh', TokenRefreshView.as_view(), name='token-refresh'),
     path('admin/register', views.RegistrationView.as_view(), name='admin-register'),
     path('ts/register', views.RegistrationView.as_view(), name='ts-register'),
-    # path('ts/login', views.LoginView.as_view(), name='ts-login'),
-    # path('applicant/login', views.LoginView.as_view(), name='applicant-login'),
-    # path('applicant/register', views.ApplicantRegistrationAV.as_view(),
-    #      name='applicant-register'),
 
 
 
-    path('verify-email/', views.VerifyEmail.as_view(), name='verify-email'),
+    #     path('verify-email/', views.VerifyEmail.as_view(), name='verify-email'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('change-password/<int:pk>/', views.ChangePasswordAV.as_view(),
          name='change-password'),
@@ -27,5 +23,16 @@ urlpatterns = [
          name='reset-password'),
     path('password-reset-complete/', views.SetNewPasswordAV.as_view(),
          name='password-reset-complete'),
-    path('users/', views.AccountsRetrieveAV.as_view(), name='users'),
+
+    path('profiles/<int:pk>/',
+         views.ProfileRetrieveAPIView.as_view(), name="profile"),
+    path('update-profile/<int:pk>/', views.UpdateProfileView.as_view(),
+         name='update-profile'),
+    path('me/', views.AccountRetrieveUpdateAPIView.as_view(), name='me'),
+    path('all', views.AccountsRetrieveAV.as_view(), name='admins'),
+    path('toggle-content-manager/<int:pk>', views.ToggleContentManager.as_view(),
+         name='toggle-content-manager'),
+    path('toggle-membership-manager/<int:pk>',
+         views.ToggleMembershipManager.as_view(), name='toggle-membership-manager'),
+
 ]

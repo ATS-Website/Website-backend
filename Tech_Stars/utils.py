@@ -1,13 +1,21 @@
 import base64
-import datetime
+import json
+
+from django.utils import timezone
+from django.conf import settings
 
 import qrcode
 import io
 import csv
 
+from .enc_dec.encryption_decryption import aes_decrypt
+
+timezone.activate(settings.TIME_ZONE)
+
 
 def generate_qr_code(data, size=10, border=0):
-    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=size, border=border)
+    qr = qrcode.QRCode(
+        version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=size, border=border)
     qr.add_data(data)
     qr.make(fit=True)
     img = qr.make_image()
@@ -37,7 +45,7 @@ def write_log_csv(event, admin, message):
         write = csv.DictWriter(x, fieldnames=header)
 
         data = {
-            "Date_Time": datetime.datetime.now(),
+            "Date_Time": timezone.now(),
             "Event": event,
             "Admin": admin,
             "Message": message,
@@ -50,15 +58,16 @@ def write_log_csv(event, admin, message):
             write.writerow(data)
 
 
-def write_server_logs(url: str, status_code: str):
+def write_server_logs(url: str, status_code: str, request_body=""):
     if status_code.startswith("2"):
         with open("access_server_logs.csv", "a", newline="\n") as x:
-            header = ["Date_Time", "url"]
+            header = ["Date_Time", "url", "request_body"]
             write = csv.DictWriter(x, fieldnames=header)
 
             data = {
-                "Date_Time": datetime.datetime.now(),
-                "url": url
+                "Date_Time": timezone.localtime(timezone.now()),
+                "url": url,
+                "request_body": request_body
             }
             if len(read_csv("access_server_logs.csv")) < 1:
                 write.writeheader()
@@ -71,7 +80,7 @@ def write_server_logs(url: str, status_code: str):
             write = csv.DictWriter(x, fieldnames=header)
 
             data = {
-                "Date_Time": datetime.datetime.now(),
+                "Date_Time": timezone.localtime(timezone.now()),
                 "url": url
             }
             if len(read_csv("error_server_logs.csv")) < 1:
@@ -81,17 +90,19 @@ def write_server_logs(url: str, status_code: str):
                 write.writerow(data)
 
     with open("complete_server_logs.csv", "a", newline="\n") as y:
-        complete_header = ["Date_Time", "status", "url", "status_code"]
+        complete_header = ["Date_Time", "status",
+                           "url", "status_code", "request_body"]
         complete_write = csv.DictWriter(y, fieldnames=complete_header)
 
         data = {
-            "Date_Time": datetime.datetime.now(),
+            "Date_Time": timezone.localtime(timezone.now()),
             "url": url,
-            "status_code": status_code
+            "status_code": status_code,
+            "request_body": request_body
         }
 
         if status_code.startswith("2"):
-            data["status"] = "Info"
+            data["status"] = "Success"
         else:
             data["status"] = "Error"
 
@@ -102,5 +113,6 @@ def write_server_logs(url: str, status_code: str):
             complete_write.writerow(data)
 
 
-
-
+def decrypt_request(enc_dict):
+    enc = enc_dict.get("data")[0]
+    return json.loads(aes_decrypt(enc))
