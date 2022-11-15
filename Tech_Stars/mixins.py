@@ -7,7 +7,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CON
 from Accounts.permissions import IsValidRequestAPIKey
 
 from .permissions import IsAdminOrMembershipManagerOrReadOnly
-from .utils import decrypt_request
+# from .utils import decrypt_request
 from .utils import write_log_csv
 
 
