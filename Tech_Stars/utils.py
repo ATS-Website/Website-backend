@@ -14,7 +14,8 @@ timezone.activate(settings.TIME_ZONE)
 
 
 def generate_qr_code(data, size=10, border=0):
-    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=size, border=border)
+    qr = qrcode.QRCode(
+        version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=size, border=border)
     qr.add_data(data)
     qr.make(fit=True)
     img = qr.make_image()
@@ -89,7 +90,8 @@ def write_server_logs(url: str, status_code: str, request_body=""):
                 write.writerow(data)
 
     with open("complete_server_logs.csv", "a", newline="\n") as y:
-        complete_header = ["Date_Time", "status", "url", "status_code", "request_body"]
+        complete_header = ["Date_Time", "status",
+                           "url", "status_code", "request_body"]
         complete_write = csv.DictWriter(y, fieldnames=complete_header)
 
         data = {
