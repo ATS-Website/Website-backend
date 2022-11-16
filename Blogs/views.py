@@ -1,5 +1,6 @@
 import datetime
 import itertools
+from django.forms.models import model_to_dict
 
 from algoliasearch_django import raw_search
 from django.shortcuts import render, get_object_or_404
@@ -28,7 +29,7 @@ from .paginations import ResponsePagination
 
 from .models import *
 from . import client
-from .utils import new_send_mail_func
+from .tasks import new_send_mail_func
 
 
 class SearchBlogView(generics.ListAPIView):
@@ -87,7 +88,7 @@ class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, Cu
 
 
 # AUTHOR
-class AuthorListCreateAPIView( CustomListCreateAPIView):
+class AuthorListCreateAPIView(CustomListCreateAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     renderer_classes = [CustomRenderer]
@@ -131,7 +132,7 @@ class GalleryRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomR
     lookup_field = "pk"
 
 
-class NewsLetterSubscriptionListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
+class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
     queryset = NewsLetterSubscription.objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
     renderer_classes = [CustomRenderer, ]
@@ -146,16 +147,20 @@ class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrR
 
 
 class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
+    renderer_classes = [CustomRenderer]
+
     def get_object(self):
-        return [x.email for x in NewsLetterSubscription.active_objects.all()]
+        return {x.email: x.email for x in NewsLetterSubscription.active_objects.all()}
 
     def post(self, request, *args, **kwargs):
         try:
             news_letter = NewsLetter.active_objects.get(id=kwargs["pk"])
         except:
             raise ValidationError("NewsLetter does not exist !")
-
-        new_send_mail_func(vars(news_letter), self.get_object())
+        # print(model_to_dict(news_letter))
+        # print([x.email for x in NewsLetterSubscription.active_objects.all()])
+        # print({x.email: x.email for x in NewsLetterSubscription.active_objects.all()})
+        new_send_mail_func.delay(model_to_dict(news_letter), self.get_object())
 
         return Response("Messages Sent Successfully", status=HTTP_201_CREATED)
 

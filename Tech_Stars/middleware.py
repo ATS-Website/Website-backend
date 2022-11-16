@@ -5,7 +5,8 @@ from django.utils.deprecation import MiddlewareMixin
 
 from Tech_Stars.renderers import CustomRenderer
 # from .enc_dec.encryption_decryption import aes_encrypt
-from .utils import write_server_logs
+# from .utils import write_server_logs
+from .tasks import write_server_logs
 
 
 class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
@@ -25,9 +26,9 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
             status_code = str(vars(response).get(
                 "renderer_context").get("response"))[22:25]
             if request.method == "POST" or request.method == "PUT":
-                write_server_logs(url, status_code, request.body)
+                write_server_logs.delay(url, status_code, request.body)
             else:
-                write_server_logs(url, status_code)
+                write_server_logs.delay(url, status_code)
         except:
             pass
 

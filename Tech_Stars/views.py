@@ -26,7 +26,8 @@ from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAP
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView
                      )
-from .utils import generate_qr, write_log_csv
+from .utils import generate_qr_code
+from .tasks import write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
 from Accounts.mixins import IsAdminOrReadOnlyMixin
 
@@ -257,7 +258,7 @@ class WriteAdminLog(APIView):
         if event is None or admin is None or message is None:
             raise ValidationError("Incomplete Data")
 
-        write_log_csv(event, admin, message)
+        write_log_csv.delay(event, admin, message)
 
         return Response("Activity logged successfully", status=HTTP_201_CREATED)
 
