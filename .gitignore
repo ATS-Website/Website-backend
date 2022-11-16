@@ -14,7 +14,7 @@ error_server_logs.csv
 # Edit at https://www.toptal.com/developers/gitignore?templates=pythonvanilla
 # C extensions
 *.so
-
+example.env
 # Distribution / packaging
 .Python
 build/
