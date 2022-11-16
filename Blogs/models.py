@@ -238,15 +238,23 @@ class NewsComment(models.Model):
 
 
 class NewsLetterSubscription(models.Model):
-    email = models.EmailField(null=True, unique=True)
+    email = models.EmailField(null=True)
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    class Meta:
+        unique_together = ("email", "is_active")
+
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        if NewsLetterSubscription.active_objects.filter(email=self.email).first() is not None:
+            raise ValidationError("It already Exist")
+        return super(NewsLetterSubscription, self).save(*args, **kwargs)
 
 
 class NewsLetter(models.Model):

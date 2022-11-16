@@ -28,13 +28,16 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
             else:
                 write_server_logs(url, status_code)
         except:
+            status_code = ""
             pass
 
-        context = vars(response).get("renderer_context")
-        encrypted = aes_encrypt(json.dumps(response.data))
-        response = Response({encrypted})
-        response.accepted_renderer = CustomRenderer()
-        response.accepted_media_type = "application/json"
-        response.renderer_context = context
-        response.render()
+        if status_code.startswith("2"):
+            context = vars(response).get("renderer_context")
+            encrypted = aes_encrypt(json.dumps(response.data))
+            response = Response({encrypted})
+            response.accepted_renderer = CustomRenderer()
+            response.accepted_media_type = "application/json"
+            response.renderer_context = context
+            response.render()
+            return response
         return response

@@ -1,5 +1,4 @@
 import csv
-import datetime
 import json
 import random
 
@@ -8,8 +7,7 @@ from django.conf import settings
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, CreateAPIView
-from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
+from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 
@@ -20,7 +18,6 @@ from .serializers import (
     OfficeLocationSerializer, TestimonialFrontpageSerializer, XpertOfTheWeekSerializer,
     XpertOfTheWeekDetailSerializer
 )
-from .renderers import CustomRenderer
 from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView,
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
@@ -30,11 +27,11 @@ from .utils import generate_qr, write_log_csv, decrypt_request
 from .enc_dec.encryption_decryption import aes_encrypt
 from Accounts.mixins import IsAdminOrReadOnlyMixin
 
-
 # Create your views here.
 
 
 timezone.activate(settings.TIME_ZONE)
+
 
 def create_attendance(tech_star, date_time, device_id):
     attendance = Attendance.active_objects.create(tech_star=tech_star, check_in=date_time, )
@@ -49,27 +46,23 @@ def create_attendance(tech_star, date_time, device_id):
     return serializer.data
 
 
-class TechStarListCreateAPIView( CustomListCreateAPIView):
+class TechStarListCreateAPIView(CustomListCreateAPIView):
     serializer_class = TechStarSerializer
     queryset = TechStar.active_objects.all()
-    renderer_classes = (CustomRenderer,)
 
 
 class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     serializer_class = TechStarDetailSerializer
     queryset = TechStar.active_objects.all()
-    renderer_classes = (CustomRenderer,)
 
 
 class TestimonialListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = TestimonialSerializer
     queryset = Testimonial.active_objects.all()
-    renderer_classes = (CustomRenderer,)
 
 
 class TestimonialFrontpageListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, ListAPIView):
     serializer_class = TestimonialFrontpageSerializer
-    renderer_classes = (CustomRenderer,)
 
     def get(self, request, *args, **kwargs):
         testimonial = list(Testimonial.active_objects.all())
@@ -81,13 +74,11 @@ class TestimonialFrontpageListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, L
 class TestimonialDetailUpdateDeleteView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     serializer_class = TestimonialDetailSerializer
     queryset = Testimonial.active_objects.all()
-    renderer_classes = (CustomRenderer,)
 
 
 class ResumptionAndClosingTimeCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CustomRenderer,)
     queryset = ResumptionAndClosingTime.objects.all()
 
 
@@ -95,7 +86,6 @@ class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManage
                                                          CustomRetrieveUpdateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CustomRenderer,)
     queryset = ResumptionAndClosingTime.objects.all()
 
     def get_object(self):
@@ -103,7 +93,6 @@ class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManage
 
 
 class GenerateAttendanceQRCode(CustomCreateAPIView):
-    renderer_classes = (CustomRenderer,)
 
     # parser_classes = (MultiPartParser, FormParser)
 
@@ -139,7 +128,6 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
 
 
 class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCreateAPIView):
-    renderer_classes = (CustomRenderer,)
     serializer_class = AttendanceSerializer
 
     def post(self, request, *args, **kwargs):
@@ -200,25 +188,21 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
 class AttendanceUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
     queryset = Attendance.active_objects.all()
     serializer_class = AttendanceSerializer
-    renderer_classes = (CustomRenderer,)
 
 
 class AttendanceListAPIView(ListAPIView):
     queryset = Attendance.active_objects.all()
     serializer_class = AttendanceSerializer
-    renderer_classes = (CustomRenderer,)
     permission_classes = (IsAuthenticated,)
 
 
 class OfficeLocationCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = OfficeLocationSerializer
-    renderer_classes = (CustomRenderer,)
     queryset = OfficeLocation.objects.all()
 
 
 class OfficeLocationDetailsUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
     serializer_class = OfficeLocationSerializer
-    renderer_classes = (CustomRenderer,)
 
     def get_object(self):
         return OfficeLocation.objects.all().first()
@@ -226,14 +210,12 @@ class OfficeLocationDetailsUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin
 
 class XpertOfTheWeekListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = XpertOfTheWeekSerializer
-    renderer_classes = (CustomRenderer,)
     queryset = XpertOfTheWeek.active_objects.all()
 
 
 class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin,
                                               CustomRetrieveUpdateDestroyAPIView):
     serializer_class = XpertOfTheWeekDetailSerializer
-    renderer_classes = (CustomRenderer,)
     queryset = XpertOfTheWeek.active_objects.all()
 
 

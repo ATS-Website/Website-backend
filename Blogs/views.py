@@ -1,15 +1,9 @@
-import datetime
-import itertools
-
 from algoliasearch_django import raw_search
-from django.shortcuts import render, get_object_or_404
 from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import BrowsableAPIRenderer
-from rest_framework.decorators import api_view, renderer_classes, permission_classes
-from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
-from rest_framework import generics, permissions
+from rest_framework import generics
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
 
@@ -17,16 +11,14 @@ from Accounts.renderers import CustomRenderer
 from Accounts.permissions import IsValidRequestAPIKey
 
 from Tech_Stars.mixins import (CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView,
-                               CustomRetrieveUpdateAPIView, CustomCreateAPIView
+                               CustomRetrieveUpdateAPIView
                                )
 
 from .mixins import AdminOrContentManagerOrReadOnlyMixin
-from .permissions import IsAdminOrReadOnly
 from .serializers import *
-from .paginations import ResponsePagination
+
 
 from .models import *
-from . import client
 from .utils import new_send_mail_func
 
 
@@ -60,43 +52,37 @@ class SearchNewsView(generics.ListAPIView):
         return Response(results, status=HTTP_200_OK)
 
 
-class BlogArticleListCreateAPIView (AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
+class BlogArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = BlogArticle.active_objects.all()
     serializer_class = BlogArticleSerializer
     permission_classes = [IsValidRequestAPIKey, ]
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
 class BlogArticleRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = BlogArticle.active_objects.all()
     serializer_class = BlogArticleDetailSerializer
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
 # COMMENTS
 class CommentListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = Comment.active_objects.all()
     serializer_class = CommentSerializer
-    renderer_classes = [CustomRenderer]
 
 
 class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = Comment.active_objects.all()
     serializer_class = CommentDetailSerializer
-    renderer_classes = (CustomRenderer,)
 
 
 # AUTHOR
-class AuthorListCreateAPIView( CustomListCreateAPIView):
+class AuthorListCreateAPIView(CustomListCreateAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    renderer_classes = [CustomRenderer]
 
 
 class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorDetailSerializer
-    renderer_classes = [CustomRenderer]
     lookup_field = "pk"
 
 
@@ -105,42 +91,33 @@ class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRe
 class NewsArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = NewsArticle.active_objects.all()
     serializer_class = NewsArticleSerializer
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
 class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView):
     queryset = NewsArticle.active_objects.all()
     serializer_class = NewsArticleDetailSerializer
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
-    # lookup_field = "pk"
 
 
 # Gallery
 class GalleryListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = Gallery.active_objects.all()
-    renderer_classes = [CustomRenderer]
     serializer_class = GallerySerializer
 
 
 class GalleryRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
     queryset = Gallery.active_objects.all()
-    renderer_classes = [CustomRenderer]
     serializer_class = GallerySerializer
-    lookup_field = "pk"
 
 
 class NewsLetterSubscriptionListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = NewsLetterSubscription.objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
-    renderer_classes = [CustomRenderer, ]
 
 
 class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
                                                         CustomRetrieveUpdateDestroyAPIView):
     queryset = NewsLetterSubscription.objects.all()
     serializer_class = NewsLetterSubscriptionDetailSerializer
-    renderer_classes = [CustomRenderer, ]
-    lookup_field = "pk"
 
 
 class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
@@ -161,43 +138,25 @@ class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
 class CategoryListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = Category.active_objects.all()
     serializer_class = CategorySerializer
-    renderer_classes = [CustomRenderer, ]
-    lookup_field = "pk"
 
 
 class CategoryDetailUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = Category.active_objects.all()
     serializer_class = CategoryDetailSerializer
-    renderer_classes = (CustomRenderer, BrowsableAPIRenderer)
-
-
-# class TagListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
-#     queryset = Tag.active_objects.all()
-#     serializer_class = TagSerializer
-#     renderer_classes = [CustomRenderer, ]
-#     lookup_field = "pk"
-
-
-# class TagDetailUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
-#     queryset = Tag.active_objects.all()
-#     serializer_class = TagDetailSerializer
-#     renderer_classes = (CustomRenderer,)
 
 
 class NewsLetterListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = NewsLetter.active_objects.all()
     serializer_class = NewsLetterSerializer
-    renderer_classes = (CustomRenderer,)
 
 
 class NewsLetterDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = NewsLetter.active_objects.all()
     serializer_class = NewsLetterDetailSerializer
-    renderer_classes = (CustomRenderer,)
 
 
 class BlogArticleCommentListAPIView(APIView):
-    def get(self, request,  *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         queryset = Comment.active_objects.filter(blog_article_id=kwargs["pk"])
         serializer = CommentSerializer(
             queryset, many=True, context={"request": request})
@@ -207,17 +166,14 @@ class BlogArticleCommentListAPIView(APIView):
 class ViewsListCreateAPIView(CreateAPIView):
     queryset = Views.active_objects.all()
     serializer_class = BlogViewsSerializer
-    renderer_classes = (CustomRenderer,)
 
 
 class LikesCreateAPIView(CreateAPIView):
     serializer_class = LikeSerializer
-    renderer_classes = (CustomRenderer,)
     queryset = Likes.active_objects.all()
 
 
 class CategoryNewsCountAPIView(APIView):
-    renderer_classes = (CustomRenderer,)
 
     def get(self, request, *args, **kwargs):
         queryset = Category.active_objects.all()[:6]
