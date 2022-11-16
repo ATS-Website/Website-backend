@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     'corsheaders',
     # external api
     'algoliasearch_django',
+    'django_celery_results',
+    # 'django-celery-beat',
     # "cloudinary_storage",
     # 'cloudinary',
 ]
@@ -97,18 +99,28 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config("DB_NAME"),
+#         'USER': config("DB_USER"),
+#         'PASSWORD': config("DB_PASSWORD"),
+#         'PORT': config("DB_PORT"),
+#         'HOST': config("DB_HOST"),
+
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DB_NAME"),
-        'USER': config("DB_USER"),
-        'PASSWORD': config("DB_PASSWORD"),
-        'PORT': config("DB_PORT"),
-        'HOST': config("DB_HOST"),
+        'NAME': "Website",
+        'USER': "postgres",
+        'PASSWORD': 'root',
+        'PORT': '5432',
+        'HOST': 'localhost',
 
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -192,11 +204,16 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = config("EMAIL_PORT", cast=int)
 
-# CELERY_BROKER_URL = config("CELERY_BROKER_URL")
-# CELERY_ACCEPT_CONTENT = ["application/json"]
-# CELERY_RESULT_SERIALIZER = "json"
-# CELERY_TASK_SERIALIZER = "json"
-# CELERY_TIMEZONE = config("CELERY_TIMEZONE")
+# CELERY
+
+CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_ACCEPT_CONTENT = ["application/json"]
+# CELERY_RESULT_SERIALIZER = 'pickle'
+# CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_TIMEZONE = config("CELERY_TIMEZONE")
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
 
 # CLOUDINARY_STORAGE = {
 #     "CLOUD_NAME": config("CLOUD_NAME"),
@@ -206,3 +223,6 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 #                                  'hdp', 'png', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'ico'],
 
 # }
+
+# CELERY-BEAT
+CELERY_BEAT_SCHEDULER = 'djanga_celery_beat.schedulers:DatabaseScheduler'
