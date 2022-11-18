@@ -26,7 +26,7 @@ SECRET_KEY = config("SECRET_KEY")
 # SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
 DEBUG = True
 # DEBUG = config("DEBUG", cast=bool, default=True)
-ADMIN = config("ADMIN")
+# ADMIN = config("ADMIN")
 
 
 # ALLOWED_HOSTS = []
@@ -110,15 +110,25 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 #     }
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': "Website",
+#         'USER': "postgres",
+#         'PASSWORD': 'root',
+#         'PORT': '5432',
+#         'HOST': 'localhost',
+#
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "Website",
-        'USER': "postgres",
-        'PASSWORD': 'root',
+        'NAME': 'ATS_Website',
+        'USER': 'Django_ATS',
+        'PASSWORD': "1234567890",
         'PORT': '5432',
         'HOST': 'localhost',
-
     }
 }
 # Password validation
@@ -175,8 +185,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.BrowsableAPIRenderer',
-        'Accounts.renderers.CustomRenderer'
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
+        'Accounts.renderers.CustomRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10

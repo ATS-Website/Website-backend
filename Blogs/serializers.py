@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, ListField
 from rest_framework import serializers
 from .models import *
 
@@ -114,18 +114,10 @@ class NewsArticleDetailSerializer(ModelSerializer):
 # GALLERY
 
 
-class GallerySerializer(ModelSerializer):
-    class Meta:
-        model = Gallery
-
-        fields = ['id', 'image', 'text']
-
-
 # NEWSLETTER
 
 
 class NewsLetterSubscriptionSerializer(ModelSerializer):
-
     url = HyperlinkedIdentityField(
         view_name="Blogs:newsletter_subscription_detail_update", read_only=True)
 
@@ -246,4 +238,40 @@ class CategoryNewsCountSerializer(ModelSerializer):
         fields = (
             "name",
             "category_news_count"
+        )
+
+
+class ImagesSerializer(ModelSerializer):
+    class Meta:
+        model = Images
+        fields = ("image", "alt", "date_created")
+
+
+class AlbumSerializer(ModelSerializer):
+    images = ImagesSerializer(many=True, read_only=True)
+    url = HyperlinkedIdentityField(view_name="Blogs:album_retrieve_update_delete", read_only=True)
+
+    class Meta:
+        model = Album
+        fields = ("name", "images", "url")
+
+    def create(self, validated_data):
+        images = self.context.get("view").request.FILES
+        name = validated_data.get("name")
+        album = Album.active_objects.get_or_create(name=name)[0]
+
+        for image in images.values():
+            Images.active_objects.create(image=image, album=album)
+
+        return album
+
+
+class AlbumDetailSerializer(ModelSerializer):
+    active_images = ImagesSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Album
+        fields = (
+            "name",
+            "active_images"
         )

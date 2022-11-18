@@ -2,14 +2,15 @@ import csv
 import datetime
 import json
 import random
+from ast import literal_eval
 
 from django.utils import timezone
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, CreateAPIView
-from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
+from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 
@@ -20,22 +21,20 @@ from .serializers import (
     OfficeLocationSerializer, TestimonialFrontpageSerializer, XpertOfTheWeekSerializer,
     XpertOfTheWeekDetailSerializer
 )
-from .renderers import CustomRenderer
 from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView,
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView
                      )
-from .utils import generate_qr_code
+from .utils import generate_qr
 from .tasks import write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
 from Accounts.mixins import IsAdminOrReadOnlyMixin
 
-
 # Create your views here.
 
 
-timezone.activate(settings.TIME_ZONE)
+# timezone.activate(settings.TIME_ZONE)
 
 
 def create_attendance(tech_star, date_time, device_id):
@@ -56,25 +55,21 @@ class TechStarListCreateAPIView(CustomListCreateAPIView):
     serializer_class = TechStarSerializer
     parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
-    renderer_classes = (CustomRenderer,)
 
 
 class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     serializer_class = TechStarDetailSerializer
     parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
-    renderer_classes = (CustomRenderer,)
 
 
 class TestimonialListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = TestimonialSerializer
     queryset = Testimonial.active_objects.all()
-    renderer_classes = (CustomRenderer,)
 
 
 class TestimonialFrontpageListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, ListAPIView):
     serializer_class = TestimonialFrontpageSerializer
-    renderer_classes = (CustomRenderer,)
 
     def get(self, request, *args, **kwargs):
         testimonial = list(Testimonial.active_objects.all())
@@ -86,13 +81,11 @@ class TestimonialFrontpageListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, L
 class TestimonialDetailUpdateDeleteView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     serializer_class = TestimonialDetailSerializer
     queryset = Testimonial.active_objects.all()
-    renderer_classes = (CustomRenderer,)
 
 
 class ResumptionAndClosingTimeCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CustomRenderer,)
     queryset = ResumptionAndClosingTime.objects.all()
 
 
@@ -100,7 +93,6 @@ class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManage
                                                          CustomRetrieveUpdateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CustomRenderer,)
     queryset = ResumptionAndClosingTime.objects.all()
 
     def get_object(self):
@@ -108,7 +100,6 @@ class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManage
 
 
 class GenerateAttendanceQRCode(CustomCreateAPIView):
-    renderer_classes = (CustomRenderer,)
 
     # parser_classes = (MultiPartParser, FormParser)
 
@@ -145,7 +136,6 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
 
 
 class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCreateAPIView):
-    renderer_classes = (CustomRenderer,)
     serializer_class = AttendanceSerializer
 
     def post(self, request, *args, **kwargs):
@@ -179,15 +169,16 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                 tech_star_attendance = Attendance.active_objects.filter(
                     tech_star_id=tech_star.id).first()
                 if tech_star_attendance is not None:
-                    last_attendance_date = str(
-                        tech_star_attendance.check_in)[:10]
-                    if last_attendance_date == str(timezone.localtime(timezone.now()).date()):
+                    # last_attendance_date = str(
+                    #     tech_star_attendance.check_in)[:10]
+                    last_attendance_date = tech_star_attendance.check_in.date()
+                    if last_attendance_date == timezone.now().date():
                         # print(date_time)
                         # print(tech_star_attendance.check_in)
                         # print((tech_star_attendance.check_in + datetime.timedelta(minutes=10)))
-                        # if date_time > tech_star_attendance.check_in + datetime.timedelta(minutes=10):
-                        #     raise ValidationError(
-                        #         "You cannot check out, if the time is not 2 hours from your check in !")
+                        if date_time < tech_star_attendance.check_in + timezone.timedelta(minutes=10):
+                            raise ValidationError(
+                                "You cannot check out, if the time is not 2 hours from your check in !")
 
                         tech_star_attendance.check_out = date_time
                         if tech_star_attendance.status == "Uncompleted":
@@ -209,25 +200,21 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
 class AttendanceUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
     queryset = Attendance.active_objects.all()
     serializer_class = AttendanceSerializer
-    renderer_classes = (CustomRenderer,)
 
 
 class AttendanceListAPIView(ListAPIView):
     queryset = Attendance.active_objects.all()
     serializer_class = AttendanceSerializer
-    renderer_classes = (CustomRenderer,)
     permission_classes = (IsAuthenticated,)
 
 
 class OfficeLocationCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = OfficeLocationSerializer
-    renderer_classes = (CustomRenderer,)
     queryset = OfficeLocation.objects.all()
 
 
 class OfficeLocationDetailsUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
     serializer_class = OfficeLocationSerializer
-    renderer_classes = (CustomRenderer,)
 
     def get_object(self):
         return OfficeLocation.objects.all().first()
@@ -235,14 +222,12 @@ class OfficeLocationDetailsUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin
 
 class XpertOfTheWeekListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = XpertOfTheWeekSerializer
-    renderer_classes = (CustomRenderer,)
     queryset = XpertOfTheWeek.active_objects.all()
 
 
 class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin,
                                               CustomRetrieveUpdateDestroyAPIView):
     serializer_class = XpertOfTheWeekDetailSerializer
-    renderer_classes = (CustomRenderer,)
     queryset = XpertOfTheWeek.active_objects.all()
 
 
@@ -262,8 +247,8 @@ class WriteAdminLog(APIView):
         return Response("Activity logged successfully", status=HTTP_201_CREATED)
 
 
-class ReadAdminLog(IsAdminOrReadOnlyMixin, ListAPIView):
+class ReadAdminLog(ListAPIView):
     def get(self, *args, **kwargs):
         with open("admin_activity_logs.csv", "r") as x:
-            read = json.dumps(list(csv.DictReader(x)))
+            read = literal_eval(json.dumps(list(csv.DictReader(x))))
             return Response(read, status=HTTP_200_OK)
