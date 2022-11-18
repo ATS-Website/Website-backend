@@ -65,6 +65,8 @@ class Account(AbstractBaseUser):
     is_admin = models.BooleanField(default=True)
     is_content_manager = models.BooleanField(default=False)
     is_membership_manager = models.BooleanField(default=False)
+    is_assessment_manager = models.BooleanField(default=False)
+    is_application_manager = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -83,3 +85,13 @@ class Account(AbstractBaseUser):
 
     def __str__(self) -> str:
         return self.username
+
+
+class Profile(models.Model):
+    account = models.OneToOneField(
+        Account, on_delete=models.CASCADE, null=True)
+    avatar = models.ImageField(upload_to='accounts/images', null=True)
+    position = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return self.account.username

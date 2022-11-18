@@ -1,0 +1,39 @@
+//socket
+[Unit]
+Description=Website socket
+[Socket]
+ListenStream=/home/afex-ats/www/run/website.sock
+[Install]
+WantedBy=sockets.target
+
+//service
+[Unit]
+Description=Website daemon
+Requires=ats_bk.socket
+After=network.target
+[Service]
+User=afex-ats
+Group=www-data
+WorkingDirectory=/home/afex-ats/www/apps/website
+ExecStart=/home/afex-ats/www/envs/website_env/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/home/afex-ats/www/run/website.sock \
+          website.wsgi:application
+[Install]
+WantedBy=multi-user.target
+
+
+
+server {
+    listen 80;
+    server_name atsbk.afex.dev;
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/afex-ats/www/apps/website/website;
+    }
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/afex-ats/www/run/website.sock;
+    }
+}

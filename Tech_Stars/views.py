@@ -1,12 +1,15 @@
 import csv
+import datetime
 import json
 import random
+from ast import literal_eval
 
 from django.utils import timezone
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
@@ -23,18 +26,20 @@ from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAP
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView
                      )
-from .utils import generate_qr, write_log_csv, decrypt_request
+from .utils import generate_qr
+from .tasks import write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
 from Accounts.mixins import IsAdminOrReadOnlyMixin
 
 # Create your views here.
 
 
-timezone.activate(settings.TIME_ZONE)
+# timezone.activate(settings.TIME_ZONE)
 
 
 def create_attendance(tech_star, date_time, device_id):
-    attendance = Attendance.active_objects.create(tech_star=tech_star, check_in=date_time, )
+    attendance = Attendance.active_objects.create(
+        tech_star=tech_star, check_in=date_time, )
 
     if device_id == tech_star.device_id:
         attendance.status = "Uncompleted"
@@ -48,11 +53,13 @@ def create_attendance(tech_star, date_time, device_id):
 
 class TechStarListCreateAPIView(CustomListCreateAPIView):
     serializer_class = TechStarSerializer
+    parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
 
 
 class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     serializer_class = TechStarDetailSerializer
+    parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
 
 
@@ -97,11 +104,12 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
     # parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
-        new_request = decrypt_request(request.data)
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
         time_check = ResumptionAndClosingTime.objects.all().first()
 
-        open_time = time_check.open_time
-        close_time = time_check.close_time
+        # open_time = time_check.open_time
+        # close_time = time_check.close_time
 
         # if open_time <= timezone.localtime(timezone.now()).time() <= close_time:
 
@@ -109,7 +117,7 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
         try:
             tech_star = TechStar.active_objects.get(official_email=email)
         except:
-            raise ValidationError("Tech Star Not Found !")
+            raise ValidationError("Tech Star with this email doesn't exist !")
 
         date_time = new_request.get("date_time")
         location = new_request.get("location")
@@ -131,7 +139,8 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
     serializer_class = AttendanceSerializer
 
     def post(self, request, *args, **kwargs):
-        new_request = decrypt_request(request.data)
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
         latitude = float(new_request.get("latitude"))
         longitude = float(new_request.get("longitude"))
         office_location = OfficeLocation.objects.all().first()
@@ -158,16 +167,19 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                 tech_star.save()
 
             if open_time <= timezone.localtime(timezone.now()).time() <= close_time:
-                tech_star_attendance = Attendance.active_objects.filter(tech_star_id=tech_star.id).first()
+                tech_star_attendance = Attendance.active_objects.filter(
+                    tech_star_id=tech_star.id).first()
                 if tech_star_attendance is not None:
-                    last_attendance_date = str(tech_star_attendance.check_in)[:10]
-                    if last_attendance_date == str(timezone.localtime(timezone.now()).date()):
+                    # last_attendance_date = str(
+                    #     tech_star_attendance.check_in)[:10]
+                    last_attendance_date = tech_star_attendance.check_in.date()
+                    if last_attendance_date == timezone.now().date():
                         # print(date_time)
                         # print(tech_star_attendance.check_in)
                         # print((tech_star_attendance.check_in + datetime.timedelta(minutes=10)))
-                        # if date_time > tech_star_attendance.check_in + datetime.timedelta(minutes=10):
-                        #     raise ValidationError(
-                        #         "You cannot check out, if the time is not 2 hours from your check in !")
+                        if date_time < tech_star_attendance.check_in + timezone.timedelta(minutes=10):
+                            raise ValidationError(
+                                "You cannot check out, if the time is not 2 hours from your check in !")
 
                         tech_star_attendance.check_out = date_time
                         if tech_star_attendance.status == "Uncompleted":
@@ -177,7 +189,8 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                         tech_star_attendance.save()
                         attendance = self.get_serializer(tech_star_attendance)
                         return Response(attendance.data, status=HTTP_201_CREATED)
-                    attendance = create_attendance(tech_star, date_time, device_id)
+                    attendance = create_attendance(
+                        tech_star, date_time, device_id)
                     return Response(attendance, status=HTTP_201_CREATED)
                 attendance = create_attendance(tech_star, date_time, device_id)
                 return Response(attendance, status=HTTP_201_CREATED)
@@ -221,7 +234,8 @@ class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnly
 
 class WriteAdminLog(APIView):
     def post(self, request, *args, **kwargs):
-        new_request = decrypt_request(request.data)
+        # new_request = decrypt_request(request.data)
+        new_request = request.data
         event = new_request.get('event')
         admin = new_request.get("admin")
         message = new_request.get("message")
@@ -229,13 +243,13 @@ class WriteAdminLog(APIView):
         if event is None or admin is None or message is None:
             raise ValidationError("Incomplete Data")
 
-        write_log_csv(event, admin, message)
+        write_log_csv.delay(event, admin, message)
 
         return Response("Activity logged successfully", status=HTTP_201_CREATED)
 
 
-class ReadAdminLog(IsAdminOrReadOnlyMixin, ListAPIView):
+class ReadAdminLog(ListAPIView):
     def get(self, *args, **kwargs):
         with open("admin_activity_logs.csv", "r") as x:
-            read = json.dumps(list(csv.DictReader(x)))
+            read = literal_eval(json.dumps(list(csv.DictReader(x))))
             return Response(read, status=HTTP_200_OK)

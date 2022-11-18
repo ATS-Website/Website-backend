@@ -3,8 +3,6 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.db import models
-from cloudinary_storage.validators import validate_video
-from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 from django.contrib.auth.models import User
 import datetime
 from .utils import time_taken_to_read
@@ -77,7 +75,6 @@ class BlogArticle(models.Model):
         blank=True, upload_to='media/blog_article/images/', null=True)
     author = models.ForeignKey(
         Author, null=True, on_delete=models.SET_NULL, default="anonymous")
-    image = models.ImageField(blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
 
@@ -212,10 +209,6 @@ class NewsArticle(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-    def save(self, *args, **kwargs):
-        self.intro = self.description[:40]
-        return super().save(*args, **kwargs)
-
     def __str__(self):
         return self.title
 
@@ -275,21 +268,56 @@ class NewsLetter(models.Model):
     # GALLERY
 
 
-class Gallery(models.Model):
-    image = models.ImageField(
-        blank=True, upload_to="gallery/images/", null=True)
-    # video = models.FileField(blank=True, upload_to="gallery/videos/",
-    #                          null=True, storage=VideoMediaCloudinaryStorage(),validator=[validate_])
-    text = models.CharField(max_length=250, null=True)
-    date_added = models.DateField(auto_now_add=True, null=True)
+# class Gallery(models.Model):
+#     image = models.ImageField(
+#         blank=True, upload_to="gallery/images/", null=True)
+#     # video = models.FileField(blank=True, upload_to="gallery/videos/",
+#     #                          null=True, storage=VideoMediaCloudinaryStorage(),validator=[validate_])
+#     text = models.CharField(max_length=250, null=True)
+#     date_added = models.DateField(auto_now_add=True, null=True)
+#     is_active = models.BooleanField(default=True)
+#
+#     objects = models.Manager()
+#     active_objects = ActiveManager()
+#     inactive_objects = InActiveManager()
+#
+#     def save(self, *args, **kwargs):
+#         if self.image is None:
+#             raise ValidationError(
+#                 "Image cannot be empty !")
+#         return super(Gallery, self).save(*args, **kwargs)
+
+
+class Album(models.Model):
+    name = models.CharField(max_length=500, null=True)
+    created = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
-    def save(self, *args, **kwargs):
-        if self.image is None:
-            raise ValidationError(
-                "Image cannot be empty !")
-        return super(Gallery, self).save(*args, **kwargs)
+    class Meta:
+        unique_together = ("name", "is_active")
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def active_images(self):
+        return Images.active_objects.filter(album_id=self.id)
+
+
+class Images(models.Model):
+    album = models.ForeignKey(Album, on_delete=models.SET_NULL, null=True, limit_choices_to={"is_active": True}, blank=True)
+    image = models.ImageField(upload_to="Tech_Stars/ATS-Gallery")
+    alt = models.CharField(max_length=300, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    date_created = models.DateField(auto_now_add=True, null=True)
+
+    objects = models.Manager()
+    active_objects = ActiveManager()
+    inactive_objects = InActiveManager()
+
+    class Meta:
+        unique_together = ("album", "image", "is_active")

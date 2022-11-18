@@ -4,12 +4,13 @@ __pycache__/
 */.env
 .env
 env
+media
 admin_activity_logs.csv
 access_server_logs.csv
 complete_server_logs.csv
 error_server_logs.csv
- origin/abraham_dev
-#*/enc_dec
+*/enc_dec
+2.0
 # Created by https://www.toptal.com/developers/gitignore/api/pythonvanilla
 # Edit at https://www.toptal.com/developers/gitignore?templates=pythonvanilla
 # C extensions

@@ -1,3 +1,9 @@
+import datetime
+import itertools
+import json
+
+from django.forms.models import model_to_dict
+
 from algoliasearch_django import raw_search
 from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import BrowsableAPIRenderer
@@ -6,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
+from rest_framework.parsers import FormParser, FileUploadParser, MultiPartParser
 
 from Accounts.renderers import CustomRenderer
 from Accounts.permissions import IsValidRequestAPIKey
@@ -17,9 +24,9 @@ from Tech_Stars.mixins import (CustomRetrieveUpdateDestroyAPIView, CustomListCre
 from .mixins import AdminOrContentManagerOrReadOnlyMixin
 from .serializers import *
 
-
 from .models import *
-from .utils import new_send_mail_func
+from . import client
+from .tasks import new_send_mail_func
 
 
 class SearchBlogView(generics.ListAPIView):
@@ -55,7 +62,7 @@ class SearchNewsView(generics.ListAPIView):
 class BlogArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = BlogArticle.active_objects.all()
     serializer_class = BlogArticleSerializer
-    permission_classes = [IsValidRequestAPIKey, ]
+    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
 class BlogArticleRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
@@ -83,7 +90,6 @@ class AuthorListCreateAPIView(CustomListCreateAPIView):
 class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorDetailSerializer
-    lookup_field = "pk"
 
 
 # NEWS
@@ -98,18 +104,7 @@ class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView)
     serializer_class = NewsArticleDetailSerializer
 
 
-# Gallery
-class GalleryListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
-    queryset = Gallery.active_objects.all()
-    serializer_class = GallerySerializer
-
-
-class GalleryRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateAPIView):
-    queryset = Gallery.active_objects.all()
-    serializer_class = GallerySerializer
-
-
-class NewsLetterSubscriptionListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
+class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
     queryset = NewsLetterSubscription.objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
 
@@ -121,16 +116,20 @@ class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrR
 
 
 class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
+    renderer_classes = [CustomRenderer]
+
     def get_object(self):
-        return [x.email for x in NewsLetterSubscription.active_objects.all()]
+        return {x.email: x.email for x in NewsLetterSubscription.active_objects.all()}
 
     def post(self, request, *args, **kwargs):
         try:
             news_letter = NewsLetter.active_objects.get(id=kwargs["pk"])
         except:
             raise ValidationError("NewsLetter does not exist !")
-
-        new_send_mail_func(vars(news_letter), self.get_object())
+        # print(model_to_dict(news_letter))
+        # print([x.email for x in NewsLetterSubscription.active_objects.all()])
+        # print({x.email: x.email for x in NewsLetterSubscription.active_objects.all()})
+        new_send_mail_func.delay(model_to_dict(news_letter), self.get_object())
 
         return Response("Messages Sent Successfully", status=HTTP_201_CREATED)
 
@@ -156,6 +155,8 @@ class NewsLetterDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
 
 
 class BlogArticleCommentListAPIView(APIView):
+    renderer_classes = (CustomRenderer,)
+
     def get(self, request, *args, **kwargs):
         queryset = Comment.active_objects.filter(blog_article_id=kwargs["pk"])
         serializer = CommentSerializer(
@@ -163,7 +164,7 @@ class BlogArticleCommentListAPIView(APIView):
         return Response(serializer.data, status=HTTP_200_OK)
 
 
-class ViewsListCreateAPIView(CreateAPIView):
+class ViewsListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CreateAPIView):
     queryset = Views.active_objects.all()
     serializer_class = BlogViewsSerializer
 
@@ -179,3 +180,23 @@ class CategoryNewsCountAPIView(APIView):
         queryset = Category.active_objects.all()[:6]
         serializer = CategoryNewsCountSerializer(queryset, many=True, )
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+class ImageListAPIView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        queryset = Images.active_objects.all()
+        serializer = ImagesSerializer(queryset, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)
+
+
+class AlbumListCreateAPIView(CustomListCreateAPIView):
+    queryset = Album.active_objects.all()
+    serializer_class = AlbumSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+
+class AlbumRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView):
+    queryset = Album.active_objects.all()
+    serializer_class = AlbumDetailSerializer
+    parser_classes = (MultiPartParser, FormParser)
