@@ -70,6 +70,7 @@ class TechStarDetailSerializer(ModelSerializer):
 
 
 class TestimonialSerializer(ModelSerializer):
+
     url = HyperlinkedIdentityField(
         view_name="Tech_Stars:testimonial_detail_update_delete", read_only=True)
 
@@ -145,6 +146,7 @@ class OfficeLocationSerializer(ModelSerializer):
 
 
 class XpertOfTheWeekSerializer(ModelSerializer):
+
     url = HyperlinkedIdentityField(
         view_name="Tech_Stars:xpert_detail_update_delete", read_only=True)
 
