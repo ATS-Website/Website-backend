@@ -1,3 +1,6 @@
+from rest_framework.generics import GenericAPIView
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator
 import csv
 import datetime
 import json
@@ -26,7 +29,7 @@ from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAP
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView
                      )
-from .utils import generate_qr_code
+from .utils import generate_qr_code, generate_qr
 from .tasks import write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
 from Accounts.mixins import IsAdminOrReadOnlyMixin
@@ -248,6 +251,8 @@ class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnly
 
 
 class WriteAdminLog(APIView):
+    renderer_classes = [CustomRenderer]
+
     def post(self, request, *args, **kwargs):
         # new_request = decrypt_request(request.data)
         new_request = request.data
@@ -263,8 +268,10 @@ class WriteAdminLog(APIView):
         return Response("Activity logged successfully", status=HTTP_201_CREATED)
 
 
-class ReadAdminLog(IsAdminOrReadOnlyMixin, ListAPIView):
-    def get(self, *args, **kwargs):
+class ReadAdminLog(IsAdminOrReadOnlyMixin, GenericAPIView):
+    renderer_classes = [CustomRenderer]
+
+    def get(self, request, *args, **kwargs):
         with open("admin_activity_logs.csv", "r") as x:
             read = json.dumps(list(csv.DictReader(x)))
             return Response(read, status=HTTP_200_OK)

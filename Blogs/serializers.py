@@ -1,3 +1,6 @@
+from .documents import NewsArticleDocument, BlogArticleDocument
+
+from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
 from rest_framework import serializers
 from .models import *
@@ -13,6 +16,30 @@ class SearchBlogSerializer(ModelSerializer):
     class Meta:
         model = NewsArticle
         fields = ('id', 'title', 'intro', 'description')
+
+
+class NewsArticleDocumentSerializer(DocumentSerializer):
+    class Meta:
+        document = NewsArticleDocument
+
+        fields = (
+            'title',
+            'intro',
+            'description',
+            'category'
+        )
+
+
+class BlogArticleDocumentSerializer(DocumentSerializer):
+    class Meta:
+        document = BlogArticleDocument
+
+        fields = (
+            'title',
+            'intro',
+            'description',
+            'author'
+        )
 
 
 class AuthorSerializer(ModelSerializer):

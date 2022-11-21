@@ -57,10 +57,14 @@ INSTALLED_APPS = [
     # external api
     'algoliasearch_django',
     'django_celery_results',
+    "djcelery_email",
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
     # 'django-celery-beat',
     # "cloudinary_storage",
     # 'cloudinary',
 ]
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -76,7 +80,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com',
+                        'http://localhost:3000', 'http://localhost:8000',  'http://127.0.0.1', ]
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -193,6 +198,16 @@ ALGOLIA = {
     'APPLICATION_ID': config('ALG_APPLICATION_ID'),
     'API_KEY': config('ALG_API_KEY'),
     'INDEX_PREFIX': 'ats',
+}
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    },
+}
+ELASTICSEARCH_INDEX_NAMES = {
+    'Blogs.NewsArticle': 'news',
+    'Blogs.BlogArticle': 'blogs',
 }
 
 

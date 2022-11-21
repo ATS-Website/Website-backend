@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from django.utils.deprecation import MiddlewareMixin
 
 from Tech_Stars.renderers import CustomRenderer
-# from .enc_dec.encryption_decryption import aes_encrypt
-# from .utils import write_server_logs
-from .tasks import write_server_logs
+from .enc_dec.encryption_decryption import aes_encrypt
+from .utils import write_server_logs
+# from .tasks import write_server_logs
 
 
 class EncryptionAndDecryptionMiddleware(MiddlewareMixin):

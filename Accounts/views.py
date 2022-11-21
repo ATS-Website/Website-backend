@@ -21,7 +21,7 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from Accounts.renderers import CustomRenderer
 from Accounts.serializers import RegisterationSerializer, ResetPasswordSerializer, UpdateAccountSerializer, ProfileSerializer
-from Accounts.utils import Utils
+from Accounts.tasks import Utils
 from Accounts.models import Account, Profile
 
 from .serializers import LoginSerializer, RegisterationSerializer, ChangePasswordSerializer, UserSerializer, SetNewPasswordSerializer
@@ -32,7 +32,6 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .permissions import IsAdmin
 from .mixins import IsAdminOrReadOnlyMixin
-from .tasks import test_func
 from .permissions import IsValidRequestAPIKey
 from Tech_Stars.utils import write_log_csv
 from Tech_Stars.mixins import CustomRetrieveUpdateAPIView
@@ -183,7 +182,7 @@ class ForgotPassordAV(APIView):
             message = "Hi" + account.username + "," + \
                 " Please Use the Link below to reset your account passwors:" + "" + abs_url
 
-            Utils.send_email(mail_subject, message, account.email)
+            Utils.send_email.delay(mail_subject, message, account.email)
         return Response({"status": "success", "message": "We have sent a password-reset link to the email you provided.Please check and reset  "}, status=status.HTTP_200_OK)
 
 
@@ -272,6 +271,3 @@ class ToggleMembershipManager(APIView):
         account.is_membership_manager = not account.is_membership_manager
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
 
-
-def test(request):
-    test_func.delay()

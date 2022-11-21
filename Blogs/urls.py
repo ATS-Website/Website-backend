@@ -1,5 +1,6 @@
 from django.urls import path
 from Blogs import views
+from rest_framework import routers
 
 from Blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
                          BlogArticleListCreateAPIView, BlogArticleRetrieveUpdateDeleteAPIView,
@@ -13,6 +14,13 @@ from Blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
                          )
 
 app_name = 'Blogs'
+
+router = routers.SimpleRouter(trailing_slash=False)
+
+router.register(r'news-search', views.NewsArticleDocumentView,
+                basename='article-search')
+router.register(r'blog-search', views.NewsArticleDocumentView,
+                basename='article-search')
 
 urlpatterns = [
     path('blogs', BlogArticleListCreateAPIView.as_view(), name="blog_list_create"),
@@ -77,4 +85,6 @@ urlpatterns = [
 
     path('search-blog/', SearchBlogView.as_view(), name="search-blog"),
     path('search-news/', SearchNewsView.as_view(), name="search-news"),
+
 ]
+urlpatterns += router.urls

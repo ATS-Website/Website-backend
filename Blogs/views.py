@@ -32,6 +32,81 @@ from . import client
 from .tasks import new_send_mail_func
 
 
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.filter_backends import SearchFilterBackend, SuggesterFilterBackend
+from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
+from .documents import NewsArticleDocument
+from .serializers import NewsArticleDocumentSerializer
+
+
+class NewsArticleDocumentView(DocumentViewSet):
+    document = NewsArticleDocument
+    serializer_class = NewsArticleDocumentSerializer
+
+    filter_backends = [SearchFilterBackend]
+    search_fields = ('title', "intro", "description", "category")
+    suggester_fields = {
+        'title': {
+            'field': 'title.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'description': {
+            'field': 'description.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'intro': {
+            'field': 'intro.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'category': {
+            'field': 'category.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+    }
+
+
+class BlogArticleDocumentView(DocumentViewSet):
+    document = BlogArticleDocument
+    serializer_class = BlogArticleDocumentSerializer
+
+    filter_backends = [SearchFilterBackend, SuggesterFilterBackend]
+    search_fields = ('title', "intro", "description", "author")
+    suggester_fields = {
+        'title': {
+            'field': 'title.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'description': {
+            'field': 'description.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'intro': {
+            'field': 'intro.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'author': {
+            'field': 'author.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+    }
+
+
 class SearchBlogView(generics.ListAPIView):
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
@@ -157,9 +232,7 @@ class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
             news_letter = NewsLetter.active_objects.get(id=kwargs["pk"])
         except:
             raise ValidationError("NewsLetter does not exist !")
-        # print(model_to_dict(news_letter))
-        # print([x.email for x in NewsLetterSubscription.active_objects.all()])
-        # print({x.email: x.email for x in NewsLetterSubscription.active_objects.all()})
+
         new_send_mail_func.delay(model_to_dict(news_letter), self.get_object())
 
         return Response("Messages Sent Successfully", status=HTTP_201_CREATED)
