@@ -30,7 +30,7 @@ DEBUG = True
 
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['atsbk.afexats.com', 'localhost:3000', '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', ]
+ALLOWED_HOSTS = ['atsbk.afexats.com', 'localhost:3000', '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', "127.0.0.1", "localhost"]
 # ALLOWED_HOSTS = [
 #     'localhost',
 #     '127.0.0.1',
@@ -76,9 +76,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com',
-                        'http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000',
-                        'http://127.0.0.1:8000']
+CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com','http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000','http://127.0.0.1:8000']
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -187,7 +185,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
         'Accounts.renderers.CustomRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

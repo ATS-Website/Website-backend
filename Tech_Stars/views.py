@@ -13,6 +13,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
+from decouple import config
 
 from .serializers import (
     TestimonialSerializer, TestimonialDetailSerializer,
@@ -100,6 +101,7 @@ class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManage
 
 
 class GenerateAttendanceQRCode(CustomCreateAPIView):
+    serializer_class = BarcodeSerializer
 
     # parser_classes = (MultiPartParser, FormParser)
 
@@ -125,11 +127,12 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
         data = {
             "email": email,
             "date_time": date_time,
+            "secret_key": config("QR_SECRET_KEY")
         }
         print(data)
 
-        qr = generate_qr(aes_encrypt(data))
-        result = BarcodeSerializer(qr)
+        qr = generate_qr(data)
+        result = self.get_serializer(qr)
 
         return Response(result.data, status=HTTP_201_CREATED)
         raise ValidationError("Out of Time Range !")

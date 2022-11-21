@@ -200,3 +200,10 @@ class AlbumRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView):
     queryset = Album.active_objects.all()
     serializer_class = AlbumDetailSerializer
     parser_classes = (MultiPartParser, FormParser)
+
+
+class NavNewsListAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = NewsArticle.active_objects.all()
+        serializer = NavNewsSerializer(queryset, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)
