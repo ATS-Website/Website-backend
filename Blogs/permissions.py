@@ -11,5 +11,5 @@ class IsAdminOrReadOnly(BasePermission):
 
 class OnlyAdminCanDelete(BasePermission):
     def has_permission(self, request, view):
-        return bool((request.user.is_superadmin or request.user.is_content_manager) and
-                                                                          request.user.is_authenticated)
+        return bool(request.method in ["POST", "PUT", "GET", "PATCH"] or ((request.user.is_superadmin or request.user.is_content_manager) and
+                                                                          request.user.is_authenticated))

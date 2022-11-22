@@ -30,7 +30,7 @@ DEBUG = True
 
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['atsbk.afexats.com', 'localhost:3000', '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', "127.0.0.1", "localhost"]
 # ALLOWED_HOSTS = [
 #     'localhost',
 #     '127.0.0.1',
@@ -76,7 +76,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com','http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000','http://127.0.0.1:8000']
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -193,7 +193,6 @@ REST_FRAMEWORK = {
 
 }
 
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2000),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
@@ -204,7 +203,6 @@ ALGOLIA = {
     'API_KEY': config('ALG_API_KEY'),
     'INDEX_PREFIX': 'ats',
 }
-
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)

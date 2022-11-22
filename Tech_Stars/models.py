@@ -44,6 +44,18 @@ class TechStar(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    def tech_star_full_name(self):
+        return self.tech_star.full_name
+
+    def tech_star_profile_picture(self):
+        return self.tech_star.profile_picture
+
+    def tech_star_course(self):
+        return self.tech_star.course
+
+    def tech_star_cohort(self):
+        return self.tech_star.cohort
+
 
 #
 # class Attendance(models.Model):
@@ -101,27 +113,15 @@ class Testimonial(models.Model):
 # def set_tech_star_id(sender, instance, created, **kwargs):
 #     if created:
 #         tech_star = TechStar.objects.all().last()
-
+#
 #         if tech_star is not None:
 #             get_id = int(tech_star.tech_star_id[-4::]) + 1
 #             instance.tech_star_id = f"ATS-{str(get_id).zfill(4)}"
 #             instance.save()
-
-        # else:
-        #     instance.tech_star_id = f"ATS-0001"
-        #     instance.save()
-
-    def tech_star_full_name(self):
-        return self.tech_star.full_name
-
-    def tech_star_profile_picture(self):
-        return self.tech_star.profile_picture
-
-    def tech_star_course(self):
-        return self.tech_star.course
-
-    def tech_star_cohort(self):
-        return self.tech_star.cohort
+#
+#         else:
+#             instance.tech_star_id = f"ATS-0001"
+#             instance.save()
 
 
 class ResumptionAndClosingTime(models.Model):
@@ -160,4 +160,4 @@ class XpertOfTheWeek(models.Model):
     inactive_objects = InActiveManager()
 
     class Meta:
-        ordering = ("-date_created", )
+        ordering = ("-date_created",)

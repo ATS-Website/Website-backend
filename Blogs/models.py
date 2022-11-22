@@ -211,6 +211,9 @@ class NewsArticle(models.Model):
     def __str__(self):
         return self.title
 
+    def category_name(self):
+        return self.category.name
+
 
 class NewsComment(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
