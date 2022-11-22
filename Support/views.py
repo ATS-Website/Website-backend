@@ -2,8 +2,11 @@ from .serializers import FrequentlyAskedQuestionsSerializer, FrequentlyAskedQues
     ContactUsSerializer, ContactUsDetailSerializer
 from .models import FrequentlyAskedQuestions, ContactUs
 from .mixins import AdminOrReadOnlyMixin
+from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView, ListAPIView
 from Tech_Stars.renderers import CustomRenderer
-from Tech_Stars.mixins import CustomListCreateAPIView, CustomRetrieveUpdateDestroyAPIView
+from Tech_Stars.mixins import CustomListCreateAPIView, CustomRetrieveUpdateDestroyAPIView, CustomDestroyAPIView
+from Blogs.permissions import IsAdminOrReadOnly
 
 
 # Create your views here.
@@ -20,6 +23,13 @@ class FrequentlyAskedQuestionDetailsUpdateDeleteAPIView(AdminOrReadOnlyMixin, Cu
     serializer_class = FrequentlyAskedQuestionsDetailSerializer
     renderer_classes = (CustomRenderer,)
 
+class FrequentlyAskedQuestionListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = FrequentlyAskedQuestions.inactive_objects.all()
+    serializer_class = FrequentlyAskedQuestionsSerializer
+
+class FrequentlyAskedQuestionRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = FrequentlyAskedQuestions.inactive_objects.all()
+    serializer_class = FrequentlyAskedQuestionsSerializer
 
 class ContactUsListCreateAPIView(AdminOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = ContactUs.active_objects.all()

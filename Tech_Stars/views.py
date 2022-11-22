@@ -14,6 +14,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 from decouple import config
+from Blogs.permissions import IsAdminOrReadOnly
 
 from .serializers import (
     TestimonialSerializer, TestimonialDetailSerializer,
@@ -25,8 +26,9 @@ from .serializers import (
 from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView,
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
-                     CustomRetrieveUpdateAPIView
-                     )
+                     CustomRetrieveUpdateAPIView, CustomDestroyAPIView
+                               
+                               )
 from .utils import generate_qr
 from .tasks import write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
@@ -63,6 +65,13 @@ class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin
     parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
 
+class TrashedTechStarListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = TechStar.inactive_objects.all()
+    serializer_class = TechStarSerializer
+
+class TrashedTechStarRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = TechStar.inactive_objects.all()
+    serializer_class = TechStarDetailSerializer
 
 class TestimonialListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = TestimonialSerializer
@@ -83,6 +92,14 @@ class TestimonialDetailUpdateDeleteView(AdminOrMembershipManagerOrReadOnlyMixin,
     serializer_class = TestimonialDetailSerializer
     queryset = Testimonial.active_objects.all()
 
+
+class TrashedTestimonialListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = Testimonial.inactive_objects.all()
+    serializer_class = TestimonialSerializer
+
+class TrashedTestimonialRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = Testimonial.inactive_objects.all()
+    serializer_class = TestimonialDetailSerializer
 
 class ResumptionAndClosingTimeCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
@@ -232,6 +249,14 @@ class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnly
                                               CustomRetrieveUpdateDestroyAPIView):
     serializer_class = XpertOfTheWeekDetailSerializer
     queryset = XpertOfTheWeek.active_objects.all()
+
+class TrashedXpertListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = XpertOfTheWeek.inactive_objects.all()
+    serializer_class = XpertOfTheWeekSerializer
+
+class TrashedXpertRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = XpertOfTheWeek.inactive_objects.all()
+    serializer_class = XpertOfTheWeekSerializer
 
 
 class WriteAdminLog(APIView):

@@ -56,6 +56,9 @@ class TechStar(models.Model):
     def tech_star_cohort(self):
         return self.tech_star.cohort
 
+    def __str__(self):
+        return self.full_name
+
 
 #
 # class Attendance(models.Model):
@@ -102,6 +105,8 @@ class Testimonial(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    def __str__(self):
+        return str(self.tech_star) + "'s testimonial"
 
 # def id_creator_checker(number: int):
 #     get_id = number + 1
