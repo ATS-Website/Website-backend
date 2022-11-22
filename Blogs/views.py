@@ -1,13 +1,14 @@
 import datetime
 import itertools
 import json
-
+from Blogs.permissions import OnlyAdminCanDelete
 from django.forms.models import model_to_dict
 
 from algoliasearch_django import raw_search
 from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.generics import CreateAPIView
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
@@ -18,7 +19,7 @@ from Accounts.renderers import CustomRenderer
 from Accounts.permissions import IsValidRequestAPIKey
 
 from Tech_Stars.mixins import (CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView,
-                               CustomRetrieveUpdateAPIView
+                               CustomRetrieveUpdateAPIView, CustomDestroyAPIView
                                )
 
 from .mixins import AdminOrContentManagerOrReadOnlyMixin
@@ -69,6 +70,15 @@ class BlogArticleRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixi
     queryset = BlogArticle.active_objects.all()
     serializer_class = BlogArticleDetailSerializer
 
+
+class TrashedBlogListAPIView(OnlyAdminCanDelete, generics.ListAPIView):
+    queryset = BlogArticle.Inactive_objects.all()
+    serializer_class = BlogArticleSerializer
+
+class TrashedBlogDeleteAPIView(OnlyAdminCanDelete, CustomDestroyAPIView):
+    queryset = BlogArticle.Inactive_objects.all()
+    serializer_class = BlogArticleDetailSerializer
+    
 
 # COMMENTS
 class CommentListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
