@@ -187,8 +187,6 @@ class Category(models.Model):
         raise ValidationError("Categories cannot be more than 6 !")
 
 
-
-
 class NewsArticle(models.Model):
     title = models.CharField(max_length=250, null=True)
     intro = models.CharField(max_length=400)
@@ -233,15 +231,23 @@ class NewsComment(models.Model):
 
 
 class NewsLetterSubscription(models.Model):
-    email = models.EmailField(null=True, unique=True)
+    email = models.EmailField(null=True)
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    class Meta:
+        unique_together = ("email", "is_active")
+
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        if NewsLetterSubscription.active_objects.filter(email=self.email).first() is not None:
+            raise ValidationError("It already Exist")
+        return super(NewsLetterSubscription, self).save(*args, **kwargs)
 
 
 class NewsLetter(models.Model):
@@ -262,21 +268,56 @@ class NewsLetter(models.Model):
     # GALLERY
 
 
-class Gallery(models.Model):
-    image = models.ImageField(
-        blank=True, upload_to="gallery/images/", null=True)
-    # video = models.FileField(blank=True, upload_to="gallery/videos/",
-    #                          null=True, storage=VideoMediaCloudinaryStorage(),validator=[validate_])
-    text = models.CharField(max_length=250, null=True)
-    date_added = models.DateField(auto_now_add=True, null=True)
+# class Gallery(models.Model):
+#     image = models.ImageField(
+#         blank=True, upload_to="gallery/images/", null=True)
+#     # video = models.FileField(blank=True, upload_to="gallery/videos/",
+#     #                          null=True, storage=VideoMediaCloudinaryStorage(),validator=[validate_])
+#     text = models.CharField(max_length=250, null=True)
+#     date_added = models.DateField(auto_now_add=True, null=True)
+#     is_active = models.BooleanField(default=True)
+#
+#     objects = models.Manager()
+#     active_objects = ActiveManager()
+#     inactive_objects = InActiveManager()
+#
+#     def save(self, *args, **kwargs):
+#         if self.image is None:
+#             raise ValidationError(
+#                 "Image cannot be empty !")
+#         return super(Gallery, self).save(*args, **kwargs)
+
+
+class Album(models.Model):
+    name = models.CharField(max_length=500, null=True)
+    created = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
-    def save(self, *args, **kwargs):
-        if self.image is None:
-            raise ValidationError(
-                "Image cannot be empty !")
-        return super(Gallery, self).save(*args, **kwargs)
+    class Meta:
+        unique_together = ("name", "is_active")
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def active_images(self):
+        return Images.active_objects.filter(album_id=self.id)
+
+
+class Images(models.Model):
+    album = models.ForeignKey(Album, on_delete=models.SET_NULL, null=True, limit_choices_to={"is_active": True}, blank=True)
+    image = models.ImageField(upload_to="Tech_Stars/ATS-Gallery")
+    alt = models.CharField(max_length=300, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    date_created = models.DateField(auto_now_add=True, null=True)
+
+    objects = models.Manager()
+    active_objects = ActiveManager()
+    inactive_objects = InActiveManager()
+
+    class Meta:
+        unique_together = ("album", "image", "is_active")

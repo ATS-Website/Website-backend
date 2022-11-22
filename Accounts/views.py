@@ -254,7 +254,7 @@ class SetNewPasswordAV(generics.GenericAPIView):
         return Response({"status": "success", "message": "Password was successfully reset"}, status=status.HTTP_200_OK)
 
 
-class ToggleContentManager(APIView):
+class ToggleContentManagerAV(APIView):
     renderer_classes = [CustomRenderer]
 
     def get(self, request, *args, **kwargs):
@@ -263,7 +263,7 @@ class ToggleContentManager(APIView):
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
 
 
-class ToggleMembershipManager(APIView):
+class ToggleMembershipManagerAV(APIView):
     renderer_classes = [CustomRenderer]
 
     def get(self, request, *args, **kwargs):
@@ -271,3 +271,20 @@ class ToggleMembershipManager(APIView):
         account.is_membership_manager = not account.is_membership_manager
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
 
+
+class ToggleAssessmentManagerAV(APIView):
+    renderer_classes = [CustomRenderer]
+
+    def get(self, request, *args, **kwargs):
+        account = Account.objects.filter(pk=kwargs.get("pk")).first()
+        account.is_assessment_manager = not account.is_assessment_manager
+        return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
+
+
+class ToggleApplicationManagerAV(APIView):
+    renderer_classes = [CustomRenderer]
+
+    def get(self, request, *args, **kwargs):
+        account = Account.objects.filter(pk=kwargs.get("pk")).first()
+        account.is_application_manager = not account.is_application_manager
+        return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)

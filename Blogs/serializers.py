@@ -2,6 +2,7 @@ from .documents import NewsArticleDocument, BlogArticleDocument
 
 from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, ListField
 from rest_framework import serializers
 from .models import *
 
@@ -65,6 +66,7 @@ class AuthorDetailSerializer(ModelSerializer):
 
 class BlogArticleSerializer(ModelSerializer):
     url = serializers.SerializerMethodField()
+    author = AuthorDetailSerializer()
 
     class Meta:
         model = BlogArticle
@@ -93,6 +95,7 @@ class BlogArticleDetailSerializer(ModelSerializer):
     more_comments = HyperlinkedIdentityField(
         view_name="Blogs:blog_comments", read_only=True)
     few_comments = CommentSerializer(read_only=True, many=True)
+    author = AuthorDetailSerializer()
 
     class Meta:
         model = BlogArticle
@@ -105,66 +108,6 @@ class CommentDetailSerializer(ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'name', 'description', "blog_article", 'created_at')
-
-
-# NEWS SERIALIZER
-class NewsArticleSerializer(ModelSerializer):
-    url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = NewsArticle
-        fields = ['id', 'title', 'intro', 'description', 'created_at',
-                  'category', 'author', 'image', 'url',
-                  ]
-
-    def get_url(self, obj):
-        return self.context.get("request").build_absolute_uri("/api/v1/news/") + str(obj.pk)
-
-
-class NewsArticleDetailSerializer(ModelSerializer):
-    class Meta:
-        model = NewsArticle
-        fields = ['id', 'title', 'intro', 'description', 'created_at',
-                  'category', 'author', 'image'
-                  ]
-
-
-#
-# class NewsCommentSerializer(ModelSerializer):
-#     news_article = NewsArticleSerializer(read_only=True)
-#
-#     class Meta:
-#         model = NewsComment
-#         fields = ['id', 'name', 'description', 'news_article', 'created_at']
-
-
-# GALLERY
-
-
-class GallerySerializer(ModelSerializer):
-    class Meta:
-        model = Gallery
-
-        fields = ['id', 'image', 'text']
-
-
-# NEWSLETTER
-
-
-class NewsLetterSubscriptionSerializer(ModelSerializer):
-
-    url = HyperlinkedIdentityField(
-        view_name="Blogs:newsletter_subscription_detail_update", read_only=True)
-
-    class Meta:
-        model = NewsLetterSubscription
-        fields = ('id', 'email', 'url')
-
-
-class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
-    class Meta:
-        model = NewsLetterSubscription
-        fields = ('id', 'email',)
 
 
 class CategorySerializer(ModelSerializer):
@@ -180,6 +123,51 @@ class CategoryDetailSerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name']
+# NEWS SERIALIZER
+
+
+class NewsArticleSerializer(ModelSerializer):
+    url = serializers.SerializerMethodField()
+    author = AuthorDetailSerializer()
+    category = CategoryDetailSerializer()
+
+    class Meta:
+        model = NewsArticle
+        fields = ['id', 'title', 'intro', 'description', 'created_at',
+                  'category', 'author', 'image', 'url',
+                  ]
+
+    def get_url(self, obj):
+        return self.context.get("request").build_absolute_uri("/api/v1/news/") + str(obj.pk)
+
+
+class NewsArticleDetailSerializer(ModelSerializer):
+    author = AuthorDetailSerializer()
+    category = CategoryDetailSerializer()
+
+    class Meta:
+        model = NewsArticle
+        fields = ['id', 'title', 'intro', 'description', 'created_at',
+                  'category', 'author', 'image'
+                  ]
+
+
+# NEWSLETTER
+
+
+class NewsLetterSubscriptionSerializer(ModelSerializer):
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:newsletter_subscription_detail_update", read_only=True)
+
+    class Meta:
+        model = NewsLetterSubscription
+        fields = ('id', 'email', 'url')
+
+
+class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
+    class Meta:
+        model = NewsLetterSubscription
+        fields = ('id', 'email',)
 
 
 class TagSerializer(ModelSerializer):
@@ -273,4 +261,41 @@ class CategoryNewsCountSerializer(ModelSerializer):
         fields = (
             "name",
             "category_news_count"
+        )
+
+
+class ImagesSerializer(ModelSerializer):
+    class Meta:
+        model = Images
+        fields = ("image", "alt", "date_created")
+
+
+class AlbumSerializer(ModelSerializer):
+    images = ImagesSerializer(many=True, read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:album_retrieve_update_delete", read_only=True)
+
+    class Meta:
+        model = Album
+        fields = ("name", "images", "url")
+
+    def create(self, validated_data):
+        images = self.context.get("view").request.FILES
+        name = validated_data.get("name")
+        album = Album.active_objects.get_or_create(name=name)[0]
+
+        for image in images.values():
+            Images.active_objects.create(image=image, album=album)
+
+        return album
+
+
+class AlbumDetailSerializer(ModelSerializer):
+    active_images = ImagesSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Album
+        fields = (
+            "name",
+            "active_images"
         )

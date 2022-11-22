@@ -4,6 +4,7 @@ __pycache__/
 */.env
 .env
 env
+media
 admin_activity_logs.csv
 access_server_logs.csv
 complete_server_logs.csv

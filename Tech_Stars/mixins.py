@@ -26,12 +26,11 @@ class CustomListCreateAPIView(ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        print((list(serializer.data.keys())[1]))
         message_obj = serializer.data.get((list(serializer.data.keys())[1]))
         print(message_obj)
         print((list(serializer.data.keys())[1]))
-        write_log_csv.delay(f"Created {self.get_serializer().Meta.model.__name__}",
-                            request.user.username, f"{message_obj} was Created")
+        write_log_csv(f"Created {self.get_serializer().Meta.model.__name__}",
+                      request.user.username, f"{message_obj} was Created")
         return Response(serializer.data, status=HTTP_201_CREATED, headers=headers)
 
 

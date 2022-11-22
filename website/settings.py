@@ -26,16 +26,13 @@ SECRET_KEY = config("SECRET_KEY")
 # SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
 DEBUG = True
 # DEBUG = config("DEBUG", cast=bool, default=True)
-ADMIN = config("ADMIN")
+# ADMIN = config("ADMIN")
 
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['atsbk.afexats.com', 'localhost',  '127.0.0.1', ]
-# ALLOWED_HOSTS = [
-#     'localhost',
-#     '127.0.0.1',
-#     '111.222.333.444',
-#     'mywebsite.example']
+ALLOWED_HOSTS = ['atsbk.afexats.com', '127.0.0.1', 'localhost', 'localhost:3000',
+                 '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', ]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -81,7 +78,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'website.urls'
 CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com',
-                        'http://localhost:3000', 'http://localhost:8000',  'http://127.0.0.1', ]
+                        'http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000',
+                        'http://127.0.0.1:8000']
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -126,6 +124,7 @@ DATABASES = {
 
     }
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -181,13 +180,12 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.BrowsableAPIRenderer',
-        'Accounts.renderers.CustomRenderer'
+        'Accounts.renderers.CustomRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 
 }
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2000),
@@ -202,9 +200,10 @@ ALGOLIA = {
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'localhost:9200'
+        'hosts': 'https://127.0.0.1:9200'
     },
 }
+
 ELASTICSEARCH_INDEX_NAMES = {
     'Blogs.NewsArticle': 'news',
     'Blogs.BlogArticle': 'blogs',
