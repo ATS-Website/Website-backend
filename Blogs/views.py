@@ -83,12 +83,12 @@ class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, Cu
 
 # AUTHOR
 class AuthorListCreateAPIView(CustomListCreateAPIView):
-    queryset = Author.objects.all()
+    queryset = Author.active_objects.all()
     serializer_class = AuthorSerializer
 
 
 class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
-    queryset = Author.objects.all()
+    queryset = Author.active_objects.all()
     serializer_class = AuthorDetailSerializer
 
 
@@ -105,13 +105,13 @@ class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView)
 
 
 class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
-    queryset = NewsLetterSubscription.objects.all()
+    queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
 
 
 class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
                                                         CustomRetrieveUpdateDestroyAPIView):
-    queryset = NewsLetterSubscription.objects.all()
+    queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionDetailSerializer
 
 

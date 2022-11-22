@@ -86,14 +86,12 @@ class TestimonialDetailUpdateDeleteView(AdminOrMembershipManagerOrReadOnlyMixin,
 
 class ResumptionAndClosingTimeCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
-    permission_classes = (IsAuthenticated,)
     queryset = ResumptionAndClosingTime.objects.all()
 
 
 class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManagerOrReadOnlyMixin,
                                                          CustomRetrieveUpdateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
-    permission_classes = (IsAuthenticated,)
     queryset = ResumptionAndClosingTime.objects.all()
 
     def get_object(self):
@@ -155,6 +153,7 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
             date_time = new_request.get("date_time")
             device_id = new_request.get("device_id")
 
+
             try:
                 tech_star = TechStar.active_objects.get(official_email=email)
             except:
@@ -173,14 +172,12 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                 tech_star_attendance = Attendance.active_objects.filter(
                     tech_star_id=tech_star.id).first()
                 if tech_star_attendance is not None:
-                    # last_attendance_date = str(
-                    #     tech_star_attendance.check_in)[:10]
                     last_attendance_date = tech_star_attendance.check_in.date()
                     if last_attendance_date == timezone.now().date():
-                        # print(date_time)
-                        # print(tech_star_attendance.check_in)
-                        # print((tech_star_attendance.check_in + datetime.timedelta(minutes=10)))
-                        if date_time < tech_star_attendance.check_in + timezone.timedelta(minutes=10):
+                        date_time_conv = timezone.datetime.strptime(date_time.split(".")[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+                        # print(date_time_conv < (tech_star_attendance.check_in + timezone.timedelta(minutes=10)).replace(tzinfo=timezone.utc))
+                        # raise ValidationError("")
+                        if date_time_conv < (tech_star_attendance.check_in + timezone.timedelta(minutes=10)).replace(tzinfo=timezone.utc):
                             raise ValidationError(
                                 "You cannot check out, if the time is not 2 hours from your check in !")
 
