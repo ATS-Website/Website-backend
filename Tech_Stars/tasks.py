@@ -30,7 +30,6 @@ def write_log_csv(event, admin, message):
         else:
             write.writerow(data)
 
-
 @shared_task(bind=True)
 def write_server_logs(url: str, status_code: str, request_body=""):
     if status_code.startswith("2"):

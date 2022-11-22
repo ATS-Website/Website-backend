@@ -37,6 +37,7 @@ class TechStarSerializer(ModelSerializer):
 
         if tech_star is not None:
             get_id = int(str(tech_star.tech_star_id).split("-")[-1]) + 1
+            print(get_id)
 
             id2string = f"ATS-{str(get_id).zfill(4)}"
 
@@ -51,7 +52,7 @@ class TechStarSerializer(ModelSerializer):
 class TechStarDetailSerializer(ModelSerializer):
     class Meta:
         model = TechStar
-        fields = (
+        fields = ( 
             "id",
             "tech_star_id",
             "full_name",

@@ -1,5 +1,10 @@
 import json
+
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
@@ -57,7 +62,6 @@ class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
                       request.user.username, f"{instance} was deleted")
         return Response(status=HTTP_204_NO_CONTENT)
 
-
 class CustomCreateAPIView(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
@@ -88,3 +92,36 @@ class CustomRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         write_log_csv(f"Updated {self.get_serializer().Meta.model.__name__}",
                       request.user.username, f"{message_obj} was updated")
         return Response(serializer.data, status=HTTP_201_CREATED)
+
+
+class CustomDestroyAPIView(generics.DestroyAPIView):
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_active = True
+        instance.save()
+        write_log_csv(f"Restored {self.get_serializer().Meta.model.__name__}",
+                request.user.username, f"{instance} was restored")
+        return Response(status=HTTP_204_NO_CONTENT)
+
+
+
+# class CustomThrashAPIView(APIView):
+#     queryset = ""
+#     serializer_class = ""
+
+
+#     # def get_serializer(self, *args, **kwargs):
+#     #     return self.serializer_class(*args, **kwargs)
+
+#     def get_object(self, **kwargs):
+#         return get_object_or_404(self.queryset, id=kwargs["pk"])
+
+#     def get(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(self.queryset, many=True)
+#         return Response(serializer.data, status=HTTP_200_OK)
+
+#     def delete(self, **kwargs):
+#         instance = self.get_object(**kwargs)
+#         instance.is_active = True
+#         instance.save()
+#         return Response("Restored Successfully", status=HTTP_204_NO_CONTENT)
