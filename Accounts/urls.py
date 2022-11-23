@@ -30,9 +30,13 @@ urlpatterns = [
          name='update-profile'),
     path('me/', views.AccountRetrieveUpdateAPIView.as_view(), name='me'),
     path('all', views.AccountsRetrieveAV.as_view(), name='admins'),
-    path('toggle-content-manager/<int:pk>', views.ToggleContentManager.as_view(),
+    path('toggle-content-manager/<int:pk>', views.ToggleContentManagerAV.as_view(),
          name='toggle-content-manager'),
     path('toggle-membership-manager/<int:pk>',
-         views.ToggleMembershipManager.as_view(), name='toggle-membership-manager'),
+         views.ToggleMembershipManagerAV.as_view(), name='toggle-membership-manager'),
+    path('toggle-assessment-manager/<int:pk>', views.ToggleAssessmentManagerAV.as_view(),
+         name='toggle-assessment-manager'),
+    path('toggle-application-manager/<int:pk>', views.ToggleApplicationManagerAV.as_view(),
+         name='toggle-application-manager'),
 
 ]

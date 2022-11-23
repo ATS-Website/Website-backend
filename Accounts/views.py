@@ -21,7 +21,7 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from Accounts.renderers import CustomRenderer
 from Accounts.serializers import RegisterationSerializer, ResetPasswordSerializer, UpdateAccountSerializer, ProfileSerializer
-from Accounts.utils import Utils
+from Accounts.tasks import Utils
 from Accounts.models import Account, Profile
 
 from .serializers import LoginSerializer, RegisterationSerializer, ChangePasswordSerializer, UserSerializer, SetNewPasswordSerializer
@@ -32,7 +32,6 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .permissions import IsAdmin
 from .mixins import IsAdminOrReadOnlyMixin
-from .tasks import test_func
 from .permissions import IsValidRequestAPIKey
 from Tech_Stars.utils import write_log_csv
 from Tech_Stars.mixins import CustomRetrieveUpdateAPIView
@@ -183,7 +182,7 @@ class ForgotPassordAV(APIView):
             message = "Hi" + account.username + "," + \
                 " Please Use the Link below to reset your account passwors:" + "" + abs_url
 
-            Utils.send_email(mail_subject, message, account.email)
+            Utils.send_email.delay(mail_subject, message, account.email)
         return Response({"status": "success", "message": "We have sent a password-reset link to the email you provided.Please check and reset  "}, status=status.HTTP_200_OK)
 
 
@@ -255,7 +254,7 @@ class SetNewPasswordAV(generics.GenericAPIView):
         return Response({"status": "success", "message": "Password was successfully reset"}, status=status.HTTP_200_OK)
 
 
-class ToggleContentManager(APIView):
+class ToggleContentManagerAV(APIView):
     renderer_classes = [CustomRenderer]
 
     def get(self, request, *args, **kwargs):
@@ -264,7 +263,7 @@ class ToggleContentManager(APIView):
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
 
 
-class ToggleMembershipManager(APIView):
+class ToggleMembershipManagerAV(APIView):
     renderer_classes = [CustomRenderer]
 
     def get(self, request, *args, **kwargs):
@@ -273,5 +272,19 @@ class ToggleMembershipManager(APIView):
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
 
 
-def test(request):
-    test_func.delay()
+class ToggleAssessmentManagerAV(APIView):
+    renderer_classes = [CustomRenderer]
+
+    def get(self, request, *args, **kwargs):
+        account = Account.objects.filter(pk=kwargs.get("pk")).first()
+        account.is_assessment_manager = not account.is_assessment_manager
+        return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
+
+
+class ToggleApplicationManagerAV(APIView):
+    renderer_classes = [CustomRenderer]
+
+    def get(self, request, *args, **kwargs):
+        account = Account.objects.filter(pk=kwargs.get("pk")).first()
+        account.is_application_manager = not account.is_application_manager
+        return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)

@@ -65,6 +65,8 @@ class Account(AbstractBaseUser):
     is_admin = models.BooleanField(default=True)
     is_content_manager = models.BooleanField(default=False)
     is_membership_manager = models.BooleanField(default=False)
+    is_assessment_manager = models.BooleanField(default=False)
+    is_application_manager = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

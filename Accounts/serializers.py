@@ -23,6 +23,11 @@ class LoginSerializer(TokenObtainPairSerializer):
         # Add custom claims
         token['username'] = user.username
         token['email'] = user.email
+        token["is_superadmin"] = user.is_superadmin
+        token["is_content_manager"] = user.is_content_manager
+        token["is_membership_manager"] = user.is_membership_manager
+        token["is_assessment_manager"] = user.is_assessment_manager
+        token["is_application_manager"] = user.is_application_manager
 
         return token
 

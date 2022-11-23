@@ -26,16 +26,13 @@ SECRET_KEY = config("SECRET_KEY")
 # SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
 DEBUG = True
 # DEBUG = config("DEBUG", cast=bool, default=True)
-ADMIN = config("ADMIN")
+# ADMIN = config("ADMIN")
 
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['atsbk.afexats.com', 'localhost',  '127.0.0.1', ]
-# ALLOWED_HOSTS = [
-#     'localhost',
-#     '127.0.0.1',
-#     '111.222.333.444',
-#     'mywebsite.example']
+ALLOWED_HOSTS = ['atsbk.afexats.com', '127.0.0.1', 'localhost', 'localhost:3000',
+                 '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', ]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,10 +54,14 @@ INSTALLED_APPS = [
     # external api
     'algoliasearch_django',
     'django_celery_results',
+    "djcelery_email",
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
     # 'django-celery-beat',
     # "cloudinary_storage",
     # 'cloudinary',
 ]
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -76,7 +77,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com', 'http://localhost:3000',
+                        'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:8000']
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -121,6 +123,7 @@ DATABASES = {
 
     }
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -175,14 +178,13 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.BrowsableAPIRenderer',
-        'Accounts.renderers.CustomRenderer'
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
+        'Accounts.renderers.CustomRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 
 }
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2000),
@@ -193,6 +195,17 @@ ALGOLIA = {
     'APPLICATION_ID': config('ALG_APPLICATION_ID'),
     'API_KEY': config('ALG_API_KEY'),
     'INDEX_PREFIX': 'ats',
+}
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'https://127.0.0.1:9200'
+    },
+}
+
+ELASTICSEARCH_INDEX_NAMES = {
+    'Blogs.NewsArticle': 'news',
+    'Blogs.BlogArticle': 'blogs',
 }
 
 
@@ -206,11 +219,11 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 
 # CELERY
 
-CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_TIMEZONE = "AFrica/Lagos"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 # CELERY_RESULT_SERIALIZER = 'pickle'
 # CELERY_TASK_SERIALIZER = 'pickle'
-CELERY_TIMEZONE = config("CELERY_TIMEZONE")
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60

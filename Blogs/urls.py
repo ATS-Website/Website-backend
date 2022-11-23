@@ -1,5 +1,6 @@
 from django.urls import path
 from Blogs import views
+from rest_framework import routers
 
 from Blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
                          BlogArticleListCreateAPIView, BlogArticleRetrieveUpdateDeleteAPIView,
@@ -9,10 +10,18 @@ from Blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
                          NewsLetterSubscriptionRetrieveUpdateDeleteAPIView, NewsLetterSubscriptionListCreateAPIView,
                          SendNewsLetter, NewsLetterListCreateAPIView, NewsLetterDetailsUpdateDeleteAPIView,
                          SearchNewsView, SearchBlogView, BlogArticleCommentListAPIView,
-                         ViewsListCreateAPIView, LikesCreateAPIView, CategoryNewsCountAPIView
+                         ViewsListCreateAPIView, LikesCreateAPIView, CategoryNewsCountAPIView, ImageListAPIView,
+                         AlbumListCreateAPIView, AlbumRetrieveUpdateDeleteAPIView, NavNewsListAPIView
                          )
 
 app_name = 'Blogs'
+
+router = routers.SimpleRouter(trailing_slash=False)
+
+router.register(r'news-search', views.NewsArticleDocumentView,
+                basename='article-search')
+router.register(r'blog-search', views.NewsArticleDocumentView,
+                basename='article-search')
 
 urlpatterns = [
     path('blogs', BlogArticleListCreateAPIView.as_view(), name="blog_list_create"),
@@ -55,11 +64,6 @@ urlpatterns = [
     path("views", ViewsListCreateAPIView.as_view(), name="views_list_create"),
     path("likes", LikesCreateAPIView.as_view(), name="likes_list_create"),
 
-
-    path('gallery', views.GalleryListCreateAPIView.as_view(),
-         name="gallery_list_create"),
-    path('gallery/<int:pk>',
-         views.GalleryRetrieveUpdateAPIView.as_view(), name='gallery_detail_update'),
     #
 
     path("newsletter", NewsLetterListCreateAPIView.as_view(),
@@ -75,6 +79,17 @@ urlpatterns = [
     path("send-newsletter/<int:pk>",
          SendNewsLetter.as_view(), name="send_newsletter"),
 
+    path("images", ImageListAPIView.as_view(), name="images_list"),
+
+    path("album", AlbumListCreateAPIView.as_view(), name="album_list_create"),
+    path("album/<int:pk>", AlbumRetrieveUpdateDeleteAPIView.as_view(), name="album_retrieve_update_delete"),
+
+    path("nav-news", NavNewsListAPIView.as_view(), name="nav_news_list"),
+
+
+
     path('search-blog/', SearchBlogView.as_view(), name="search-blog"),
     path('search-news/', SearchNewsView.as_view(), name="search-news"),
+
 ]
+urlpatterns += router.urls
