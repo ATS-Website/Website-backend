@@ -11,7 +11,7 @@ from Blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
                          SendNewsLetter, NewsLetterListCreateAPIView, NewsLetterDetailsUpdateDeleteAPIView,
                          SearchNewsView, SearchBlogView, BlogArticleCommentListAPIView,
                          ViewsListCreateAPIView, LikesCreateAPIView, CategoryNewsCountAPIView, ImageListAPIView,
-                         AlbumListCreateAPIView, AlbumRetrieveUpdateDeleteAPIView
+                         AlbumListCreateAPIView, AlbumRetrieveUpdateDeleteAPIView, NavNewsListAPIView
                          )
 
 app_name = 'Blogs'
@@ -83,6 +83,8 @@ urlpatterns = [
 
     path("album", AlbumListCreateAPIView.as_view(), name="album_list_create"),
     path("album/<int:pk>", AlbumRetrieveUpdateDeleteAPIView.as_view(), name="album_retrieve_update_delete"),
+
+    path("nav-news", NavNewsListAPIView.as_view(), name="nav_news_list"),
 
 
 

@@ -77,9 +77,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com',
-                        'http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000',
-                        'http://127.0.0.1:8000']
+CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com', 'http://localhost:3000',
+                        'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:8000']
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -179,7 +178,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
         'Accounts.renderers.CustomRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -220,11 +219,11 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 
 # CELERY
 
-CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_BROKER_URL = "redis: // localhost: 6379"
+CELERY_TIMEZONE = "AFrica/Lagos"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 # CELERY_RESULT_SERIALIZER = 'pickle'
 # CELERY_TASK_SERIALIZER = 'pickle'
-CELERY_TIMEZONE = config("CELERY_TIMEZONE")
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60

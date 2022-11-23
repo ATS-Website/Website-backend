@@ -158,12 +158,12 @@ class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, Cu
 
 # AUTHOR
 class AuthorListCreateAPIView(CustomListCreateAPIView):
-    queryset = Author.objects.all()
+    queryset = Author.active_objects.all()
     serializer_class = AuthorSerializer
 
 
 class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
-    queryset = Author.objects.all()
+    queryset = Author.active_objects.all()
     serializer_class = AuthorDetailSerializer
 
 
@@ -180,13 +180,13 @@ class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView)
 
 
 class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
-    queryset = NewsLetterSubscription.objects.all()
+    queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
 
 
 class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
                                                         CustomRetrieveUpdateDestroyAPIView):
-    queryset = NewsLetterSubscription.objects.all()
+    queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionDetailSerializer
 
 
@@ -273,3 +273,10 @@ class AlbumRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView):
     queryset = Album.active_objects.all()
     serializer_class = AlbumDetailSerializer
     parser_classes = (MultiPartParser, FormParser)
+
+
+class NavNewsListAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = NewsArticle.active_objects.all()
+        serializer = NavNewsSerializer(queryset, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)

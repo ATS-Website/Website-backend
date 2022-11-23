@@ -141,6 +141,12 @@ class NewsArticleSerializer(ModelSerializer):
         return self.context.get("request").build_absolute_uri("/api/v1/news/") + str(obj.pk)
 
 
+class NavNewsSerializer(ModelSerializer):
+    class Meta:
+        model = NewsArticle
+        fields = ("category_name", "title")
+
+
 class NewsArticleDetailSerializer(ModelSerializer):
     author = AuthorDetailSerializer()
     category = CategoryDetailSerializer()
