@@ -73,10 +73,11 @@ class TrashedBlogListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = BlogArticle.Inactive_objects.all()
     serializer_class = BlogArticleSerializer
 
+
 class TrashedBlogRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = BlogArticle.Inactive_objects.all()
     serializer_class = BlogArticleDetailSerializer
-    
+
 
 # COMMENTS
 class CommentListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
@@ -88,13 +89,16 @@ class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, Cu
     queryset = Comment.active_objects.all()
     serializer_class = CommentDetailSerializer
 
+
 class TrashedCommentListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = Comment.inactive_objects.all()
     serializer_class = CommentSerializer
 
+
 class TrashedCommentRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = Comment.inactive_objects.all()
     serializer_class = CommentSerializer
+
 
 # AUTHOR
 class AuthorListCreateAPIView(CustomListCreateAPIView):
@@ -106,9 +110,11 @@ class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRe
     queryset = Author.active_objects.all()
     serializer_class = AuthorDetailSerializer
 
+
 class TrashedAuthorListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = Author.Inactive_objects.all()
     serializer_class = AuthorSerializer
+
 
 class TrashedAuthorRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = Author.Inactive_objects.all()
@@ -131,9 +137,11 @@ class TrashedNewsListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = NewsArticle.inactive_objects.all()
     serializer_class = NewsArticleSerializer
 
+
 class TrashedNewsRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = NewsArticle.inactive_objects.all()
     serializer_class = NewsArticleDetailSerializer
+
 
 class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
     queryset = NewsLetterSubscription.active_objects.all()
@@ -220,13 +228,16 @@ class ImageListAPIView(APIView):
         serializer = ImagesSerializer(queryset, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
 
+
 class TrashedImageListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = Images.inactive_objects.all()
     serializer_class = ImagesSerializer
 
+
 class TrashedImageRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = Images.inactive_objects.all()
     serializer_class = ImagesSerializer
+
 
 class AlbumListCreateAPIView(CustomListCreateAPIView):
     queryset = Album.active_objects.all()
