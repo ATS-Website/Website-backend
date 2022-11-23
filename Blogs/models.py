@@ -48,8 +48,7 @@ class Author(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(
-        max_length=15, help_text="Enter a suitable tag to help find the post", )
+    name = models.CharField(max_length=15, help_text="Enter a suitable tag to help find the post", )
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
@@ -219,8 +218,7 @@ class NewsArticle(models.Model):
 class NewsComment(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     description = models.CharField(max_length=100, blank=False, null=False)
-    news_article = models.ForeignKey(
-        NewsArticle, on_delete=models.SET_NULL, null=True)
+    news_article = models.ForeignKey(NewsArticle, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -293,6 +291,7 @@ class NewsLetter(models.Model):
 
 class Album(models.Model):
     name = models.CharField(max_length=500, null=True)
+    description = models.TextField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 

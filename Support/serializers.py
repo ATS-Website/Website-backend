@@ -35,7 +35,7 @@ class ContactUsSerializer(ModelSerializer):
             "id",
             "full_name",
             "email",
-            "short_message",
+            # "short_message",
             "url",
         )
 

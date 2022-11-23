@@ -1,25 +1,25 @@
 import datetime
 import itertools
 import json
-
+from Blogs.permissions import IsAdminOrReadOnly
 from django.forms.models import model_to_dict
 
 from algoliasearch_django import raw_search
 from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import BrowsableAPIRenderer
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
-from rest_framework.views import APIView
+
 from rest_framework.parsers import FormParser, FileUploadParser, MultiPartParser
 
 from Accounts.renderers import CustomRenderer
 from Accounts.permissions import IsValidRequestAPIKey
 
-from Tech_Stars.mixins import (CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView,
-                               CustomRetrieveUpdateAPIView
-                               )
+from Tech_Stars.mixins import (
+    CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView, CustomDestroyAPIView)
 
 from .mixins import AdminOrContentManagerOrReadOnlyMixin
 from .serializers import *
@@ -145,6 +145,16 @@ class BlogArticleRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixi
     serializer_class = BlogArticleDetailSerializer
 
 
+class TrashedBlogListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = BlogArticle.Inactive_objects.all()
+    serializer_class = BlogArticleSerializer
+
+
+class TrashedBlogRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = BlogArticle.Inactive_objects.all()
+    serializer_class = BlogArticleDetailSerializer
+
+
 # COMMENTS
 class CommentListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = Comment.active_objects.all()
@@ -154,6 +164,16 @@ class CommentListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListC
 class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = Comment.active_objects.all()
     serializer_class = CommentDetailSerializer
+
+
+class TrashedCommentListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = Comment.inactive_objects.all()
+    serializer_class = CommentSerializer
+
+
+class TrashedCommentRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = Comment.inactive_objects.all()
+    serializer_class = CommentSerializer
 
 
 # AUTHOR
@@ -167,6 +187,16 @@ class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRe
     serializer_class = AuthorDetailSerializer
 
 
+class TrashedAuthorListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = Author.Inactive_objects.all()
+    serializer_class = AuthorSerializer
+
+
+class TrashedAuthorRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = Author.Inactive_objects.all()
+    serializer_class = AuthorDetailSerializer
+
+
 # NEWS
 
 class NewsArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
@@ -176,6 +206,16 @@ class NewsArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomL
 
 class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView):
     queryset = NewsArticle.active_objects.all()
+    serializer_class = NewsArticleDetailSerializer
+
+
+class TrashedNewsListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = NewsArticle.inactive_objects.all()
+    serializer_class = NewsArticleSerializer
+
+
+class TrashedNewsRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = NewsArticle.inactive_objects.all()
     serializer_class = NewsArticleDetailSerializer
 
 
@@ -261,6 +301,16 @@ class ImageListAPIView(APIView):
         queryset = Images.active_objects.all()
         serializer = ImagesSerializer(queryset, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+class TrashedImageListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = Images.inactive_objects.all()
+    serializer_class = ImagesSerializer
+
+
+class TrashedImageRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = Images.inactive_objects.all()
+    serializer_class = ImagesSerializer
 
 
 class AlbumListCreateAPIView(CustomListCreateAPIView):
