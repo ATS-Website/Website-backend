@@ -31,6 +31,7 @@ def write_log_csv(event, admin, message):
             write.writerow(data)
 
 
+@app.task(bind=True)
 def write_server_logs(url: str, status_code: str, request_body=""):
     if status_code.startswith("2"):
         with open("access_server_logs.csv", "a", newline="\n") as x:

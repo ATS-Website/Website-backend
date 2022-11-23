@@ -56,12 +56,15 @@ class TechStar(models.Model):
     def tech_star_cohort(self):
         return self.tech_star.cohort
 
+    def __str__(self):
+        return self.full_name
+
 
 #
 # class Attendance(models.Model):
 #     STATUS_CHOICES = (
 #         ("Fraudulent", "Fraudulent"),
-#         ("Successful", "Successful")
+#         ("Successful", "Successful") 
 #     )
 #     user = models.ForeignKey(TechStar, on_delete=models.SET_NULL, null=True)
 #     check_in = models.DateTimeField()
@@ -101,6 +104,9 @@ class Testimonial(models.Model):
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
+
+    def __str__(self):
+        return str(self.tech_star) + "'s testimonial"
 
 
 # def id_creator_checker(number: int):

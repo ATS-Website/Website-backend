@@ -17,6 +17,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 from decouple import config
+from Blogs.permissions import IsAdminOrReadOnly
 
 from .serializers import (
     TestimonialSerializer, TestimonialDetailSerializer,
@@ -28,12 +29,14 @@ from .serializers import (
 from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView,
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
-                     CustomRetrieveUpdateAPIView
+                     CustomRetrieveUpdateAPIView, CustomDestroyAPIView
+
                      )
 from .utils import generate_qr_code, generate_qr
 from .tasks import write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
 from Accounts.mixins import IsAdminOrReadOnlyMixin
+
 
 # Create your views here.
 
@@ -67,6 +70,16 @@ class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin
     queryset = TechStar.active_objects.all()
 
 
+class TrashedTechStarListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = TechStar.inactive_objects.all()
+    serializer_class = TechStarSerializer
+
+
+class TrashedTechStarRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = TechStar.inactive_objects.all()
+    serializer_class = TechStarDetailSerializer
+
+
 class TestimonialListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = TestimonialSerializer
     queryset = Testimonial.active_objects.all()
@@ -85,6 +98,16 @@ class TestimonialFrontpageListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, L
 class TestimonialDetailUpdateDeleteView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     serializer_class = TestimonialDetailSerializer
     queryset = Testimonial.active_objects.all()
+
+
+class TrashedTestimonialListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = Testimonial.inactive_objects.all()
+    serializer_class = TestimonialSerializer
+
+
+class TrashedTestimonialRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = Testimonial.inactive_objects.all()
+    serializer_class = TestimonialDetailSerializer
 
 
 class ResumptionAndClosingTimeCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
@@ -130,9 +153,8 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
             "date_time": date_time,
             "secret_key": config("QR_SECRET_KEY")
         }
-        print(data)
 
-        qr = generate_qr(data)
+        qr = generate_qr(aes_encrypt(data))
         result = self.get_serializer(qr)
 
         return Response(result.data, status=HTTP_201_CREATED)
@@ -149,13 +171,11 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
         longitude = float(new_request.get("longitude"))
         office_location = OfficeLocation.objects.all().first()
 
-        if office_location.latitude_1 < latitude < office_location.latitude_2 \
-                and office_location.longitude_1 <= longitude <= office_location.longitude_2:
+        if office_location.latitude_1 < latitude < office_location.latitude_2 and office_location.longitude_1 <= longitude <= office_location.longitude_2:
 
             email = new_request.get("email")
             date_time = new_request.get("date_time")
             device_id = new_request.get("device_id")
-
 
             try:
                 tech_star = TechStar.active_objects.get(official_email=email)
@@ -177,10 +197,12 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                 if tech_star_attendance is not None:
                     last_attendance_date = tech_star_attendance.check_in.date()
                     if last_attendance_date == timezone.now().date():
-                        date_time_conv = timezone.datetime.strptime(date_time.split(".")[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+                        date_time_conv = timezone.datetime.strptime(date_time.split(".")[0],
+                                                                    "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
                         # print(date_time_conv < (tech_star_attendance.check_in + timezone.timedelta(minutes=10)).replace(tzinfo=timezone.utc))
                         # raise ValidationError("")
-                        if date_time_conv < (tech_star_attendance.check_in + timezone.timedelta(minutes=10)).replace(tzinfo=timezone.utc):
+                        if date_time_conv < (tech_star_attendance.check_in + timezone.timedelta(minutes=10)).replace(
+                                tzinfo=timezone.utc):
                             raise ValidationError(
                                 "You cannot check out, if the time is not 2 hours from your check in !")
 
@@ -233,6 +255,16 @@ class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnly
                                               CustomRetrieveUpdateDestroyAPIView):
     serializer_class = XpertOfTheWeekDetailSerializer
     queryset = XpertOfTheWeek.active_objects.all()
+
+
+class TrashedXpertListAPIView(IsAdminOrReadOnly, ListAPIView):
+    queryset = XpertOfTheWeek.inactive_objects.all()
+    serializer_class = XpertOfTheWeekSerializer
+
+
+class TrashedXpertRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+    queryset = XpertOfTheWeek.inactive_objects.all()
+    serializer_class = XpertOfTheWeekSerializer
 
 
 class WriteAdminLog(APIView):

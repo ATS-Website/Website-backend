@@ -11,6 +11,7 @@ complete_server_logs.csv
 error_server_logs.csv
 */enc_dec
 2.0
+test.txt
 # Created by https://www.toptal.com/developers/gitignore/api/pythonvanilla
 # Edit at https://www.toptal.com/developers/gitignore?templates=pythonvanilla
 # C extensions

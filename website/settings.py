@@ -19,6 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 SECRET_KEY = config("SECRET_KEY")
+QR_SECRET_KEY = config("QR_SECRET_KEY")
 #
 # # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = decouple.config("DEBUG", cast=bool)
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
     # 'django-celery-beat',
     # "cloudinary_storage",
     # 'cloudinary',
+
 ]
 
 
@@ -109,7 +111,7 @@ WSGI_APPLICATION = 'website.wsgi.application'
 #         'PASSWORD': config("DB_PASSWORD"),
 #         'PORT': config("DB_PORT"),
 #         'HOST': config("DB_HOST"),
-
+#
 #     }
 # }
 DATABASES = {
