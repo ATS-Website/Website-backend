@@ -35,9 +35,16 @@ class ContactUsSerializer(ModelSerializer):
             "id",
             "full_name",
             "email",
-            # "short_message",
+            "subject",
+            "short_message",
             "url",
+            "message",
         )
+
+        extra_kwargs = {
+            "message": {"write_only": True},
+            "short_message": {"read_only": True}
+        }
 
 
 class ContactUsDetailSerializer(ModelSerializer):
@@ -46,6 +53,7 @@ class ContactUsDetailSerializer(ModelSerializer):
         fields = (
             "id",
             "full_name",
+            "subject",
             "email",
             "message",
         )
