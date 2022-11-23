@@ -28,5 +28,7 @@ class ContactUs(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
-    # def short_message(self):
-    #     return self.message[:30]
+    def short_message(self):
+        if self.message is not None:
+            return self.message[:30]
+        return ""
