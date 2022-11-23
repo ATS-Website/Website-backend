@@ -4,7 +4,8 @@ from .models import FrequentlyAskedQuestions, ContactUs
 
 
 class FrequentlyAskedQuestionsSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Support:faq_details_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Support:faq_details_update_delete", read_only=True)
 
     class Meta:
         model = FrequentlyAskedQuestions
@@ -27,7 +28,8 @@ class FrequentlyAskedQuestionsDetailSerializer(ModelSerializer):
 
 
 class ContactUsSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(view_name="Support:contact_us_details_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Support:contact_us_details_update_delete", read_only=True)
 
     class Meta:
         model = ContactUs
