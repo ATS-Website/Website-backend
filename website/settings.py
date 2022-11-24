@@ -164,7 +164,7 @@ STATICFILES_DIR = os.path.join(BASE_DIR, "static")
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
 # DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -201,13 +201,14 @@ ALGOLIA = {
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'https://127.0.0.1:9200'
+        'hosts': 'http://127.0.0.1:9200'
     },
 }
 
 ELASTICSEARCH_INDEX_NAMES = {
     'Blogs.NewsArticle': 'news',
     'Blogs.BlogArticle': 'blogs',
+    'Tech_Stars.Tech_Star': "techstar"
 }
 
 

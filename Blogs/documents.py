@@ -47,6 +47,13 @@ class NewsArticleDocument(Document):
 
     class Django:
         model = NewsArticle
+        # fields = [
+        #     "title",
+        #     "description",
+        #     "category",
+        #     "created_at",
+        #     "updated_at",
+        # ]
 
 
 @registry.register_document
@@ -92,7 +99,14 @@ class BlogArticleDocument(Document):
     )
 
     class Index:
-        name = 'news'
+        name = 'blogs'
 
     class Django:
-        model = NewsArticle
+        model = BlogArticle
+        # fields = [
+        #     "title",
+        #     "description",
+        #     "category",
+        #     "created_at",
+        #     "updated_at",
+        # ]

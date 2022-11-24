@@ -30,7 +30,7 @@ from .tasks import new_send_mail_func
 
 
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
-from django_elasticsearch_dsl_drf.filter_backends import SearchFilterBackend, SuggesterFilterBackend
+from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
 from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
 from .documents import NewsArticleDocument
 from .serializers import NewsArticleDocumentSerializer
@@ -40,7 +40,7 @@ class NewsArticleDocumentView(DocumentViewSet):
     document = NewsArticleDocument
     serializer_class = NewsArticleDocumentSerializer
 
-    filter_backends = [SearchFilterBackend]
+    filter_backends = [CompoundSearchFilterBackend]
     search_fields = ('title', "intro", "description", "category")
     suggester_fields = {
         'title': {
@@ -74,7 +74,7 @@ class BlogArticleDocumentView(DocumentViewSet):
     document = BlogArticleDocument
     serializer_class = BlogArticleDocumentSerializer
 
-    filter_backends = [SearchFilterBackend, SuggesterFilterBackend]
+    filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
     search_fields = ('title', "intro", "description", "author")
     suggester_fields = {
         'title': {
@@ -113,7 +113,7 @@ class SearchBlogView(generics.ListAPIView):
         if not query:
             return Response({"message": "An Error Occurred"}, status=HTTP_400_BAD_REQUEST)
 
-        params = {"hitsPerPage": 5}
+        params = {"hitsPerPage": 10}
         results = raw_search(BlogArticle, query, params)
 
         # results = client.perform_search(query)
@@ -129,7 +129,7 @@ class SearchNewsView(generics.ListAPIView):
         if not query:
             return Response({"message": "An Error Occurred"}, status=HTTP_400_BAD_REQUEST)
 
-        params = {"hitsPerPage": 5}
+        params = {"hitsPerPage": 10}
         results = raw_search(NewsArticle, query, params)
         return Response(results, status=HTTP_200_OK)
 

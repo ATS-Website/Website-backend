@@ -48,7 +48,8 @@ class Author(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=15, help_text="Enter a suitable tag to help find the post", )
+    name = models.CharField(
+        max_length=15, help_text="Enter a suitable tag to help find the post", )
     is_active = models.BooleanField(default=True)
 
     objects = models.Manager()
@@ -211,14 +212,20 @@ class NewsArticle(models.Model):
     def __str__(self):
         return self.title
 
+    @property
     def category_name(self):
         return self.category.name
+
+    @property
+    def author_name(self):
+        return '{} {}'.format(self.author.first_name, self.author.last_name)
 
 
 class NewsComment(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     description = models.CharField(max_length=100, blank=False, null=False)
-    news_article = models.ForeignKey(NewsArticle, on_delete=models.SET_NULL, null=True)
+    news_article = models.ForeignKey(
+        NewsArticle, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -311,7 +318,8 @@ class Album(models.Model):
 
 
 class Images(models.Model):
-    album = models.ForeignKey(Album, on_delete=models.SET_NULL, null=True, limit_choices_to={"is_active": True}, blank=True)
+    album = models.ForeignKey(Album, on_delete=models.SET_NULL,
+                              null=True, limit_choices_to={"is_active": True}, blank=True)
     image = models.ImageField(upload_to="Tech_Stars/ATS-Gallery")
     alt = models.CharField(max_length=300, null=True, blank=True)
     is_active = models.BooleanField(default=True)

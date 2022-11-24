@@ -128,13 +128,14 @@ class CategoryDetailSerializer(ModelSerializer):
 
 class NewsArticleSerializer(ModelSerializer):
     url = serializers.SerializerMethodField()
-    author = AuthorDetailSerializer()
-    category = CategoryDetailSerializer()
+    author_name = serializers.CharField(read_only=True)
+    category_name = serializers.CharField(
+        read_only=True)
 
     class Meta:
         model = NewsArticle
         fields = ['id', 'title', 'intro', 'description', 'created_at',
-                  'category', 'author', 'image', 'url',
+                  'category', 'author', 'image', 'url', 'author_name', "category_name",
                   ]
 
     def get_url(self, obj):
