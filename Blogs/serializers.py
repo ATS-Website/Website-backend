@@ -27,7 +27,8 @@ class NewsArticleDocumentSerializer(DocumentSerializer):
             'title',
             'intro',
             'description',
-            'category'
+            'category',
+            'author'
         )
 
 

@@ -41,6 +41,24 @@ class NewsArticleDocument(Document):
             )
         }
     )
+    author = fields.ObjectField(
+        attr='author',
+        properties={
+            'id': fields.IntegerField(),
+            'first_name': fields.TextField(
+                attr='first_name',
+                fields={
+                    'raw': fields.KeywordField(),
+                }
+            ),
+            'last_name': fields.TextField(
+                attr='last_name',
+                fields={
+                    'raw': fields.KeywordField(),
+                }
+            )
+        }
+    )
 
     class Index:
         name = 'news'
