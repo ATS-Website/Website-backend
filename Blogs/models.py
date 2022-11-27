@@ -104,7 +104,7 @@ class BlogArticle(models.Model):
         return time_taken_to_read(str(self.title), str(self.description))
 
     def author_fullname(self):
-        return f"{self.author}"
+        return '{} {}'.format(self.author.first_name, self.author.last_name)
 
     def few_comments(self):
         return Comment.active_objects.filter(blog_article_id=self.id)[:4]

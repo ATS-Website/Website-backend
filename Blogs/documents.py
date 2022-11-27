@@ -2,8 +2,11 @@
 
 from django_elasticsearch_dsl import Document, fields
 from django_elasticsearch_dsl.registries import registry
+# from oscar.core.loading import get_model
 
 from .models import NewsArticle, BlogArticle
+
+# Product = get_model('catalogue', 'product')
 
 
 @registry.register_document

@@ -67,7 +67,6 @@ class AuthorDetailSerializer(ModelSerializer):
 
 class BlogArticleSerializer(ModelSerializer):
     url = serializers.SerializerMethodField()
-    author = AuthorDetailSerializer()
 
     class Meta:
         model = BlogArticle

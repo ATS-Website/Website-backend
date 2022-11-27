@@ -1,3 +1,4 @@
+
 import datetime
 import itertools
 import json
@@ -41,7 +42,7 @@ class NewsArticleDocumentView(DocumentViewSet):
     serializer_class = NewsArticleDocumentSerializer
 
     filter_backends = [CompoundSearchFilterBackend]
-    search_fields = ('title', "intro", "description", "category")
+    search_fields = ('title', "intro", "description", "category", "author")
     suggester_fields = {
         'title': {
             'field': 'title.suggest',
