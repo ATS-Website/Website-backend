@@ -71,7 +71,7 @@ class BlogArticleSerializer(ModelSerializer):
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'intro', 'description',
-                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname",
+                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname", "author_image",
                   ]
         extra_kwargs = {
             "author": {"write_only": True}

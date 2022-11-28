@@ -208,7 +208,7 @@ ELASTICSEARCH_DSL = {
 ELASTICSEARCH_INDEX_NAMES = {
     'Blogs.NewsArticle': 'news',
     'Blogs.BlogArticle': 'blogs',
-    'Tech_Stars.Tech_Star': "techstar"
+    'Tech_Stars.Tech_Star': "techstars"
 }
 
 

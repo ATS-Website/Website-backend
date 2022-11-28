@@ -106,6 +106,9 @@ class BlogArticle(models.Model):
     def author_fullname(self):
         return '{} {}'.format(self.author.first_name, self.author.last_name)
 
+    def author_image(self):
+        return self.author.profile_pics
+
     def few_comments(self):
         return Comment.active_objects.filter(blog_article_id=self.id)[:4]
 
