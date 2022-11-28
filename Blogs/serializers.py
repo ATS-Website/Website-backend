@@ -135,7 +135,7 @@ class NewsArticleSerializer(ModelSerializer):
     class Meta:
         model = NewsArticle
         fields = ['id', 'title', 'intro', 'description', 'created_at',
-                  'category', 'author', 'image', 'url', 'author_name', "category_name",
+                  'category', 'author', 'image', 'url', 'author_name', "category_name", "author_image"
                   ]
 
     def get_url(self, obj):

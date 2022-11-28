@@ -220,6 +220,10 @@ class NewsArticle(models.Model):
         return self.category.name
 
     @property
+    def author_image(self):
+        return self.author.profile_pics.url
+
+    @property
     def author_name(self):
         return '{} {}'.format(self.author.first_name, self.author.last_name)
 

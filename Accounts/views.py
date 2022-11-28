@@ -137,7 +137,7 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
             data = {
                 "username": profile.account.username,
                 "bio": profile.position,
-                "image":  profile.avatar.url if profile.avatar.url else "",
+                "image":  profile.avatar.url if profile.avatar.url else profile.avatar,
                 "status": "success",
             }
 
