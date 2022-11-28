@@ -79,8 +79,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com', 'http://localhost:3000',
-                        'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:8000']
+CORS_ALLOWED_ORIGINS = ['https://6384b950f2c6e80009106d70--zippy-dango-7ea3fe.netlify.app',
+                        'http://localhost:3000', 'http://127.0.0.1:3000']
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -160,7 +160,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIR = os.path.join(BASE_DIR, "static")
-# STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
 # DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
