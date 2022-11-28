@@ -2,8 +2,11 @@
 
 from django_elasticsearch_dsl import Document, fields
 from django_elasticsearch_dsl.registries import registry
+# from oscar.core.loading import get_model
 
 from .models import NewsArticle, BlogArticle
+
+# Product = get_model('catalogue', 'product')
 
 
 @registry.register_document
@@ -41,12 +44,37 @@ class NewsArticleDocument(Document):
             )
         }
     )
+    author = fields.ObjectField(
+        attr='author',
+        properties={
+            'id': fields.IntegerField(),
+            'first_name': fields.TextField(
+                attr='first_name',
+                fields={
+                    'raw': fields.KeywordField(),
+                }
+            ),
+            'last_name': fields.TextField(
+                attr='last_name',
+                fields={
+                    'raw': fields.KeywordField(),
+                }
+            )
+        }
+    )
 
     class Index:
         name = 'news'
 
     class Django:
         model = NewsArticle
+        # fields = [
+        #     "title",
+        #     "description",
+        #     "category",
+        #     "created_at",
+        #     "updated_at",
+        # ]
 
 
 @registry.register_document
@@ -92,7 +120,14 @@ class BlogArticleDocument(Document):
     )
 
     class Index:
-        name = 'news'
+        name = 'blogs'
 
     class Django:
-        model = NewsArticle
+        model = BlogArticle
+        # fields = [
+        #     "title",
+        #     "description",
+        #     "category",
+        #     "created_at",
+        #     "updated_at",
+        # ]

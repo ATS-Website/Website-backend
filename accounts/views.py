@@ -137,7 +137,7 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
             data = {
                 "username": profile.account.username,
                 "bio": profile.position,
-                "image":  profile.avatar.url if profile.avatar.url else "",
+                "image":  profile.avatar.url if profile.avatar.url else profile.avatar,
                 "status": "success",
             }
 
@@ -164,26 +164,35 @@ class ForgotPassordAV(APIView):
     serializer_class = ResetPasswordSerializer
 
     def post(self, request, *args, **kwargs):
-
+        print("here")
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        lower_email = serializer.validated_data.get("email").lower()
-        if Account.objects.filter(email__iexact=lower_email).exists():
-            account = Account.objects.get(email=lower_email)
-            uuidb64 = urlsafe_base64_encode(account.id)
-            token = PasswordResetTokenGenerator().make_token(account)
-            current_site = get_current_site(
-                request).domain
-            relative_path = reverse(
-                "reset-password", kwargs={"uuidb64": uuidb64, "token": token})
-            abs_url = "http://" + current_site + relative_path
+        print(serializer.is_valid())
+        print(serializer.errors)
+        if serializer.is_valid():
+            lower_email = serializer.validated_data.get("email").lower()
+            print(lower_email)
+            if Account.objects.filter(email__iexact=lower_email).exists():
+                account = Account.objects.get(email=lower_email)
+                uuidb64 = urlsafe_base64_encode(
+                    str(account.id).encode('utf-8'))
+                token = PasswordResetTokenGenerator().make_token(account)
+                current_site = get_current_site(
+                    request).domain
+                print(current_site)
+                relative_path = reverse(
+                    "reset-passwords", kwargs={"uuidb64": uuidb64, "token": token})
 
-            mail_subject = "Please Reset your Account Password"
-            message = "Hi" + account.username + "," + \
-                " Please Use the Link below to reset your account passwors:" + "" + abs_url
+                abs_url = "http://" + current_site + relative_path
 
-            Utils.send_email.delay(mail_subject, message, account.email)
-        return Response({"status": "success", "message": "We have sent a password-reset link to the email you provided.Please check and reset  "}, status=status.HTTP_200_OK)
+                mail_subject = "Please Reset your Account Password"
+                message = "Hi" + account.username + "," + \
+                    " Please Use the Link below to reset your account passwors:" + "" + abs_url
+
+                Utils.send_email.delay(mail_subject, message, account.email)
+                return Response({"status": "success", "message": "We have sent a password-reset link to the email you provided.Please check and reset  "}, status=status.HTTP_200_OK)
+            return Response({"status": "error", "message": "The email provided doesn't exist in our records"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ResetPassordAV(APIView):
@@ -196,7 +205,7 @@ class ResetPassordAV(APIView):
             account = Account.objects.get(id=id)
             if not PasswordResetTokenGenerator().check_token(account, token):
                 return Response({"status": "fail", "message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"status": "success", "message": "Your credentials valid", "uuidb64": uuidb64, "token": token}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": "success", "message": "Your  credentials  have been validated", "uuidb64": uuidb64, "token": token}, status=status.HTTP_400_BAD_REQUEST)
         except DjangoUnicodeDecodeError as e:
             return Response({"status": "fail", "message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -29,7 +29,8 @@ class NewsArticleDocumentSerializer(DocumentSerializer):
             'title',
             'intro',
             'description',
-            'category'
+            'category',
+            'author'
         )
 
 
@@ -68,12 +69,11 @@ class AuthorDetailSerializer(ModelSerializer):
 
 class BlogArticleSerializer(ModelSerializer):
     url = serializers.SerializerMethodField()
-    author = AuthorDetailSerializer()
 
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'intro', 'description',
-                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname",
+                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname", "author_image",
                   ]
         extra_kwargs = {
             "author": {"write_only": True}
@@ -132,13 +132,14 @@ class CategoryDetailSerializer(ModelSerializer):
 
 class NewsArticleSerializer(ModelSerializer):
     url = serializers.SerializerMethodField()
-    author = AuthorDetailSerializer()
-    category = CategoryDetailSerializer()
+    author_name = serializers.CharField(read_only=True)
+    category_name = serializers.CharField(
+        read_only=True)
 
     class Meta:
         model = NewsArticle
         fields = ['id', 'title', 'intro', 'description', 'created_at',
-                  'category', 'author', 'image', 'url',
+                  'category', 'author', 'image', 'url', 'author_name', "category_name", "author_image"
                   ]
 
     def get_url(self, obj):

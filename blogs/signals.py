@@ -11,9 +11,9 @@ def update_document(sender, **kwargs):
     model_name = sender._meta.model_name
     instance = kwargs['instance']
 
-    if app_label == 'blogs':
-        if model_name == 'NewsArticle':
-            instances = instance.article.all()
+    if app_label == 'Blogs':
+        if model_name == 'NewsArticle' or 'BlogArticle':
+            instances = instance.news.all()
             print(instances)
             for _instance in instances:
                 registry.update(_instance)
@@ -25,9 +25,37 @@ def delete_document(sender, **kwargs):
     model_name = sender._meta.model_name
     instance = kwargs['instance']
 
-    if app_label == 'blogs':
-        if model_name == 'BlogArticle':
-            instances = instance.article.all()
+    if app_label == 'Blogs':
+        if model_name == 'NewsArticle' or 'BlogArticle':
+            instances = instance.news.all()
             print(instances)
             for _instance in instances:
                 registry.update(_instance)
+        # elif model_name == 'BlogArticle':
+        #     instances = instance.blogs.all()
+        #     print(instances)
+        #     for _instance in instances:
+        #         registry.update(_instance)
+
+
+# @receiver(post_save)
+# def update_document(sender, **kwargs):
+#     app_label = sender._meta.app_label
+#     model_name = sender._meta.model_name
+#     instance = kwargs['instance']
+
+#     if app_label == 'Blogs':
+#         if model_name == 'BlogArticle':
+#             instances = instance.blogs.all()
+#             print(instances)
+#             for _instance in instances:
+#                 registry.update(_instance)
+
+
+# @receiver(post_delete)
+# def delete_document(sender, **kwargs):
+#     app_label = sender._meta.app_label
+#     model_name = sender._meta.model_name
+#     instance = kwargs['instance']
+
+#     if app_label == 'Blogs':

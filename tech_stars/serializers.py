@@ -1,8 +1,20 @@
 from rest_framework.serializers import (ModelSerializer, HyperlinkedIdentityField,
                                         Serializer, CharField
                                         )
+from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
+from .documents import TechStarDocument
 
 from .models import TechStar, Testimonial, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
+
+
+class TechStarDocumentSerializer(DocumentSerializer):
+    class Meta:
+        document = TechStarDocument
+
+        fields = (
+            'fullname',
+            'self_description',
+        )
 
 
 class TechStarSerializer(ModelSerializer):
@@ -54,7 +66,7 @@ class TechStarSerializer(ModelSerializer):
 class TechStarDetailSerializer(ModelSerializer):
     class Meta:
         model = TechStar
-        fields = ( 
+        fields = (
             "id",
             "tech_star_id",
             "full_name",

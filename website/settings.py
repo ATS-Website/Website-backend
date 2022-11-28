@@ -174,7 +174,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIR = os.path.join(BASE_DIR, "static")
-# STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
 # DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
@@ -215,7 +215,7 @@ ALGOLIA = {
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'https://127.0.0.1:9200'
+        'hosts': 'http://127.0.0.1:9200'
     },
 }
 
@@ -223,6 +223,11 @@ ELASTICSEARCH_DSL = {
 #     'blogs.NewsArticle': 'news',
 #     'blogs.BlogArticle': 'blogs',
 # }
+ELASTICSEARCH_INDEX_NAMES = {
+    'Blogs.NewsArticle': 'news',
+    'Blogs.BlogArticle': 'blogs',
+    'Tech_Stars.Tech_Star': "techstars"
+}
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -235,11 +240,11 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 
 # CELERY
 
-CELERY_BROKER_URL = "redis: // localhost: 6379"
+CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_TIMEZONE = "AFrica/Lagos"
 CELERY_ACCEPT_CONTENT = ["application/json"]
-# CELERY_RESULT_SERIALIZER = 'pickle'
-# CELERY_TASK_SERIALIZER = 'pickle'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60

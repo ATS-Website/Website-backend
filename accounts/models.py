@@ -92,8 +92,9 @@ class Account(AbstractBaseUser):
 class Profile(models.Model):
     account = models.OneToOneField(
         Account, on_delete=models.CASCADE, null=True)
-    avatar = models.ImageField(upload_to='accounts/images', null=True,
-                               validators=[validate_image_size, validate_image_file_extension])
+    avatar = models.ImageField(
+        upload_to='accounts/images', default="account/images/av.webp", null=True, 
+        validators=[validate_image_size, validate_image_file_extension])
     position = models.CharField(max_length=50)
 
     def __str__(self) -> str:

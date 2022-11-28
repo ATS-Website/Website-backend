@@ -18,13 +18,18 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 from decouple import config
 from blogs.permissions import IsAdminOrReadOnly
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
+from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
+from Blogs.permissions import IsAdminOrReadOnly
+from .documents import TechStarDocument
 
 from .serializers import (
     TestimonialSerializer, TestimonialDetailSerializer,
     TechStarSerializer, TechStarDetailSerializer,
     BarcodeSerializer, ResumptionAndClosingTimeSerializer, AttendanceSerializer,
     OfficeLocationSerializer, TestimonialFrontpageSerializer, XpertOfTheWeekSerializer,
-    XpertOfTheWeekDetailSerializer
+    XpertOfTheWeekDetailSerializer, TechStarDocumentSerializer
 )
 from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView,
@@ -49,6 +54,26 @@ office_location = OfficeLocation.objects.all().first()
 
 # time_check = ""
 # office_location = ""
+class TechStarDocumentView(DocumentViewSet):
+    document = TechStarDocument
+    serializer_class = TechStarDocumentSerializer
+
+    filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
+    search_fields = ('full_name', "self_description",)
+    suggester_fields = {
+        'full_name': {
+            'field': 'full_name.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'self_description': {
+            'field': 'self_description.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+    }
 
 
 def create_attendance(tech_star, date_time, device_id):

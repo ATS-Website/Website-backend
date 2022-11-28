@@ -32,19 +32,11 @@ class LoginSerializer(TokenObtainPairSerializer):
         return token
 
 
-class ResetPasswordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Account
-        fields = ('email',)
-        extra_kwargs = {
-            "email": {
-                "write_only": True
-            }
-        }
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(write_only=True)
 
     def validate_email(self, value):
         lower_email = value.lower()
-
         return lower_email
 
 
@@ -125,9 +117,10 @@ class UpdateAccountSerializer(serializers.ModelSerializer):
 class SetNewPasswordSerializer(serializers.Serializer):
     token = serializers.CharField(min_length=1, write_only=True)
     uuidb64 = serializers.CharField(min_length=1, write_only=True)
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Account
         fields = ("password", "confirm_password", "token", "uuidb64")
 
     def validate(self, attrs):
@@ -238,7 +231,6 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
-
         instance.set_password(validated_data.get('new_password'))
         instance.save()
 
