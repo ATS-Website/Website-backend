@@ -8,7 +8,7 @@ class CustomRenderer(JSONRenderer):
             "success": True,
             "status_code": status_code,
             "data": data,
-            "message": "Successfully Retrieved"
+            "message": "Successfully"
         }
 
         if not str(status_code).startswith("2"):

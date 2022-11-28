@@ -79,8 +79,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com', 'http://localhost:3000',
-                        'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:8000']
+CORS_ALLOWED_ORIGINS = ['https://6384b950f2c6e80009106d70--zippy-dango-7ea3fe.netlify.app',
+                        'http://localhost:3000', 'http://127.0.0.1:3000']
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -160,11 +160,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIR = os.path.join(BASE_DIR, "static")
-# STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
 # DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -201,13 +201,14 @@ ALGOLIA = {
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'https://127.0.0.1:9200'
+        'hosts': 'http://127.0.0.1:9200'
     },
 }
 
 ELASTICSEARCH_INDEX_NAMES = {
     'Blogs.NewsArticle': 'news',
     'Blogs.BlogArticle': 'blogs',
+    'Tech_Stars.Tech_Star': "techstars"
 }
 
 
@@ -224,8 +225,8 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_TIMEZONE = "AFrica/Lagos"
 CELERY_ACCEPT_CONTENT = ["application/json"]
-# CELERY_RESULT_SERIALIZER = 'pickle'
-# CELERY_TASK_SERIALIZER = 'pickle'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60

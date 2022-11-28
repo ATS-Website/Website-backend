@@ -90,7 +90,8 @@ class Account(AbstractBaseUser):
 class Profile(models.Model):
     account = models.OneToOneField(
         Account, on_delete=models.CASCADE, null=True)
-    avatar = models.ImageField(upload_to='accounts/images', null=True)
+    avatar = models.ImageField(
+        upload_to='accounts/images', default="account/images/av.webp", null=True)
     position = models.CharField(max_length=50)
 
     def __str__(self) -> str:

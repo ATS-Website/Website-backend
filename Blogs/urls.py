@@ -25,6 +25,8 @@ router.register(r'news-search', views.NewsArticleDocumentView,
                 basename='article-search')
 router.register(r'blog-search', views.NewsArticleDocumentView,
                 basename='article-search')
+# router.register(r'news-search', views.global_search,
+#                 basename='article-search')
 
 urlpatterns = [
     path('blogs', BlogArticleListCreateAPIView.as_view(), name="blog_list_create"),
@@ -110,6 +112,5 @@ urlpatterns = [
 
     path('search-blog/', SearchBlogView.as_view(), name="search-blog"),
     path('search-news/', SearchNewsView.as_view(), name="search-news"),
-
 ]
 urlpatterns += router.urls

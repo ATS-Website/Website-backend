@@ -32,8 +32,8 @@ class CustomListCreateAPIView(ListCreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         message_obj = serializer.data.get((list(serializer.data.keys())[1]))
-        print(message_obj)
-        print((list(serializer.data.keys())[1]))
+        # print(message_obj)
+        # print((list(serializer.data.keys())[1]))
         write_log_csv(f"Created {self.get_serializer().Meta.model.__name__}",
                       request.user.username, f"{message_obj} was Created")
         return Response(serializer.data, status=HTTP_201_CREATED, headers=headers)
@@ -64,6 +64,7 @@ class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         write_log_csv.delay(f"Deleted {self.get_serializer().Meta.model.__name__}",
                             request.user.username, f"{instance} was deleted")
         return Response(status=HTTP_204_NO_CONTENT)
+
 
 class CustomCreateAPIView(CreateAPIView):
 
@@ -103,9 +104,8 @@ class CustomDestroyAPIView(generics.DestroyAPIView):
         instance.is_active = True
         instance.save()
         write_log_csv(f"Restored {self.get_serializer().Meta.model.__name__}",
-                request.user.username, f"{instance} was restored")
+                      request.user.username, f"{instance} was restored")
         return Response(status=HTTP_204_NO_CONTENT)
-
 
 
 # class CustomThrashAPIView(APIView):
