@@ -17,7 +17,10 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
     body = ""
 
     def process_request(self, request):
-        self.body = request.body
+        try:
+            self.body = request.body.decode("utf8")
+        except:
+            self.body = {}
         pass
 
     def process_response(self, request, response):
@@ -29,6 +32,7 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
                 "renderer_context").get("response"))[22:25]
 
             if request.method == "POST" or request.method == "PUT":
+                print("hello")
                 write_server_logs(url, status_code, literal_eval(self.body))
             else:
                 write_server_logs(url, status_code)

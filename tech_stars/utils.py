@@ -40,7 +40,10 @@ def read_csv(file_name):
         return list(read)
 
 
-@app.task
+def check_and_write(file_name:str, data:dict):
+    pass
+
+
 def write_log_csv(event, admin, message):
     with open("admin_activity_logs.csv", "a", newline="\n") as x:
         header = ["Date_Time", "Event", "Admin", "Message"]
@@ -60,7 +63,6 @@ def write_log_csv(event, admin, message):
             write.writerow(data)
 
 
-@app.task
 def write_server_logs(url: str, status_code: str, request_body=""):
     if status_code.startswith("2"):
         with open("access_server_logs.csv", "a", newline="\n") as x:
@@ -120,6 +122,3 @@ def decrypt_request(enc_dict):
     enc = enc_dict.get("data")[0]
     print(json.loads(aes_decrypt(enc)))
     return json.loads(aes_decrypt(enc))
-
-
-

@@ -9,7 +9,7 @@ admin_activity_logs.csv
 access_server_logs.csv
 complete_server_logs.csv
 error_server_logs.csv
-*/enc_dec
+#*/enc_dec
 2.0
 test.txt
 # Created by https://www.toptal.com/developers/gitignore/api/pythonvanilla

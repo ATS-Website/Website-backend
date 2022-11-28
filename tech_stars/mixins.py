@@ -53,7 +53,7 @@ class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         message_obj = serializer.data.get((list(serializer.data.keys())[1]))
         print(message_obj)
         print((list(serializer.data.keys())[1]))
-        write_log_csv.delay(f"Updated {self.get_serializer().Meta.model.__name__}",
+        write_log_csv(f"Updated {self.get_serializer().Meta.model.__name__}",
                             request.user.username, f"{message_obj} was updated")
         return Response(serializer.data, status=HTTP_201_CREATED)
 
@@ -61,7 +61,7 @@ class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         instance.is_active = False
         instance.save()
-        write_log_csv.delay(f"Deleted {self.get_serializer().Meta.model.__name__}",
+        write_log_csv(f"Deleted {self.get_serializer().Meta.model.__name__}",
                             request.user.username, f"{instance} was deleted")
         return Response(status=HTTP_204_NO_CONTENT)
 
@@ -76,7 +76,7 @@ class CustomCreateAPIView(CreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         message_obj = serializer.data.get((list(serializer.data.keys())[1]))
-        write_log_csv.delay(f"Created {self.get_serializer().Meta.model.__name__}",
+        write_log_csv(f"Created {self.get_serializer().Meta.model.__name__}",
                             request.user.username, f"{message_obj} was created")
         return Response(serializer.data, status=HTTP_201_CREATED, headers=headers)
 
@@ -93,7 +93,7 @@ class CustomRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         message_obj = serializer.data.get((list(serializer.data.keys())[1]))
-        write_log_csv.delay(f"Updated {self.get_serializer().Meta.model.__name__}",
+        write_log_csv(f"Updated {self.get_serializer().Meta.model.__name__}",
                             request.user.username, f"{message_obj} was updated")
         return Response(serializer.data, status=HTTP_201_CREATED)
 

@@ -37,7 +37,7 @@ class TechStar(models.Model):
         validators=[validate_image_size, validate_image_file_extension])
     self_description = models.TextField(null=True)
     phone_number = PhoneNumberField(null=True, unique=True)
-    official_email = models.EmailField(null=True, unique=True, blank=True)
+    official_email = models.EmailField(null=True, unique=True)
     favorite_meal = models.CharField(max_length=50)
     favorite_quote = models.TextField(null=True)
     cohort = models.CharField(max_length=500, null=True)
