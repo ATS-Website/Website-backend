@@ -21,7 +21,7 @@ from blogs.permissions import IsAdminOrReadOnly
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
 from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
-from Blogs.permissions import IsAdminOrReadOnly
+from blogs.permissions import IsAdminOrReadOnly
 from .documents import TechStarDocument
 
 from .serializers import (

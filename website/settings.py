@@ -36,8 +36,8 @@ ALLOWED_HOSTS = ['atsbk.afexats.com', '127.0.0.1', 'localhost', 'localhost:3000'
 
 
 INSTALLED_APPS = [
-    "daphne",
-    "channels",
+    # "daphne",
+    # "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -265,4 +265,4 @@ CELERY_BEAT_SCHEDULER = 'djanga_celery_beat.schedulers:DatabaseScheduler'
 PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
 
-ASGI_APPLICATION = "website.asgi.website"
+# ASGI_APPLICATION = "website.asgi.website"
