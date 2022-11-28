@@ -73,8 +73,6 @@ class BlogArticle(models.Model):
         Author, null=True, on_delete=models.SET_NULL, default="anonymous")
     image = models.ImageField(
         blank=True, upload_to='media/blog_article/images/', null=True)
-    author = models.ForeignKey(
-        Author, null=True, on_delete=models.SET_NULL, default="anonymous")
 
     is_active = models.BooleanField(default=True)
 
@@ -103,11 +101,13 @@ class BlogArticle(models.Model):
     def min_read(self):
         return time_taken_to_read(str(self.title), str(self.description))
 
+    @property
     def author_fullname(self):
         return '{} {}'.format(self.author.first_name, self.author.last_name)
 
+    @property
     def author_image(self):
-        return self.author.profile_pics
+        return self.author.profile_pics.url
 
     def few_comments(self):
         return Comment.active_objects.filter(blog_article_id=self.id)[:4]

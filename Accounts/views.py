@@ -14,7 +14,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 # Create your views here.
 
-from django.shortcuts import render, resolve_url
+from django.shortcuts import render
 from django.urls import reverse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -166,6 +166,8 @@ class ForgotPassordAV(APIView):
     def post(self, request, *args, **kwargs):
         print("here")
         serializer = self.serializer_class(data=request.data)
+        print(serializer.is_valid())
+        print(serializer.errors)
         if serializer.is_valid():
             lower_email = serializer.validated_data.get("email").lower()
             print(lower_email)
@@ -178,7 +180,8 @@ class ForgotPassordAV(APIView):
                     request).domain
                 print(current_site)
                 relative_path = reverse(
-                    "reset-password", kwargs={"uuidb64": uuidb64, "token": token})
+                    "reset-passwords", kwargs={"uuidb64": uuidb64, "token": token})
+
                 abs_url = "http://" + current_site + relative_path
 
                 mail_subject = "Please Reset your Account Password"
@@ -202,7 +205,7 @@ class ResetPassordAV(APIView):
             account = Account.objects.get(id=id)
             if not PasswordResetTokenGenerator().check_token(account, token):
                 return Response({"status": "fail", "message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"status": "success", "message": "Your  credentials  have been validated", "uuidb64": uuidb64, "token": token}, status=status.HTTP_200_OK)
+            return Response({"status": "success", "message": "Your  credentials  have been validated", "uuidb64": uuidb64, "token": token}, status=status.HTTP_400_BAD_REQUEST)
         except DjangoUnicodeDecodeError as e:
             return Response({"status": "fail", "message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
