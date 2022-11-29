@@ -105,7 +105,7 @@ class Testimonial(models.Model):
         return self.tech_star.full_name
 
     def tech_star_profile_picture(self):
-        return self.tech_star.profile_picture
+        return self.tech_star.profile_picture.url
 
     def tech_star_course(self):
         return self.tech_star.course

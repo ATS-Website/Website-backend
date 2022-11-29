@@ -1,4 +1,3 @@
-
 import datetime
 import itertools
 import json
@@ -29,8 +28,6 @@ from .serializers import *
 from .models import *
 from . import client
 from .tasks import new_send_mail_func
-
-
 
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
@@ -342,7 +339,11 @@ class VisitorListCreateView(AdminOrContentManagerOrReadOnlyMixin, CreateAPIView)
 
 class UpdatesNumbersListView(AdminOrContentManagerOrReadOnlyMixin, APIView):
     def get(self, request, *args, **kwargs):
-        total_visitors = len(Visitors.objects.all().first().ip_address)
+        try:
+            total_visitors = len(Visitors.objects.all().first().ip_address)
+        except:
+            total_visitors = 0
+
         total_blogs = BlogArticle.active_objects.all()
         total_news = NewsArticle.active_objects.all()
         latest_blogs = total_blogs.filter(created_at__gte=(timezone.now() - timezone.timedelta(days=14))).count()
