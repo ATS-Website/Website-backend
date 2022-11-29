@@ -30,7 +30,7 @@ def _json_list():
 class Author(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=200)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     bio = models.TextField()
     twitter_link = models.CharField(max_length=900, null=True, blank=True)
     facebook_link = models.CharField(max_length=500, null=True, blank=True)
@@ -51,17 +51,17 @@ class Author(models.Model):
 # BLOGS
 
 
-class Tag(models.Model):
-    name = models.CharField(
-        max_length=15, help_text="Enter a suitable tag to help find the post", )
-    is_active = models.BooleanField(default=True)
-
-    objects = models.Manager()
-    active_objects = ActiveManager()
-    inactive_objects = InActiveManager()
-
-    def __str__(self):
-        return self.name
+# class Tag(models.Model):
+#     name = models.CharField(
+#         max_length=15, help_text="Enter a suitable tag to help find the post", )
+#     is_active = models.BooleanField(default=True)
+#
+#     objects = models.Manager()
+#     active_objects = ActiveManager()
+#     inactive_objects = InActiveManager()
+#
+#     def __str__(self):
+#         return self.name
 
 
 # BLOGS
@@ -72,14 +72,11 @@ class BlogArticle(models.Model):
     description = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    tags = models.ManyToManyField(Tag, limit_choices_to={"is_active": True})
     author = models.ForeignKey(
         Author, null=True, on_delete=models.SET_NULL, default="anonymous")
     image = models.ImageField(
         blank=True, upload_to='media/blog_article/images/', null=True,
         validators=[validate_image_size, validate_image_file_extension])
-    author = models.ForeignKey(
-        Author, null=True, on_delete=models.SET_NULL, default="anonymous")
 
     is_active = models.BooleanField(default=True)
 
@@ -132,7 +129,7 @@ class BlogArticle(models.Model):
 
 class Comment(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
-    description = models.TextField()
+    description = models.TextField(null=True)
     blog_article = models.ForeignKey(
         BlogArticle, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -200,7 +197,7 @@ class Category(models.Model):
 class NewsArticle(models.Model):
     title = models.CharField(max_length=250, null=True)
     intro = models.CharField(max_length=400)
-    description = models.TextField()
+    description = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -236,18 +233,18 @@ class NewsArticle(models.Model):
         return '{} {}'.format(self.author.first_name, self.author.last_name)
 
 
-class NewsComment(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False)
-    description = models.CharField(max_length=100, blank=False, null=False)
-    news_article = models.ForeignKey(
-        NewsArticle, on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return 'Comment {} by {}'.format(self.description, self.name)
+# class NewsComment(models.Model):
+#     name = models.CharField(max_length=100, blank=False, null=False)
+#     description = models.CharField(max_length=100, blank=False, null=False)
+#     news_article = models.ForeignKey(
+#         NewsArticle, on_delete=models.SET_NULL, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#
+#     class Meta:
+#         ordering = ['-created_at']
+#
+#     def __str__(self):
+#         return 'Comment {} by {}'.format(self.description, self.name)
 
 
 # NEWSLETTER# NEWSLETTER

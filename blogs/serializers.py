@@ -181,19 +181,19 @@ class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
         fields = ('id', 'email',)
 
 
-class TagSerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(
-        view_name="blogs:tag_detail_update_delete", read_only=True)
+# class TagSerializer(ModelSerializer):
+#     url = HyperlinkedIdentityField(
+#         view_name="blogs:tag_detail_update_delete", read_only=True)
+#
+#     class Meta:
+#         model = Tag
+#         fields = ['id', 'name', 'url']
 
-    class Meta:
-        model = Tag
-        fields = ['id', 'name', 'url']
-
-
-class TagDetailSerializer(ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['id', 'name', ]
+#
+# class TagDetailSerializer(ModelSerializer):
+#     class Meta:
+#         model = Tag
+#         fields = ['id', 'name', ]
 
 
 class NewsLetterSerializer(ModelSerializer):
