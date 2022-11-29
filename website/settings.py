@@ -235,4 +235,4 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 # }
 
 # CELERY-BEAT
-CELERY_BEAT_SCHEDULER = 'djanga_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

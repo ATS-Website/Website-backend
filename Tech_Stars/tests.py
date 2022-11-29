@@ -29,6 +29,3 @@ class TechStarTest(APITestCase):
         response = client.post(url, data,  format="json")
         print(response)
         self.assertEqual(response.status_code, HTTP_201_CREATED)
-
-
-    def
