@@ -63,7 +63,7 @@ class TechStar(models.Model):
 #
 # class Attendance(models.Model):
 #     STATUS_CHOICES = (
- #         ("Fraudulent", "Fraudulent"),
+#         ("Fraudulent", "Fraudulent"),
 #         ("Successful", "Successful") 
 #     )
 #     user = models.ForeignKey(TechStar, on_delete=models.SET_NULL, null=True)
@@ -107,6 +107,7 @@ class Testimonial(models.Model):
 
     def __str__(self):
         return str(self.tech_star) + "'s testimonial"
+
 
 # def id_creator_checker(number: int):
 #     get_id = number + 1

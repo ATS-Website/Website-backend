@@ -7,6 +7,8 @@ from django.utils.deprecation import MiddlewareMixin
 from Tech_Stars.renderers import CustomRenderer
 from .enc_dec.encryption_decryption import aes_encrypt
 from .utils import write_server_logs
+
+
 # from .tasks import write_server_logs
 
 
@@ -24,7 +26,7 @@ class EncryptionAndDecryptionMiddleware(MiddlewareMixin):
                 "renderer_context").get("response"))[22:25]
             if request.method == "POST" or request.method == "PUT":
                 try:
-                    body = literal_eval(request.body.decode("utf-8"))           ##Testimonial Issue
+                    body = literal_eval(request.body.decode("utf-8"))  ##Testimonial Issue
                 except:
                     body = ""
 

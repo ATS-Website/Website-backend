@@ -1,3 +1,6 @@
+from rest_framework.generics import GenericAPIView
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator
 import csv
 import datetime
 import json
@@ -14,30 +17,56 @@ from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 from decouple import config
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
+from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
 from Blogs.permissions import IsAdminOrReadOnly
+from .documents import TechStarDocument
 
 from .serializers import (
     TestimonialSerializer, TestimonialDetailSerializer,
     TechStarSerializer, TechStarDetailSerializer,
     BarcodeSerializer, ResumptionAndClosingTimeSerializer, AttendanceSerializer,
     OfficeLocationSerializer, TestimonialFrontpageSerializer, XpertOfTheWeekSerializer,
-    XpertOfTheWeekDetailSerializer
+    XpertOfTheWeekDetailSerializer, TechStarDocumentSerializer
 )
 from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView,
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView, CustomDestroyAPIView
-                               
-                               )
-from .utils import generate_qr
+
+                     )
+from .utils import generate_qr_code, generate_qr
 from .tasks import write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
 from Accounts.mixins import IsAdminOrReadOnlyMixin
+
 
 # Create your views here.
 
 
 # timezone.activate(settings.TIME_ZONE)
+
+class TechStarDocumentView(DocumentViewSet):
+    document = TechStarDocument
+    serializer_class = TechStarDocumentSerializer
+
+    filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
+    search_fields = ('full_name', "self_description",)
+    suggester_fields = {
+        'full_name': {
+            'field': 'full_name.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'self_description': {
+            'field': 'self_description.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+    }
 
 
 def create_attendance(tech_star, date_time, device_id):
@@ -65,13 +94,16 @@ class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin
     parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
 
+
 class TrashedTechStarListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = TechStar.inactive_objects.all()
     serializer_class = TechStarSerializer
 
+
 class TrashedTechStarRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = TechStar.inactive_objects.all()
     serializer_class = TechStarDetailSerializer
+
 
 class TestimonialListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = TestimonialSerializer
@@ -97,20 +129,20 @@ class TrashedTestimonialListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = Testimonial.inactive_objects.all()
     serializer_class = TestimonialSerializer
 
+
 class TrashedTestimonialRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = Testimonial.inactive_objects.all()
     serializer_class = TestimonialDetailSerializer
 
+
 class ResumptionAndClosingTimeCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
-    permission_classes = (IsAuthenticated,)
     queryset = ResumptionAndClosingTime.objects.all()
 
 
 class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManagerOrReadOnlyMixin,
                                                          CustomRetrieveUpdateAPIView):
     serializer_class = ResumptionAndClosingTimeSerializer
-    permission_classes = (IsAuthenticated,)
     queryset = ResumptionAndClosingTime.objects.all()
 
     def get_object(self):
@@ -146,9 +178,8 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
             "date_time": date_time,
             "secret_key": config("QR_SECRET_KEY")
         }
-        print(data)
 
-        qr = generate_qr(data)
+        qr = generate_qr(aes_encrypt(data))
         result = self.get_serializer(qr)
 
         return Response(result.data, status=HTTP_201_CREATED)
@@ -189,14 +220,14 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                 tech_star_attendance = Attendance.active_objects.filter(
                     tech_star_id=tech_star.id).first()
                 if tech_star_attendance is not None:
-                    # last_attendance_date = str(
-                    #     tech_star_attendance.check_in)[:10]
                     last_attendance_date = tech_star_attendance.check_in.date()
                     if last_attendance_date == timezone.now().date():
-                        # print(date_time)
-                        # print(tech_star_attendance.check_in)
-                        # print((tech_star_attendance.check_in + datetime.timedelta(minutes=10)))
-                        if date_time < tech_star_attendance.check_in + timezone.timedelta(minutes=10):
+                        date_time_conv = timezone.datetime.strptime(date_time.split(".")[0],
+                                                                    "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+                        # print(date_time_conv < (tech_star_attendance.check_in + timezone.timedelta(minutes=10)).replace(tzinfo=timezone.utc))
+                        # raise ValidationError("")
+                        if date_time_conv < (tech_star_attendance.check_in + timezone.timedelta(minutes=10)).replace(
+                                tzinfo=timezone.utc):
                             raise ValidationError(
                                 "You cannot check out, if the time is not 2 hours from your check in !")
 
@@ -250,9 +281,11 @@ class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnly
     serializer_class = XpertOfTheWeekDetailSerializer
     queryset = XpertOfTheWeek.active_objects.all()
 
+
 class TrashedXpertListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = XpertOfTheWeek.inactive_objects.all()
     serializer_class = XpertOfTheWeekSerializer
+
 
 class TrashedXpertRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = XpertOfTheWeek.inactive_objects.all()
@@ -260,6 +293,7 @@ class TrashedXpertRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
 
 
 class WriteAdminLog(APIView):
+
     def post(self, request, *args, **kwargs):
         # new_request = decrypt_request(request.data)
         new_request = request.data
@@ -275,6 +309,7 @@ class WriteAdminLog(APIView):
         return Response("Activity logged successfully", status=HTTP_201_CREATED)
 
 
+# class ReadAdminLog(IsAdminOrReadOnlyMixin, GenericAPIView):
 class ReadAdminLog(ListAPIView):
     def get(self, *args, **kwargs):
         with open("admin_activity_logs.csv", "r") as x:

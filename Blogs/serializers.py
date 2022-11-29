@@ -1,3 +1,7 @@
+from .documents import NewsArticleDocument, BlogArticleDocument
+
+from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
+from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, ListField
 from rest_framework import serializers
 from .models import *
@@ -13,6 +17,31 @@ class SearchBlogSerializer(ModelSerializer):
     class Meta:
         model = NewsArticle
         fields = ('id', 'title', 'intro', 'description')
+
+
+class NewsArticleDocumentSerializer(DocumentSerializer):
+    class Meta:
+        document = NewsArticleDocument
+
+        fields = (
+            'title',
+            'intro',
+            'description',
+            'category',
+            'author'
+        )
+
+
+class BlogArticleDocumentSerializer(DocumentSerializer):
+    class Meta:
+        document = BlogArticleDocument
+
+        fields = (
+            'title',
+            'intro',
+            'description',
+            'author'
+        )
 
 
 class AuthorSerializer(ModelSerializer):
@@ -42,7 +71,7 @@ class BlogArticleSerializer(ModelSerializer):
     class Meta:
         model = BlogArticle
         fields = ['id', 'title', 'intro', 'description',
-                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname",
+                  'created_at', 'author', 'url', 'image', "min_read", "author_fullname", "author_image",
                   ]
         extra_kwargs = {
             "author": {"write_only": True}
@@ -66,6 +95,7 @@ class BlogArticleDetailSerializer(ModelSerializer):
     more_comments = HyperlinkedIdentityField(
         view_name="Blogs:blog_comments", read_only=True)
     few_comments = CommentSerializer(read_only=True, many=True)
+    author = AuthorDetailSerializer()
 
     class Meta:
         model = BlogArticle
@@ -80,14 +110,32 @@ class CommentDetailSerializer(ModelSerializer):
         fields = ('id', 'name', 'description', "blog_article", 'created_at')
 
 
+class CategorySerializer(ModelSerializer):
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:category_detail_update_delete", read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', "url"]
+
+
+class CategoryDetailSerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
 # NEWS SERIALIZER
+
+
 class NewsArticleSerializer(ModelSerializer):
     url = serializers.SerializerMethodField()
+    author_name = serializers.CharField(read_only=True)
+    category_name = serializers.CharField(
+        read_only=True)
 
     class Meta:
         model = NewsArticle
         fields = ['id', 'title', 'intro', 'description', 'created_at',
-                  'category', 'author', 'image', 'url',
+                  'category', 'author', 'image', 'url', 'author_name', "category_name", "author_image"
                   ]
 
     def get_url(self, obj):
@@ -101,23 +149,14 @@ class NavNewsSerializer(ModelSerializer):
 
 
 class NewsArticleDetailSerializer(ModelSerializer):
+    author = AuthorDetailSerializer()
+    category = CategoryDetailSerializer()
+
     class Meta:
         model = NewsArticle
         fields = ['id', 'title', 'intro', 'description', 'created_at',
                   'category', 'author', 'image'
                   ]
-
-
-#
-# class NewsCommentSerializer(ModelSerializer):
-#     news_article = NewsArticleSerializer(read_only=True)
-#
-#     class Meta:
-#         model = NewsComment
-#         fields = ['id', 'name', 'description', 'news_article', 'created_at']
-
-
-# GALLERY
 
 
 # NEWSLETTER
@@ -136,21 +175,6 @@ class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
     class Meta:
         model = NewsLetterSubscription
         fields = ('id', 'email',)
-
-
-class CategorySerializer(ModelSerializer):
-    url = HyperlinkedIdentityField(
-        view_name="Blogs:category_detail_update_delete", read_only=True)
-
-    class Meta:
-        model = Category
-        fields = ['id', 'name', "url"]
-
-
-class CategoryDetailSerializer(ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ['id', 'name']
 
 
 class TagSerializer(ModelSerializer):
@@ -255,7 +279,8 @@ class ImagesSerializer(ModelSerializer):
 
 class AlbumSerializer(ModelSerializer):
     images = ImagesSerializer(many=True, read_only=True)
-    url = HyperlinkedIdentityField(view_name="Blogs:album_retrieve_update_delete", read_only=True)
+    url = HyperlinkedIdentityField(
+        view_name="Blogs:album_retrieve_update_delete", read_only=True)
 
     class Meta:
         model = Album

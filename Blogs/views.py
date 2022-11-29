@@ -1,3 +1,4 @@
+
 import datetime
 import itertools
 import json
@@ -18,7 +19,8 @@ from rest_framework.parsers import FormParser, FileUploadParser, MultiPartParser
 from Accounts.renderers import CustomRenderer
 from Accounts.permissions import IsValidRequestAPIKey
 
-from Tech_Stars.mixins import (CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView, CustomDestroyAPIView)
+from Tech_Stars.mixins import (
+    CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView, CustomDestroyAPIView)
 
 from .mixins import AdminOrContentManagerOrReadOnlyMixin
 from .serializers import *
@@ -26,6 +28,81 @@ from .serializers import *
 from .models import *
 from . import client
 from .tasks import new_send_mail_func
+
+
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
+from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
+from .documents import NewsArticleDocument
+from .serializers import NewsArticleDocumentSerializer
+
+
+class NewsArticleDocumentView(DocumentViewSet):
+    document = NewsArticleDocument
+    serializer_class = NewsArticleDocumentSerializer
+
+    filter_backends = [CompoundSearchFilterBackend]
+    search_fields = ('title', "intro", "description", "category", "author")
+    suggester_fields = {
+        'title': {
+            'field': 'title.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'description': {
+            'field': 'description.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'intro': {
+            'field': 'intro.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'category': {
+            'field': 'category.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+    }
+
+
+class BlogArticleDocumentView(DocumentViewSet):
+    document = BlogArticleDocument
+    serializer_class = BlogArticleDocumentSerializer
+
+    filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
+    search_fields = ('title', "intro", "description", "author")
+    suggester_fields = {
+        'title': {
+            'field': 'title.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'description': {
+            'field': 'description.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'intro': {
+            'field': 'intro.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+        'author': {
+            'field': 'author.suggest',
+            'suggesters': [
+                SUGGESTER_COMPLETION,
+            ],
+        },
+    }
 
 
 class SearchBlogView(generics.ListAPIView):
@@ -37,7 +114,7 @@ class SearchBlogView(generics.ListAPIView):
         if not query:
             return Response({"message": "An Error Occurred"}, status=HTTP_400_BAD_REQUEST)
 
-        params = {"hitsPerPage": 5}
+        params = {"hitsPerPage": 10}
         results = raw_search(BlogArticle, query, params)
 
         # results = client.perform_search(query)
@@ -53,7 +130,7 @@ class SearchNewsView(generics.ListAPIView):
         if not query:
             return Response({"message": "An Error Occurred"}, status=HTTP_400_BAD_REQUEST)
 
-        params = {"hitsPerPage": 5}
+        params = {"hitsPerPage": 10}
         results = raw_search(NewsArticle, query, params)
         return Response(results, status=HTTP_200_OK)
 
@@ -73,10 +150,11 @@ class TrashedBlogListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = BlogArticle.Inactive_objects.all()
     serializer_class = BlogArticleSerializer
 
+
 class TrashedBlogRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = BlogArticle.Inactive_objects.all()
     serializer_class = BlogArticleDetailSerializer
-    
+
 
 # COMMENTS
 class CommentListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
@@ -88,13 +166,16 @@ class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, Cu
     queryset = Comment.active_objects.all()
     serializer_class = CommentDetailSerializer
 
+
 class TrashedCommentListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = Comment.inactive_objects.all()
     serializer_class = CommentSerializer
 
+
 class TrashedCommentRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = Comment.inactive_objects.all()
     serializer_class = CommentSerializer
+
 
 # AUTHOR
 class AuthorListCreateAPIView(CustomListCreateAPIView):
@@ -106,9 +187,11 @@ class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRe
     queryset = Author.active_objects.all()
     serializer_class = AuthorDetailSerializer
 
+
 class TrashedAuthorListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = Author.Inactive_objects.all()
     serializer_class = AuthorSerializer
+
 
 class TrashedAuthorRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = Author.Inactive_objects.all()
@@ -131,18 +214,20 @@ class TrashedNewsListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = NewsArticle.inactive_objects.all()
     serializer_class = NewsArticleSerializer
 
+
 class TrashedNewsRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = NewsArticle.inactive_objects.all()
     serializer_class = NewsArticleDetailSerializer
 
+
 class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
-    queryset = NewsLetterSubscription.objects.all()
+    queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
 
 
 class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
                                                         CustomRetrieveUpdateDestroyAPIView):
-    queryset = NewsLetterSubscription.objects.all()
+    queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionDetailSerializer
 
 
@@ -157,9 +242,7 @@ class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
             news_letter = NewsLetter.active_objects.get(id=kwargs["pk"])
         except:
             raise ValidationError("NewsLetter does not exist !")
-        # print(model_to_dict(news_letter))
-        # print([x.email for x in NewsLetterSubscription.active_objects.all()])
-        # print({x.email: x.email for x in NewsLetterSubscription.active_objects.all()})
+
         new_send_mail_func.delay(model_to_dict(news_letter), self.get_object())
 
         return Response("Messages Sent Successfully", status=HTTP_201_CREATED)
@@ -220,13 +303,16 @@ class ImageListAPIView(APIView):
         serializer = ImagesSerializer(queryset, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
 
+
 class TrashedImageListAPIView(IsAdminOrReadOnly, ListAPIView):
     queryset = Images.inactive_objects.all()
     serializer_class = ImagesSerializer
 
+
 class TrashedImageRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     queryset = Images.inactive_objects.all()
     serializer_class = ImagesSerializer
+
 
 class AlbumListCreateAPIView(CustomListCreateAPIView):
     queryset = Album.active_objects.all()

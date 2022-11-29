@@ -19,10 +19,8 @@ def new_send_mail_func(context, subscribers: dict):
             render_to_string("newsletter.html", context))
 
         subject = context.get('subject')
-        print(subject)
         message = message_template
         email_from = settings.EMAIL_HOST_USER
-        print(subscribers)
 
         for email in subscribers.values():
             msg = EmailMessage(
@@ -31,10 +29,8 @@ def new_send_mail_func(context, subscribers: dict):
                 email_from,
                 to=[email]
             )
-            # print(message)
-            # print(msg)
             msg.send()
-            return {"status": True}
+        return {"status": True}
     except Exception as e:
         print(e)
         return {"status": False}

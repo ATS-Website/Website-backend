@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.conf import settings
-from celery import shared_task
+from website.celery import app
 import csv
 timezone.activate(settings.TIME_ZONE)
 
@@ -11,7 +11,7 @@ def read_csv(file_name):
         return list(read)
 
 
-@shared_task(bind=True)
+@app.task
 def write_log_csv(event, admin, message):
     with open("admin_activity_logs.csv", "a", newline="\n") as x:
         header = ["Date_Time", "Event", "Admin", "Message"]
@@ -30,7 +30,8 @@ def write_log_csv(event, admin, message):
         else:
             write.writerow(data)
 
-@shared_task(bind=True)
+
+@app.task(bind=True)
 def write_server_logs(url: str, status_code: str, request_body=""):
     if status_code.startswith("2"):
         with open("access_server_logs.csv", "a", newline="\n") as x:
@@ -47,6 +48,7 @@ def write_server_logs(url: str, status_code: str, request_body=""):
                 write.writerow(data)
             else:
                 write.writerow(data)
+
     else:
         with open("error_server_logs.csv", "a", newline="\n") as x:
             header = ["Date_Time", "url"]
@@ -84,3 +86,4 @@ def write_server_logs(url: str, status_code: str, request_body=""):
             complete_write.writerow(data)
         else:
             complete_write.writerow(data)
+        return {'status': True}

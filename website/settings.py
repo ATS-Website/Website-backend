@@ -31,12 +31,9 @@ DEBUG = True
 
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['atsbk.afexats.com', 'localhost:3000', '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', "127.0.0.1", "localhost"]
-# ALLOWED_HOSTS = [
-#     'localhost',
-#     '127.0.0.1',
-#     '111.222.333.444',
-#     'mywebsite.example']
+ALLOWED_HOSTS = ['atsbk.afexats.com', '127.0.0.1', 'localhost', 'localhost:3000',
+                 '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', ]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -58,11 +55,15 @@ INSTALLED_APPS = [
     # external api
     'algoliasearch_django',
     'django_celery_results',
+    "djcelery_email",
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
     # 'django-celery-beat',
     # "cloudinary_storage",
     # 'cloudinary',
 
 ]
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -78,7 +79,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com','http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000','http://127.0.0.1:8000']
+CORS_ALLOWED_ORIGINS = ['https://6384b950f2c6e80009106d70--zippy-dango-7ea3fe.netlify.app',
+                        'http://localhost:3000', 'http://127.0.0.1:3000']
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -101,38 +103,29 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DB_NAME"),
-        'USER': config("DB_USER"),
-        'PASSWORD': config("DB_PASSWORD"),
-        'PORT': config("DB_PORT"),
-        'HOST': config("DB_HOST"),
-
-    }
-}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': "Website",
-#         'USER': "postgres",
-#         'PASSWORD': 'root',
-#         'PORT': '5432',
-#         'HOST': 'localhost',
+#         'NAME': config("DB_NAME"),
+#         'USER': config("DB_USER"),
+#         'PASSWORD': config("DB_PASSWORD"),
+#         'PORT': config("DB_PORT"),
+#         'HOST': config("DB_HOST"),
 #
 #     }
 # }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ATS_Website',
-#         'USER': 'Django_ATS',
-#         'PASSWORD': "1234567890",
-#         'PORT': '5432',
-#         'HOST': 'localhost',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "Website",
+        'USER': "postgres",
+        'PASSWORD': 'root',
+        'PORT': '5432',
+        'HOST': 'localhost',
+
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -167,11 +160,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIR = os.path.join(BASE_DIR, "static")
-# STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
 # DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -206,6 +199,19 @@ ALGOLIA = {
     'INDEX_PREFIX': 'ats',
 }
 
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://127.0.0.1:9200'
+    },
+}
+
+ELASTICSEARCH_INDEX_NAMES = {
+    'Blogs.NewsArticle': 'news',
+    'Blogs.BlogArticle': 'blogs',
+    'Tech_Stars.Tech_Star': "techstars"
+}
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool)
@@ -216,11 +222,11 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 
 # CELERY
 
-CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_TIMEZONE = "AFrica/Lagos"
 CELERY_ACCEPT_CONTENT = ["application/json"]
-# CELERY_RESULT_SERIALIZER = 'pickle'
-# CELERY_TASK_SERIALIZER = 'pickle'
-CELERY_TIMEZONE = config("CELERY_TIMEZONE")
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
