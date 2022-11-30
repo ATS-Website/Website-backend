@@ -47,6 +47,9 @@ class Author(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+    def author_news_count(self):
+        return NewsArticle.active_objects.filter(author_id=self.id).count()
+
 
 # BLOGS
 

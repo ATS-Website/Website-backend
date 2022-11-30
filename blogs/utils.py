@@ -4,7 +4,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string, get_template
 from django.utils.html import strip_tags
-
 from django.core.mail import EmailMessage
 
 
@@ -43,6 +42,3 @@ def time_taken_to_read(title: str, content: str):
     if total < 1:
         return "less than a minute read"
     return f"{total} Minute Read"
-
-
-
