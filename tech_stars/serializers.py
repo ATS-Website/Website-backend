@@ -183,5 +183,16 @@ class XpertOfTheWeekDetailSerializer(ModelSerializer):
         model = XpertOfTheWeek
         fields = (
             "tech_star",
-            "interview"
+            "interview",
+            "tech_star_full_name",
+            "tech_star_profile_picture",
+            "tech_star_course",
+            "tech_star_cohort"
         )
+
+        extra_kwargs = {
+            "tech_star_full_name": {"read_only": True},
+            "tech_star_profile_picture": {"read_only": True},
+            "tech_star_course": {"read_only": True},
+            "tech_star_cohort": {"read_only": True},
+        }

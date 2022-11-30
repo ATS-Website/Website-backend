@@ -366,3 +366,4 @@ class TopAuthorsAPIView(AdminOrContentManagerOrReadOnlyMixin, APIView):
         author_list = [author for author in author_queryset if author.author_news_count() in new[:3]]
         serializer = AuthorSerializer(author_list[:3], many=True, context={"request": request})
         return Response(serializer.data, status=HTTP_200_OK)
+
