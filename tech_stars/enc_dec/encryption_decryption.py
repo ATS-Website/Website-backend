@@ -35,21 +35,16 @@ def aes_encrypt(keyword):
 def aes_decrypt(keyword):
     return AESCipher(json.dumps(keyword), key, iv).decrypt()
 
-
-look = {
-    "full_name": "John Doe",
-    "official_email": "loko873n@afexnigeria.com",
-    "self_description": "No Fear!",
-}
-test = aes_encrypt(look)
-print(test)
 #
-# test_2 = aes_decrypt("qLiaHhtouPPj8F7S6tGHCyG6/E5PmyjlBRN8sxJDfOTVo7VF3mUCaTdoHye/dYDBGOg98rkcpPJ0UTLsQVsIMnlGScolsrpCJjEkjzJ5JpVwNcg6H3GZvLznhztEc7fj39CzcR3sySbGlivdEkyrkEx9aUjacAZ+e1drTFJT4uE=")
-# print(test_2)
-#
-# tesss = aes_decrypt("F+qx9sFEhX8uxGqPAwIvOOwt5DgvnwiAiBXwT+Ltmrn35NQtEulfUghH/MqcyPHHvfmQbDNol1ksGhb3MHWi3Bv"
-#                     "/lh1TQ300glh+5Ls+UxYuPykjv9ZhJOE2QWFV2hSChUJ+KQnGBMlzC03zrIjYhFb0gZC0tB+L4W8Gm"
-#                     "/OXcorYZpeZfa9WwZEh3tKTeF/7Yc6s4WEs1tvmoOEMO4bz7hRcto06iTvoYEqIpPPVNrWLyBuJwSu9kx4lHSRDPTyU")
-# print(tesss)
+# look = {
+#     "full_name": "John Doe",
+#     "official_email": "loko873n@afexnigeria.com",
+#     "self_description": "No Fear!",
+# }
+# test = aes_encrypt(look)
+# print(test)
 
+
+testst = aes_decrypt("qLiaHhtouPPj8F7S6tGHCyG6/E5PmyjlBRN8sxJDfOTVo7VF3mUCaTdoHye/dYDBGOg98rkcpPJ0UTLsQVsIMnlGScolsrpCJjEkjzJ5JpVwNcg6H3GZvLznhztEc7fj39CzcR3sySbGlivdEkyrkEx9aUjacAZ+e1drTFJT4uE=")
+print(testst)
 
