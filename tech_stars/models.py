@@ -98,6 +98,11 @@ class Testimonial(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    def save(self, *args, **kwargs):
+        if Testimonial.active_objects.filter(id=self.id).first() is not None:
+            raise ValidationError("A tech star can have only one Testimonial")
+        return super(Testimonial, self).save(*args, **kwargs)
+
     def __str__(self):
         return str(self.tech_star) + "'s testimonial"
 

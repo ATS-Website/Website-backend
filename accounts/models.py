@@ -95,7 +95,7 @@ class Profile(models.Model):
     avatar = models.ImageField(
         upload_to='accounts/images', default="account/images/av.webp", null=True, 
         validators=[validate_image_size, validate_image_file_extension])
-    position = models.CharField(max_length=50)
+    position = models.CharField(max_length=50, null=True)
 
     def __str__(self) -> str:
         return self.account.username

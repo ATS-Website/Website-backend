@@ -61,6 +61,7 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
     def post(self, request, *args, **kwargs):
+        avatar = request.FILES["profile_picture"]
         serializer = RegisterationSerializer(data=request.data)
         data = {}
         print(serializer.is_valid(), "dd")
@@ -71,16 +72,20 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
             email = serializer.validated_data.get("email")
             gender = serializer.validated_data.get("gender")
             password = serializer.validated_data.get("password")
+            position = serializer.validated_data.get("position")
             # confirm_password = serializer.validated_data.get("password2")
             account = Account.objects.create_user(
                 first_name=first_name, last_name=last_name, username=username,
                 gender=gender, email=email, password=password)
+            profile = Profile.objects.create(account=account, avatar=avatar, position=position)
             data["status"] = "success"
             data["username"] = account.username
             data["email"] = account.email
             refresh_token = RefreshToken.for_user(account)
             data["refresh_token"] = str(refresh_token)
             data["access_token"] = str(refresh_token.access_token)
+            data["profile_picture"] = profile.avatar.url
+            data["position"] = profile.position
             return Response(data, status=status.HTTP_201_CREATED)
         data["error"] = serializer.errors
         data["status"] = "success"
