@@ -1,4 +1,3 @@
-
 import jwt
 
 from rest_framework.response import Response
@@ -20,11 +19,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import JsonResponse
 from accounts.renderers import CustomRenderer
-from accounts.serializers import RegisterationSerializer, ResetPasswordSerializer, UpdateAccountSerializer, ProfileSerializer
+from accounts.serializers import RegisterationSerializer, ResetPasswordSerializer, UpdateAccountSerializer, \
+    ProfileSerializer
 from accounts.tasks import Utils
 from accounts.models import Account, Profile
 
-from .serializers import LoginSerializer, RegisterationSerializer, ChangePasswordSerializer, UserSerializer, SetNewPasswordSerializer
+from .serializers import LoginSerializer, RegisterationSerializer, ChangePasswordSerializer, UserSerializer, \
+    SetNewPasswordSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
 from rest_framework.renderers import BrowsableAPIRenderer
@@ -91,7 +92,7 @@ class VerifyEmail(APIView):
     token_param_config = openapi.Parameter(
         'token', in_=openapi.IN_QUERY, description="Description", type=openapi.TYPE_STRING)
 
-    @ swagger_auto_schema(manual_parameters=[token_param_config])
+    @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request, *args, **kwargs):
         token = request.GET.get('token')
         try:
@@ -113,7 +114,8 @@ class VerifyEmail(APIView):
 
         except jwt.ExpiredSignatureError as e:
             print(e)
-            return Response({"error": f"Activation expired:{e}", "status": "fail", }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": f"Activation expired:{e}", "status": "fail", },
+                            status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as e:
             return Response({"error": f"Invalid token: {e}", "status": "success", }, status=status.HTTP_400_BAD_REQUEST)
 
@@ -146,6 +148,34 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
         except Profile.DoesNotExist as e:
             print("Error", e)
             return Response({"message": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
+
+
+# class ProfileRetrieveAPIView(generics.RetrieveAPIView):
+#     permission_classes = (AllowAny,)
+#     queryset = Profile.objects.all()
+#     renderer_classes = (CustomRenderer,)
+#     serializer_class = ProfileSerializer
+#
+#     def retrieve(self, request, pk, *args, **kwargs):
+#         try:
+#             profile = Profile.objects.filter(account__pk=pk).first()
+#             print(profile)
+#             serializer = self.serializer_class(profile, data=request.data)
+#             if serializer.is_valid():
+#                 profile = serializer.validated_data.get('profile', {})
+#                 print(profile.account.email)
+#             data = {
+#                 "username": "",
+#                 "bio": profile.position,
+#                 "image": profile.avatar.url if profile.avatar.url else profile.avatar,
+#                 "status": "success",
+#             }
+#
+#             return Response(data, status=status.HTTP_200_OK)
+#
+#         except Profile.DoesNotExist as e:
+#             print("Error", e)
+#             return Response({"message": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AccountsRetrieveAV(generics.ListAPIView):
@@ -186,11 +216,14 @@ class ForgotPassordAV(APIView):
 
                 mail_subject = "Please Reset your Account Password"
                 message = "Hi" + account.username + "," + \
-                    " Please Use the Link below to reset your account passwors:" + "" + abs_url
+                          " Please Use the Link below to reset your account passwors:" + "" + abs_url
 
                 Utils.send_email.delay(mail_subject, message, account.email)
-                return Response({"status": "success", "message": "We have sent a password-reset link to the email you provided.Please check and reset  "}, status=status.HTTP_200_OK)
-            return Response({"status": "error", "message": "The email provided doesn't exist in our records"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"status": "success",
+                                 "message": "We have sent a password-reset link to the email you provided.Please check and reset  "},
+                                status=status.HTTP_200_OK)
+            return Response({"status": "error", "message": "The email provided doesn't exist in our records"},
+                            status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -205,13 +238,14 @@ class ResetPassordAV(APIView):
             account = Account.objects.get(id=id)
             if not PasswordResetTokenGenerator().check_token(account, token):
                 return Response({"status": "fail", "message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"status": "success", "message": "Your  credentials  have been validated", "uuidb64": uuidb64, "token": token}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "success", "message": "Your  credentials  have been validated", "uuidb64": uuidb64,
+                 "token": token}, status=status.HTTP_400_BAD_REQUEST)
         except DjangoUnicodeDecodeError as e:
             return Response({"status": "fail", "message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateProfileView(generics.UpdateAPIView):
-
     queryset = Account.objects.all()
     permission_classes = (IsAuthenticated,)
     renderer_classes = (CustomRenderer,)

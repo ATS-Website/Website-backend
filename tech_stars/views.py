@@ -123,7 +123,7 @@ class TestimonialFrontpageListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, L
     def get(self, request, *args, **kwargs):
         testimonial = list(Testimonial.active_objects.all())
         random.shuffle(testimonial)
-        serializer = self.get_serializer(testimonial[:6], many=True)
+        serializer = self.get_serializer(testimonial[:5], many=True)
         return Response(serializer.data, status=HTTP_200_OK)
 
 
@@ -184,6 +184,9 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
                     "date_time": date_time,
                     "secret_key": config("QR_SECRET_KEY")
                 }
+
+                test = aes_encrypt(json.dumps(data))
+                print(test)
 
                 qr = generate_qr(aes_encrypt(json.dumps(data)))
                 result = self.get_serializer(qr)
@@ -302,7 +305,7 @@ class WriteAdminLog(APIView):
         if event is None or admin is None or message is None:
             raise ValidationError("Incomplete Data")
 
-        write_log_csv.delay(event, admin, message)
+        write_log_csv(event, admin, message)
 
         return Response("Activity logged successfully", status=HTTP_201_CREATED)
 
