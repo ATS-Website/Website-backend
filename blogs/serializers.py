@@ -206,9 +206,14 @@ class NewsLetterSerializer(ModelSerializer):
             "id",
             "title",
             "content",
+            "trunc_content",
             "subject",
             "url"
         )
+
+        extra_kwargs = {
+            "content": {"write_only": True}
+        }
 
 
 class NewsLetterDetailSerializer(ModelSerializer):

@@ -236,20 +236,6 @@ class NewsArticle(models.Model):
         return '{} {}'.format(self.author.first_name, self.author.last_name)
 
 
-# class NewsComment(models.Model):
-#     name = models.CharField(max_length=100, blank=False, null=False)
-#     description = models.CharField(max_length=100, blank=False, null=False)
-#     news_article = models.ForeignKey(
-#         NewsArticle, on_delete=models.SET_NULL, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     class Meta:
-#         ordering = ['-created_at']
-#
-#     def __str__(self):
-#         return 'Comment {} by {}'.format(self.description, self.name)
-
-
 # NEWSLETTER# NEWSLETTER
 
 
@@ -287,6 +273,9 @@ class NewsLetter(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    def trunc_content(self):
+        return self.content[:150]
 
 
 class Album(models.Model):
