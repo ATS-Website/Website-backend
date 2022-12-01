@@ -36,6 +36,8 @@ ALLOWED_HOSTS = ['atsbk.afexats.com', '127.0.0.1', 'localhost', 'localhost:3000'
 
 
 INSTALLED_APPS = [
+    # "daphne",
+    # "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,10 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # internal apps
-    "Accounts",
-    "Blogs",
-    "Support",
-    "Tech_Stars",
+    "accounts",
+    "blogs",
+    "support",
+    "tech_stars",
     # thirdparty services
     "rest_framework",
     'rest_framework_simplejwt',
@@ -58,6 +60,7 @@ INSTALLED_APPS = [
     "djcelery_email",
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
+    "phonenumber_field",
     # 'django-celery-beat',
     # "cloudinary_storage",
     # 'cloudinary',
@@ -74,13 +77,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "Tech_Stars.middleware.EncryptionAndDecryptionMiddleware",
+    "tech_stars.middleware.EncryptionAndDecryptionMiddleware",
 
 ]
 
 ROOT_URLCONF = 'website.urls'
-CORS_ALLOWED_ORIGINS = ['https://6384b950f2c6e80009106d70--zippy-dango-7ea3fe.netlify.app',
-                        'http://localhost:3000', 'http://127.0.0.1:3000']
+CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com', 'http://localhost:3000',
+                        'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:8000',
+                        "https://zippy-dango-7ea3fe.netlify.app"]
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -111,6 +115,17 @@ WSGI_APPLICATION = 'website.wsgi.application'
 #         'PASSWORD': config("DB_PASSWORD"),
 #         'PORT': config("DB_PORT"),
 #         'HOST': config("DB_HOST"),
+#
+#     }
+# }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': "Website",
+#         'USER': "postgres",
+#         'PASSWORD': 'root',
+#         'PORT': '5432',
+#         'HOST': 'localhost',
 #
 #     }
 # }
@@ -170,18 +185,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = "Accounts.Account"
+AUTH_USER_MODEL = "accounts.Account"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'Accounts.permissions.IsValidRequestAPIKey',
+        # 'accounts.permissions.IsValidRequestAPIKey',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': (
         # 'rest_framework.renderers.BrowsableAPIRenderer',
-        'Accounts.renderers.CustomRenderer',
+        'tech_stars.renderers.CustomRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
@@ -205,6 +220,10 @@ ELASTICSEARCH_DSL = {
     },
 }
 
+# ELASTICSEARCH_INDEX_NAMES = {
+#     'blogs.NewsArticle': 'news',
+#     'blogs.BlogArticle': 'blogs',
+# }
 ELASTICSEARCH_INDEX_NAMES = {
     'Blogs.NewsArticle': 'news',
     'Blogs.BlogArticle': 'blogs',
@@ -241,4 +260,10 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 # }
 
 # CELERY-BEAT
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = 'djanga_celery_beat.schedulers:DatabaseScheduler'
+
+
+PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
+PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
+
+# ASGI_APPLICATION = "website.asgi.website"

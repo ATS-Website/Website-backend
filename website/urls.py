@@ -20,7 +20,7 @@ from django.conf import settings
 
 from rest_framework import permissions
 
-from Accounts.models import Account
+from accounts.models import Account
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -43,11 +43,11 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('web-admin/', admin.site.urls),
 
-    path("api/v1/", include("Blogs.urls")),
-    path('api/v1/account/', include("Accounts.urls")),
-    path("api/v1/tech-stars/", include("Tech_Stars.urls")),
-    path("api/v1/support/", include("Support.urls")),
-    # path('', include('Blogs.urls')),
+    path("api/v1/", include("blogs.urls")),
+    path('api/v1/account/', include("accounts.urls")),
+    path("api/v1/tech-stars/", include("tech_stars.urls")),
+    path("api/v1/support/", include("support.urls")),
+    # path('', include('blogs.urls')),
     path('', schema_view.with_ui('swagger',
                                  cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',
