@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-
+from rest_framework.exceptions import ValidationError
 
 from tech_stars.models import ActiveManager, InActiveManager
 
@@ -15,6 +15,11 @@ class FrequentlyAskedQuestions(models.Model):
     objects = models.Manager()
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
+
+    def save(self, *args, **kwargs):
+        if FrequentlyAskedQuestions.active_objects.all().count() >= 3:
+            raise ValidationError("Faq instances cannot be more than 3")
+        return super(FrequentlyAskedQuestions, self).save(*args, **kwargs)
 
 
 class ContactUs(models.Model):

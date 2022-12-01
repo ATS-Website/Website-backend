@@ -40,10 +40,6 @@ def read_csv(file_name):
         return list(read)
 
 
-def check_and_write(file_name:str, data:dict):
-    pass
-
-
 def write_log_csv(event, admin, message):
     with open("admin_activity_logs.csv", "a", newline="\n") as x:
         header = ["Date_Time", "Event", "Admin", "Message"]

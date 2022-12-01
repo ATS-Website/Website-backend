@@ -14,7 +14,7 @@ from blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
                          AlbumListCreateAPIView, AlbumRetrieveUpdateDeleteAPIView, NavNewsListAPIView, TrashedBlogListAPIView,
                          TrashedBlogRestoreAPIView, TrashedNewsListAPIView, TrashedNewsRestoreAPIView, TrashedAuthorListAPIView,
                          TrashedAuthorRestoreAPIView, TrashedCommentListAPIView, TrashedCommentRestoreAPIView, TrashedImageListAPIView,
-                         TrashedImageRestoreAPIView, VisitorListCreateView, UpdatesNumbersListView
+                         TrashedImageRestoreAPIView, VisitorListCreateView, UpdatesNumbersListView, TopAuthorsAPIView
                          )
 
 app_name = 'blogs'
@@ -111,6 +111,8 @@ urlpatterns = [
     path("visitors", VisitorListCreateView.as_view(), name="visitors_list_create"),
 
     path("updates", UpdatesNumbersListView.as_view(), name="update_numbers"),
+
+    path("top-authors", TopAuthorsAPIView.as_view(), name="top_authors"),
 
 
 

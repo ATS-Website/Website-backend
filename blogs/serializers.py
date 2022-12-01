@@ -1,11 +1,11 @@
-from .documents import NewsArticleDocument, BlogArticleDocument
-
 from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
 from django.core.validators import validate_image_file_extension
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, ListField
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
+from .documents import NewsArticleDocument, BlogArticleDocument
 from .models import *
 
 
@@ -26,11 +26,14 @@ class NewsArticleDocumentSerializer(DocumentSerializer):
         document = NewsArticleDocument
 
         fields = (
+            'id'
             'title',
             'intro',
+            'image',
             'description',
             'category',
-            'author'
+            'author',
+            'created_at'
         )
 
 
@@ -39,11 +42,17 @@ class BlogArticleDocumentSerializer(DocumentSerializer):
         document = BlogArticleDocument
 
         fields = (
+            'id'
             'title',
             'intro',
+            'image',
             'description',
-            'author'
+            'author',
+            'created_at',
         )
+
+    # def prepare_image(self, instance):
+    #     return instance.image.url if instance.image else ''
 
 
 class AuthorSerializer(ModelSerializer):
@@ -181,21 +190,6 @@ class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
         fields = ('id', 'email',)
 
 
-# class TagSerializer(ModelSerializer):
-#     url = HyperlinkedIdentityField(
-#         view_name="blogs:tag_detail_update_delete", read_only=True)
-#
-#     class Meta:
-#         model = Tag
-#         fields = ['id', 'name', 'url']
-
-#
-# class TagDetailSerializer(ModelSerializer):
-#     class Meta:
-#         model = Tag
-#         fields = ['id', 'name', ]
-
-
 class NewsLetterSerializer(ModelSerializer):
     url = HyperlinkedIdentityField(
         view_name="blogs:newsletter_details_update_delete", read_only=True)
@@ -206,9 +200,14 @@ class NewsLetterSerializer(ModelSerializer):
             "id",
             "title",
             "content",
+            "trunc_content",
             "subject",
             "url"
         )
+
+        extra_kwargs = {
+            "content": {"write_only": True}
+        }
 
 
 class NewsLetterDetailSerializer(ModelSerializer):

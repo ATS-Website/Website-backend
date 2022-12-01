@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
 
 from .models import FrequentlyAskedQuestions, ContactUs
@@ -15,6 +16,11 @@ class FrequentlyAskedQuestionsSerializer(ModelSerializer):
             "answer",
             "url"
         )
+
+    def create(self, validated_data):
+        if FrequentlyAskedQuestions.active_objects.all().count() >= 3:
+            raise ValidationError("FAQ cannot have more than 3 instances")
+        return super(FrequentlyAskedQuestionsSerializer, self).create(validated_data)
 
 
 class FrequentlyAskedQuestionsDetailSerializer(ModelSerializer):

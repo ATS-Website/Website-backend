@@ -2,8 +2,9 @@ from rest_framework.serializers import (ModelSerializer, HyperlinkedIdentityFiel
                                         Serializer, CharField
                                         )
 from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
-from .documents import TechStarDocument
 
+
+from .documents import TechStarDocument
 from .models import TechStar, Testimonial, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 
 
@@ -12,8 +13,10 @@ class TechStarDocumentSerializer(DocumentSerializer):
         document = TechStarDocument
 
         fields = (
+            'id',
             'fullname',
             'self_description',
+            'date_created',
         )
 
 
@@ -183,5 +186,16 @@ class XpertOfTheWeekDetailSerializer(ModelSerializer):
         model = XpertOfTheWeek
         fields = (
             "tech_star",
-            "interview"
+            "interview",
+            "tech_star_full_name",
+            "tech_star_profile_picture",
+            "tech_star_course",
+            "tech_star_cohort"
         )
+
+        extra_kwargs = {
+            "tech_star_full_name": {"read_only": True},
+            "tech_star_profile_picture": {"read_only": True},
+            "tech_star_course": {"read_only": True},
+            "tech_star_cohort": {"read_only": True},
+        }

@@ -35,17 +35,16 @@ def aes_encrypt(keyword):
 def aes_decrypt(keyword):
     return AESCipher(json.dumps(keyword), key, iv).decrypt()
 
+#
+# look = {
+#     "full_name": "John Doe",
+#     "official_email": "loko873n@afexnigeria.com",
+#     "self_description": "No Fear!",
+# }
+# test = aes_encrypt(look)
+# print(test)
 
-look = {
-    "full_name": "Adekunle, Abraham",
-    "official_email": "loko873n@afexnigeria.com",
-    "self_description": "No Fear!",
-    "favorite_meal": "Eba and beans"
-}
-test = aes_encrypt(look)
-print(test)
 
-test_2 = aes_decrypt("tfaj0vDQeEF2QFycXYrAIk0g5x4UqHPjrvVXVXwLspjO4yLJhDDxDJMN/L7f5cBJFNsm9w4B9JCf4N+j74AZY9oS9mCviJaBXdLZwwvREpEn61VkiNTBKRlAtBMEclY/BOgqpbVcTcJvtT5my7d8YOsH3/LmruVULtlQrW1fHsY9obWOPNtANy6nW3iZtPXp87oOH4yAWaXj9aMETvm9pQ==")
-print(test_2)
-
+testst = aes_decrypt("qLiaHhtouPPj8F7S6tGHCyG6/E5PmyjlBRN8sxJDfOTVo7VF3mUCaTdoHye/dYDBGOg98rkcpPJ0UTLsQVsIMnlGScolsrpCJjEkjzJ5JpVwNcg6H3GZvLznhztEc7fj39CzcR3sySbGlivdEkyrkEx9aUjacAZ+e1drTFJT4uE=")
+print(testst)
 

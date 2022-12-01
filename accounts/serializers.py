@@ -168,44 +168,6 @@ class RegisterationSerializer(serializers.ModelSerializer):
         return lower_email
 
 
-# class TechStarSerializer(serializers.ModelSerializer):
-#     email = serializers.EmailField(required=True)
-#     password = serializers.CharField(
-#         write_only=True, required=True, validators=[validate_password])
-#     confirm_password = serializers.CharField(write_only=True, required=True)
-
-#     class Meta:
-#         model = TechStar
-#         fields = ('username', "first_name", "last_name",
-#                   'email',)
-
-#     def validate_email(self, value):
-#         lower_email = value.lower()
-#         if TechStar.objects.filter(email__iexact=lower_email).exists():
-#             raise serializers.ValidationError(
-#                 "A TechStar with this email already exist"
-#             )
-#         if 'afexnigeria.com' not in lower_email.split('@')[1]:
-#             raise serializers.ValidationError(
-#                 "This email is not a valid TechStar email format"
-#             )
-#         return value
-
-#     def update(self, instance, validated_data):
-#         password = validated_data.pop("password", None)
-#         account = super().update(instance, validated_data)
-#         if password is not None:
-#             account.set_password(password)
-#             account.save()
-#         return account
-
-
-# class LoginTechStarSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         fields = ('email', 'password',)
-#         model = TechStar
-
-
 class ChangePasswordSerializer(serializers.ModelSerializer):
     new_password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password])

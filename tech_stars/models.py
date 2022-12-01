@@ -98,6 +98,11 @@ class Testimonial(models.Model):
     active_objects = ActiveManager()
     inactive_objects = InActiveManager()
 
+    def save(self, *args, **kwargs):
+        if Testimonial.active_objects.filter(id=self.id).first() is not None:
+            raise ValidationError("A tech star can have only one Testimonial")
+        return super(Testimonial, self).save(*args, **kwargs)
+
     def __str__(self):
         return str(self.tech_star) + "'s testimonial"
 
@@ -151,3 +156,15 @@ class XpertOfTheWeek(models.Model):
 
     class Meta:
         ordering = ("-date_created",)
+
+    def tech_star_full_name(self):
+        return self.tech_star.full_name
+
+    def tech_star_profile_picture(self):
+        return self.tech_star.profile_picture.url
+
+    def tech_star_course(self):
+        return self.tech_star.course
+
+    def tech_star_cohort(self):
+        return self.tech_star.cohort

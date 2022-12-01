@@ -1,10 +1,5 @@
-import datetime
-import itertools
-import json
-from blogs.permissions import IsAdminOrReadOnly
 from django.forms.models import model_to_dict
 from django.utils import timezone
-
 from algoliasearch_django import raw_search
 from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import BrowsableAPIRenderer
@@ -13,35 +8,35 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
-
 from rest_framework.parsers import FormParser, FileUploadParser, MultiPartParser
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
+from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
 
-from accounts.renderers import CustomRenderer
-from accounts.permissions import IsValidRequestAPIKey
-
-from tech_stars.mixins import (
-    CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView, CustomDestroyAPIView)
-
+from .documents import NewsArticleDocument
+from .serializers import NewsArticleDocumentSerializer
 from .mixins import AdminOrContentManagerOrReadOnlyMixin
 from .serializers import *
-
 from .models import *
 from . import client
 from .tasks import new_send_mail_func
 
-from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
-from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
-from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
-from .documents import NewsArticleDocument
-from .serializers import NewsArticleDocumentSerializer
+from accounts.renderers import CustomRenderer
+
+from blogs.permissions import IsAdminOrReadOnly
+
+from tech_stars.mixins import (
+    CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView, CustomDestroyAPIView)
 
 
 class NewsArticleDocumentView(DocumentViewSet):
     document = NewsArticleDocument
     serializer_class = NewsArticleDocumentSerializer
+    # pagination_class = NewsArticleDocumentPagination
 
     filter_backends = [CompoundSearchFilterBackend]
-    search_fields = ('title', "intro", "description", "category", "author")
+    search_fields = ('title', "intro", "image", "description",
+                     "category.name", "author.first_name", "author.last_name",)
     suggester_fields = {
         'title': {
             'field': 'title.suggest',
@@ -68,6 +63,7 @@ class NewsArticleDocumentView(DocumentViewSet):
             ],
         },
     }
+    ordering = ('-id', 'title', '-created_at')
 
 
 class BlogArticleDocumentView(DocumentViewSet):
@@ -75,7 +71,8 @@ class BlogArticleDocumentView(DocumentViewSet):
     serializer_class = BlogArticleDocumentSerializer
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
-    search_fields = ('title', "intro", "description", "author")
+    search_fields = ('title', "intro", "image", "description", "author",
+                     "author.first_name", "author.last_name",)
     suggester_fields = {
         'title': {
             'field': 'title.suggest',
@@ -102,6 +99,7 @@ class BlogArticleDocumentView(DocumentViewSet):
             ],
         },
     }
+    ordering = ('-id', 'title', '-created_at')
 
 
 class SearchBlogView(generics.ListAPIView):
@@ -356,3 +354,13 @@ class UpdatesNumbersListView(AdminOrContentManagerOrReadOnlyMixin, APIView):
             "latest_post": latest_news + latest_blogs
         }
         return Response(data, status=HTTP_200_OK)
+
+
+class TopAuthorsAPIView(AdminOrContentManagerOrReadOnlyMixin, APIView):
+    def get(self, request, *args, **kwargs):
+        author_queryset = Author.active_objects.all()
+        new = [author.author_news_count() for author in author_queryset]
+        new.sort(reverse=True)
+        author_list = [author for author in author_queryset if author.author_news_count() in new[:3]]
+        serializer = AuthorSerializer(author_list[:3], many=True, context={"request": request})
+        return Response(serializer.data, status=HTTP_200_OK)

@@ -8,6 +8,7 @@ from .models import TechStar
 
 @registry.register_document
 class TechStarDocument(Document):
+    id = fields.IntegerField()
     full_name = fields.TextField(
         attr='full_name',
         fields={
@@ -22,6 +23,7 @@ class TechStarDocument(Document):
             'suggest': fields.CompletionField(),
         }
     )
+    date_created = fields.DateField()
 
     class Index:
         name = 'techstars'

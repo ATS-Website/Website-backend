@@ -1,11 +1,7 @@
 from django.core.exceptions import ValidationError
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-from django.template.defaultfilters import slugify
 from django.core.validators import validate_image_file_extension
 from django.db import models
-from django.contrib.auth.models import User
-import datetime
+
 from .utils import time_taken_to_read
 
 from tech_stars.validators import validate_image_size
@@ -46,6 +42,9 @@ class Author(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+
+    def author_news_count(self):
+        return NewsArticle.active_objects.filter(author_id=self.id).count()
 
 
 # BLOGS
@@ -115,9 +114,6 @@ class BlogArticle(models.Model):
 
     def few_comments(self):
         return Comment.active_objects.filter(blog_article_id=self.id)[:4]
-
-    # def author_profile_pic(self):
-    #     return self.author.profile_pics
 
     @property
     def by_tags(self):
@@ -233,20 +229,6 @@ class NewsArticle(models.Model):
         return '{} {}'.format(self.author.first_name, self.author.last_name)
 
 
-# class NewsComment(models.Model):
-#     name = models.CharField(max_length=100, blank=False, null=False)
-#     description = models.CharField(max_length=100, blank=False, null=False)
-#     news_article = models.ForeignKey(
-#         NewsArticle, on_delete=models.SET_NULL, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     class Meta:
-#         ordering = ['-created_at']
-#
-#     def __str__(self):
-#         return 'Comment {} by {}'.format(self.description, self.name)
-
-
 # NEWSLETTER# NEWSLETTER
 
 
@@ -284,6 +266,9 @@ class NewsLetter(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    def trunc_content(self):
+        return self.content[:150]
 
 
 class Album(models.Model):

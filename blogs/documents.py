@@ -11,6 +11,7 @@ from .models import NewsArticle, BlogArticle
 
 @registry.register_document
 class NewsArticleDocument(Document):
+    id = fields.IntegerField()
     title = fields.TextField(
         attr='title',
         fields={
@@ -32,6 +33,7 @@ class NewsArticleDocument(Document):
             'suggest': fields.CompletionField(),
         }
     )
+    image = fields.FileField()
     category = fields.ObjectField(
         attr='category',
         properties={
@@ -62,6 +64,7 @@ class NewsArticleDocument(Document):
             )
         }
     )
+    created_at = fields.DateField()
 
     class Index:
         name = 'news'
@@ -79,6 +82,7 @@ class NewsArticleDocument(Document):
 
 @registry.register_document
 class BlogArticleDocument(Document):
+    id = fields.IntegerField()
     title = fields.TextField(
         attr='title',
         fields={
@@ -100,6 +104,7 @@ class BlogArticleDocument(Document):
             'suggest': fields.CompletionField(),
         }
     )
+    image = fields.FileField()
     author = fields.ObjectField(
         attr='author',
         properties={
@@ -118,16 +123,18 @@ class BlogArticleDocument(Document):
             )
         }
     )
+    created_at = fields.DateField()
 
     class Index:
         name = 'blogs'
 
     class Django:
         model = BlogArticle
-        # fields = [
-        #     "title",
-        #     "description",
-        #     "category",
-        #     "created_at",
-        #     "updated_at",
-        # ]
+        fields = [
+
+            # "title",
+            # "description",
+            # "category",
+            # "created_at",
+            # "updated_at",
+        ]
