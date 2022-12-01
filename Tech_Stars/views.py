@@ -67,6 +67,7 @@ class TechStarDocumentView(DocumentViewSet):
             ],
         },
     }
+    ordering = ('-id', 'full_name', '-date_created')
 
 
 def create_attendance(tech_star, date_time, device_id):
