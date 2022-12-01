@@ -1,6 +1,3 @@
-from typing import Dict, Any
-
-from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string, get_template
 from django.utils.html import strip_tags
@@ -27,10 +24,8 @@ def new_send_mail_func(context, subscribers: list):
                 email_from,
                 to=[email]
             )
-            # print(message)
-            # print(msg)
+
             msg.send()
-            # print("email sent successfully")
     except Exception as e:
         print(e)
         return False

@@ -1,11 +1,7 @@
 from django.core.exceptions import ValidationError
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-from django.template.defaultfilters import slugify
 from django.core.validators import validate_image_file_extension
 from django.db import models
-from django.contrib.auth.models import User
-import datetime
+
 from .utils import time_taken_to_read
 
 from tech_stars.validators import validate_image_size
@@ -118,9 +114,6 @@ class BlogArticle(models.Model):
 
     def few_comments(self):
         return Comment.active_objects.filter(blog_article_id=self.id)[:4]
-
-    # def author_profile_pic(self):
-    #     return self.author.profile_pics
 
     @property
     def by_tags(self):

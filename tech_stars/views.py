@@ -1,14 +1,9 @@
-from rest_framework.generics import GenericAPIView
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.paginator import Paginator
 import csv
-import datetime
 import json
 import random
 from ast import literal_eval
 
 from django.utils import timezone
-from django.conf import settings
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,14 +11,12 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
-from decouple import config
-from blogs.permissions import IsAdminOrReadOnly
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
 from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
-from blogs.permissions import IsAdminOrReadOnly
-from .documents import TechStarDocument
+from decouple import config
 
+from .documents import TechStarDocument
 from .serializers import (
     TestimonialSerializer, TestimonialDetailSerializer,
     TechStarSerializer, TechStarDetailSerializer,
@@ -35,12 +28,14 @@ from .models import Testimonial, TechStar, ResumptionAndClosingTime, Attendance,
 from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView,
                      CustomRetrieveUpdateDestroyAPIView, CustomCreateAPIView,
                      CustomRetrieveUpdateAPIView, CustomDestroyAPIView
-
                      )
-from .utils import generate_qr_code, generate_qr
+from .utils import generate_qr
 from .tasks import write_log_csv
-from .enc_dec.encryption_decryption import aes_encrypt, aes_decrypt
+from .enc_dec.encryption_decryption import aes_encrypt
+
 from accounts.mixins import IsAdminOrReadOnlyMixin
+
+from blogs.permissions import IsAdminOrReadOnly
 
 # Create your views here.
 
@@ -113,7 +108,7 @@ class TrashedTechStarRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
 
 
 class TestimonialListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
-    serializer_class = TestimonialSerializer
+    serializer_class = TestimonialFrontpageSerializer
     queryset = Testimonial.active_objects.all()
 
 
@@ -184,9 +179,6 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
                     "date_time": date_time,
                     "secret_key": config("QR_SECRET_KEY")
                 }
-
-                test = aes_encrypt(data)
-                print(test)
 
                 qr = generate_qr(data)
                 result = self.get_serializer(qr)

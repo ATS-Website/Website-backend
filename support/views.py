@@ -1,12 +1,14 @@
+from rest_framework.generics import ListAPIView
+
 from .serializers import FrequentlyAskedQuestionsSerializer, FrequentlyAskedQuestionsDetailSerializer, \
     ContactUsSerializer, ContactUsDetailSerializer
 from .models import FrequentlyAskedQuestions, ContactUs
 from .mixins import AdminOrReadOnlyMixin
-from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView, ListAPIView
+
+from blogs.permissions import IsAdminOrReadOnly
+
 from tech_stars.renderers import CustomRenderer
 from tech_stars.mixins import CustomListCreateAPIView, CustomRetrieveUpdateDestroyAPIView, CustomDestroyAPIView
-from blogs.permissions import IsAdminOrReadOnly
 
 
 # Create your views here.

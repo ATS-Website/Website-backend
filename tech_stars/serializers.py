@@ -2,8 +2,9 @@ from rest_framework.serializers import (ModelSerializer, HyperlinkedIdentityFiel
                                         Serializer, CharField
                                         )
 from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
-from .documents import TechStarDocument
 
+
+from .documents import TechStarDocument
 from .models import TechStar, Testimonial, ResumptionAndClosingTime, Attendance, OfficeLocation, XpertOfTheWeek
 
 

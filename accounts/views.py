@@ -1,7 +1,5 @@
 import jwt
 
-from rest_framework.response import Response
-from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from django.contrib.sites.shortcuts import get_current_site
@@ -11,29 +9,23 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-# Create your views here.
-
-from django.shortcuts import render
 from django.urls import reverse
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.http import JsonResponse
-from accounts.renderers import CustomRenderer
-from accounts.serializers import RegisterationSerializer, ResetPasswordSerializer, UpdateAccountSerializer, \
-    ProfileSerializer
-from accounts.tasks import Utils
-from accounts.models import Account, Profile
-
-from .serializers import LoginSerializer, RegisterationSerializer, ChangePasswordSerializer, UserSerializer, \
-    SetNewPasswordSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
 from rest_framework.renderers import BrowsableAPIRenderer
-from django.contrib.auth.models import User
 from django.conf import settings
+
+from .renderers import CustomRenderer
+from .serializers import ResetPasswordSerializer, UpdateAccountSerializer, \
+    ProfileSerializer, LoginSerializer, RegisterationSerializer, ChangePasswordSerializer, UserSerializer, \
+    SetNewPasswordSerializer
+from .tasks import Utils
+from .models import Account, Profile
 from .permissions import IsAdmin
 from .mixins import IsAdminOrReadOnlyMixin
 from .permissions import IsValidRequestAPIKey
+
 from tech_stars.utils import write_log_csv
 from tech_stars.mixins import CustomRetrieveUpdateAPIView
 
@@ -77,7 +69,11 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
             account = Account.objects.create_user(
                 first_name=first_name, last_name=last_name, username=username,
                 gender=gender, email=email, password=password)
-            profile = Profile.objects.create(account=account, avatar=avatar, position=position)
+            try:
+                profile = Profile.objects.create(account=account, avatar=avatar, position=position)
+            except:
+                account.delete()
+                return Response({"message": "Kindly check the avatar and position sent"}, status=status.HTTP_400_BAD_REQUEST)
             data["status"] = "success"
             data["username"] = account.username
             data["email"] = account.email

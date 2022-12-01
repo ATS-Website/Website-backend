@@ -1,11 +1,11 @@
-from .documents import NewsArticleDocument, BlogArticleDocument
-
 from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
 from django.core.validators import validate_image_file_extension
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField, ListField
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
+from .documents import NewsArticleDocument, BlogArticleDocument
 from .models import *
 
 
@@ -179,21 +179,6 @@ class NewsLetterSubscriptionDetailSerializer(ModelSerializer):
     class Meta:
         model = NewsLetterSubscription
         fields = ('id', 'email',)
-
-
-# class TagSerializer(ModelSerializer):
-#     url = HyperlinkedIdentityField(
-#         view_name="blogs:tag_detail_update_delete", read_only=True)
-#
-#     class Meta:
-#         model = Tag
-#         fields = ['id', 'name', 'url']
-
-#
-# class TagDetailSerializer(ModelSerializer):
-#     class Meta:
-#         model = Tag
-#         fields = ['id', 'name', ]
 
 
 class NewsLetterSerializer(ModelSerializer):

@@ -1,6 +1,5 @@
 from django.urls import path
 
-
 from .views import (FrequentlyAskedQuestionListCreateAPIView, FrequentlyAskedQuestionDetailsUpdateDeleteAPIView,
                     ContactUsDetailsUpdateDeleteAPIView, ContactUsListCreateAPIView, FrequentlyAskedQuestionListAPIView,
                     FrequentlyAskedQuestionRestoreAPIView,
