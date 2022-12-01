@@ -11,10 +11,9 @@ def update_document(sender, **kwargs):
     model_name = sender._meta.model_name
     instance = kwargs['instance']
 
-    if app_label == 'Tech_Stars':
+    if app_label == 'tech_stars':
         if model_name == 'TechStar':
             instances = instance.techstars.all()
-            print(instances)
             for _instance in instances:
                 registry.update(_instance)
 
@@ -25,7 +24,7 @@ def delete_document(sender, **kwargs):
     model_name = sender._meta.model_name
     instance = kwargs['instance']
 
-    if app_label == 'Tech_Stars':
+    if app_label == 'tech_stars':
         if model_name == 'TechStar':
             instances = instance.techstars.all()
             print(instances)
