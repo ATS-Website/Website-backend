@@ -22,6 +22,7 @@ from . import client
 from .tasks import new_send_mail_func
 
 from accounts.renderers import CustomRenderer
+from accounts.permissions import IsValidRequestAPIKey
 
 from blogs.permissions import IsAdminOrReadOnly
 
@@ -29,7 +30,7 @@ from tech_stars.mixins import (
     CustomRetrieveUpdateDestroyAPIView, CustomListCreateAPIView, CustomDestroyAPIView)
 
 
-class NewsArticleDocumentView(DocumentViewSet):
+class NewsArticleDocumentView(IsValidRequestAPIKey, DocumentViewSet):
     document = NewsArticleDocument
     serializer_class = NewsArticleDocumentSerializer
     # pagination_class = NewsArticleDocumentPagination
@@ -66,7 +67,7 @@ class NewsArticleDocumentView(DocumentViewSet):
     ordering = ('-id', 'title', '-created_at')
 
 
-class BlogArticleDocumentView(DocumentViewSet):
+class BlogArticleDocumentView(IsValidRequestAPIKey, DocumentViewSet):
     document = BlogArticleDocument
     serializer_class = BlogArticleDocumentSerializer
 
@@ -102,7 +103,7 @@ class BlogArticleDocumentView(DocumentViewSet):
     ordering = ('-id', 'title', '-created_at')
 
 
-class SearchBlogView(generics.ListAPIView):
+class SearchBlogView(IsValidRequestAPIKey, generics.ListAPIView):
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
     def get(self, request, *args, **kwargs):
@@ -118,7 +119,7 @@ class SearchBlogView(generics.ListAPIView):
         return Response(results, status=HTTP_200_OK)
 
 
-class SearchNewsView(generics.ListAPIView):
+class SearchNewsView(IsValidRequestAPIKey, generics.ListAPIView):
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
     def get(self, request, *args, **kwargs):
@@ -143,12 +144,12 @@ class BlogArticleRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixi
     serializer_class = BlogArticleDetailSerializer
 
 
-class TrashedBlogListAPIView(IsAdminOrReadOnly, ListAPIView):
+class TrashedBlogListAPIView(AdminOrContentManagerOrReadOnlyMixin, ListAPIView):
     queryset = BlogArticle.Inactive_objects.all()
     serializer_class = BlogArticleSerializer
 
 
-class TrashedBlogRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+class TrashedBlogRestoreAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomDestroyAPIView):
     queryset = BlogArticle.Inactive_objects.all()
     serializer_class = BlogArticleDetailSerializer
 
@@ -164,18 +165,18 @@ class CommentDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, Cu
     serializer_class = CommentDetailSerializer
 
 
-class TrashedCommentListAPIView(IsAdminOrReadOnly, ListAPIView):
+class TrashedCommentListAPIView(AdminOrContentManagerOrReadOnlyMixin, ListAPIView):
     queryset = Comment.inactive_objects.all()
     serializer_class = CommentSerializer
 
 
-class TrashedCommentRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+class TrashedCommentRestoreAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomDestroyAPIView):
     queryset = Comment.inactive_objects.all()
     serializer_class = CommentSerializer
 
 
 # AUTHOR
-class AuthorListCreateAPIView(CustomListCreateAPIView):
+class AuthorListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin,CustomListCreateAPIView):
     queryset = Author.active_objects.all()
     serializer_class = AuthorSerializer
 
@@ -185,12 +186,12 @@ class AuthorRetrieveUpdateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRe
     serializer_class = AuthorDetailSerializer
 
 
-class TrashedAuthorListAPIView(IsAdminOrReadOnly, ListAPIView):
+class TrashedAuthorListAPIView(AdminOrContentManagerOrReadOnlyMixin, ListAPIView):
     queryset = Author.Inactive_objects.all()
     serializer_class = AuthorSerializer
 
 
-class TrashedAuthorRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+class TrashedAuthorRestoreAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomDestroyAPIView):
     queryset = Author.Inactive_objects.all()
     serializer_class = AuthorDetailSerializer
 
@@ -202,22 +203,22 @@ class NewsArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomL
     serializer_class = NewsArticleSerializer
 
 
-class NewsArticleRetrieveUpdateDeleteAPIView(CustomRetrieveUpdateDestroyAPIView):
+class NewsArticleRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
     queryset = NewsArticle.active_objects.all()
     serializer_class = NewsArticleDetailSerializer
 
 
-class TrashedNewsListAPIView(IsAdminOrReadOnly, ListAPIView):
+class TrashedNewsListAPIView(AdminOrContentManagerOrReadOnlyMixin, ListAPIView):
     queryset = NewsArticle.inactive_objects.all()
     serializer_class = NewsArticleSerializer
 
 
-class TrashedNewsRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+class TrashedNewsRestoreAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomDestroyAPIView):
     queryset = NewsArticle.inactive_objects.all()
     serializer_class = NewsArticleDetailSerializer
 
 
-class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
+class NewsLetterSubscriptionListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
 
@@ -265,7 +266,7 @@ class NewsLetterDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
     serializer_class = NewsLetterDetailSerializer
 
 
-class BlogArticleCommentListAPIView(APIView):
+class BlogArticleCommentListAPIView(AdminOrContentManagerOrReadOnlyMixin, APIView):
     renderer_classes = (CustomRenderer,)
 
     def get(self, request, *args, **kwargs):
@@ -275,17 +276,17 @@ class BlogArticleCommentListAPIView(APIView):
         return Response(serializer.data, status=HTTP_200_OK)
 
 
-class ViewsListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CreateAPIView):
+class ViewsListCreateAPIView(IsValidRequestAPIKey, CreateAPIView):
     queryset = Views.active_objects.all()
     serializer_class = BlogViewsSerializer
 
 
-class LikesCreateAPIView(CreateAPIView):
+class LikesCreateAPIView(IsValidRequestAPIKey, CreateAPIView):
     serializer_class = LikeSerializer
     queryset = Likes.active_objects.all()
 
 
-class CategoryNewsCountAPIView(APIView):
+class CategoryNewsCountAPIView(AdminOrContentManagerOrReadOnlyMixin, APIView):
 
     def get(self, request, *args, **kwargs):
         queryset = Category.active_objects.all()[:6]
@@ -293,7 +294,7 @@ class CategoryNewsCountAPIView(APIView):
         return Response(serializer.data, status=HTTP_200_OK)
 
 
-class ImageListAPIView(APIView):
+class ImageListAPIView(AdminOrContentManagerOrReadOnlyMixin, APIView):
 
     def get(self, request, *args, **kwargs):
         queryset = Images.active_objects.all()
