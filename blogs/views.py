@@ -32,9 +32,11 @@ from tech_stars.mixins import (
 class NewsArticleDocumentView(DocumentViewSet):
     document = NewsArticleDocument
     serializer_class = NewsArticleDocumentSerializer
+    # pagination_class = NewsArticleDocumentPagination
 
     filter_backends = [CompoundSearchFilterBackend]
-    search_fields = ('title', "intro", "description", "category", "author")
+    search_fields = ('title', "intro", "image", "description",
+                     "category.name", "author.first_name", "author.last_name",)
     suggester_fields = {
         'title': {
             'field': 'title.suggest',
@@ -61,6 +63,7 @@ class NewsArticleDocumentView(DocumentViewSet):
             ],
         },
     }
+    ordering = ('-id', 'title', '-created_at')
 
 
 class BlogArticleDocumentView(DocumentViewSet):
@@ -68,7 +71,8 @@ class BlogArticleDocumentView(DocumentViewSet):
     serializer_class = BlogArticleDocumentSerializer
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
-    search_fields = ('title', "intro", "description", "author")
+    search_fields = ('title', "intro", "image", "description", "author",
+                     "author.first_name", "author.last_name",)
     suggester_fields = {
         'title': {
             'field': 'title.suggest',
@@ -95,6 +99,7 @@ class BlogArticleDocumentView(DocumentViewSet):
             ],
         },
     }
+    ordering = ('-id', 'title', '-created_at')
 
 
 class SearchBlogView(generics.ListAPIView):

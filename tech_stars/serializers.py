@@ -13,8 +13,10 @@ class TechStarDocumentSerializer(DocumentSerializer):
         document = TechStarDocument
 
         fields = (
+            'id',
             'fullname',
             'self_description',
+            'date_created',
         )
 
 

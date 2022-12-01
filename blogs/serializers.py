@@ -26,11 +26,14 @@ class NewsArticleDocumentSerializer(DocumentSerializer):
         document = NewsArticleDocument
 
         fields = (
+            'id'
             'title',
             'intro',
+            'image',
             'description',
             'category',
-            'author'
+            'author',
+            'created_at'
         )
 
 
@@ -39,11 +42,17 @@ class BlogArticleDocumentSerializer(DocumentSerializer):
         document = BlogArticleDocument
 
         fields = (
+            'id'
             'title',
             'intro',
+            'image',
             'description',
-            'author'
+            'author',
+            'created_at',
         )
+
+    # def prepare_image(self, instance):
+    #     return instance.image.url if instance.image else ''
 
 
 class AuthorSerializer(ModelSerializer):
