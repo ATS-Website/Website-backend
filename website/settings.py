@@ -159,8 +159,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIR = os.path.join(BASE_DIR, "static")
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATICFILES_DIR = [STATIC_ROOT, ]
+
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
 # DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
