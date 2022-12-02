@@ -49,12 +49,10 @@ class ChangePasswordAV(IsValidRequestAPIKey, CustomRetrieveUpdateAPIView):
 
 class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
     serializer_class = RegisterationSerializer
-    # permission_classes = [IsAdmin]
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
     def post(self, request, *args, **kwargs):
-        avatar = request.FILES["profile_picture"]
-        position = request.data.get("position")
+
         serializer = RegisterationSerializer(data=request.data)
         data = {}
         print(serializer.is_valid(), "dd")
@@ -69,20 +67,15 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
             account = Account.objects.create_user(
                 first_name=first_name, last_name=last_name, username=username,
                 gender=gender, email=email, password=password)
-            try:
-                profile = Profile.objects.create(
-                    account=account, avatar=avatar, position=position)
-            except:
-                account.delete()
-                return Response({"message": "Kindly check the avatar and position sent"}, status=status.HTTP_400_BAD_REQUEST)
+
             data["status"] = "success"
             data["username"] = account.username
             data["email"] = account.email
             refresh_token = RefreshToken.for_user(account)
             data["refresh_token"] = str(refresh_token)
             data["access_token"] = str(refresh_token.access_token)
-            data["profile_picture"] = profile.avatar.url
-            data["position"] = profile.position
+            data["profile_picture"] =account.profile.avatar.url
+            data["position"] = account.profile.position
             return Response(data, status=status.HTTP_201_CREATED)
         data["error"] = serializer.errors
         data["status"] = "success"
