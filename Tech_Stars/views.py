@@ -52,7 +52,13 @@ class TechStarDocumentView(DocumentViewSet):
     serializer_class = TechStarDocumentSerializer
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
-    search_fields = ('full_name', "self_description",)
+    search_fields = {
+        "full_name": {'fuzziness': 'AUTO'},
+        "official_email": {'fuzziness': 'AUTO'},
+        "self_description": {'fuzziness': 'AUTO'},
+        "course": {'fuzziness': 'AUTO'},
+
+    }
     suggester_fields = {
         'full_name': {
             'field': 'full_name.suggest',
@@ -67,6 +73,7 @@ class TechStarDocumentView(DocumentViewSet):
             ],
         },
     }
+    multi_match_search_fields = ("full_name", "official_email", "self_description")
     ordering = ('-id', 'full_name', '-date_created')
 
 

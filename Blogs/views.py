@@ -26,7 +26,7 @@ from .mixins import AdminOrContentManagerOrReadOnlyMixin
 from .serializers import *
 
 from .models import *
-from . import client
+from .paginations import ResponsePagination
 from .tasks import new_send_mail_func
 
 
@@ -42,9 +42,20 @@ class NewsArticleDocumentView(DocumentViewSet):
     serializer_class = NewsArticleDocumentSerializer
     # pagination_class = NewsArticleDocumentPagination
 
-    filter_backends = [CompoundSearchFilterBackend]
-    search_fields = ('title', "intro", "image", "description",
-                     "category.name", "author.first_name", "author.last_name",)
+    filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
+    search_fields = {
+        "title": {'fuzziness': 'AUTO'},
+        "intro": {'fuzziness': 'AUTO'},
+        "description": {'fuzziness': 'AUTO'},
+        "image": None,
+        "category.name": {'fuzziness': 'AUTO'},
+        "author.first_name": {'fuzziness': 'AUTO'},
+        "author.last_name": {'fuzziness': 'AUTO'}
+
+    }
+    multi_match_search_fields = ("title", "intro", "description",
+                                 "author.first_name", "author.last_name", "category.name")
+
     suggester_fields = {
         'title': {
             'field': 'title.suggest',
@@ -74,13 +85,24 @@ class NewsArticleDocumentView(DocumentViewSet):
     ordering = ('-id', 'title', '-created_at')
 
 
-class BlogArticleDocumentView(DocumentViewSet):
+class BlogArticleDocumentView(DocumentViewSet, APIView):
     document = BlogArticleDocument
     serializer_class = BlogArticleDocumentSerializer
+    pagination_class = ResponsePagination
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
-    search_fields = ('title', "intro", "image", "description", "author",
-                     "author.first_name", "author.last_name",)
+    search_fields = {
+        "title": {'fuzziness': 'AUTO'},
+        "intro": {'fuzziness': 'AUTO'},
+        "description": {'fuzziness': 'AUTO'},
+        "image": None,
+        "category.name": {'fuzziness': 'AUTO'},
+        "author.first_name": {'fuzziness': 'AUTO'},
+        "author.last_name": {'fuzziness': 'AUTO'}
+
+    }
+    multi_match_search_fields = ("title", "intro", "description",
+                                 "author.first_name", "author.last_name", "category.name")
     suggester_fields = {
         'title': {
             'field': 'title.suggest',
@@ -107,6 +129,7 @@ class BlogArticleDocumentView(DocumentViewSet):
             ],
         },
     }
+
     ordering = ('-id', 'title', '-created_at')
 
 

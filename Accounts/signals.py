@@ -11,7 +11,7 @@ def create_profile(sender, instance, created, **kwargs):
         user_profile.save()
     else:
         try:
-            user_profile = Profile.objects.get(account=instance)
+            user_profile = Profile.objects.filter(account=instance).first()
             user_profile.save()
         except:
             Profile.objects.create(account=instance)

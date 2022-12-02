@@ -4,7 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 
 
 class WebsitePaginator(PageNumberPagination):
-    page_size = 100
+    page_size = 10
 
 
 # class CSVPaginator(PageNumberPagination):

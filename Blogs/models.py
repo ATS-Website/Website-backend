@@ -115,9 +115,9 @@ class BlogArticle(models.Model):
     # def author_profile_pic(self):
     #     return self.author.profile_pics
 
-    @property
-    def by_tags(self):
-        return [str(tag) for tag in self.tags.all]
+    # @property
+    # def by_tags(self):
+    #     return [str(tag) for tag in self.tags.all]
 
     def __str__(self):
         return self.title

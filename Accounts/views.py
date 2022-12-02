@@ -34,7 +34,7 @@ from .permissions import IsAdmin
 from .mixins import IsAdminOrReadOnlyMixin
 from .permissions import IsValidRequestAPIKey
 from Tech_Stars.utils import write_log_csv
-from Tech_Stars.mixins import CustomRetrieveUpdateAPIView
+from Tech_Stars.mixins import CustomRetrieveUpdateAPIView, CustomRetrieveUpdateDestroyAPIView
 
 
 class LogoutView(APIView):
@@ -251,6 +251,12 @@ class AccountRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
                       request.user.username, f"{message_obj} was updated")
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AccountRetrieveUpdateDeleteAV(CustomRetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAdmin,)
+    serializer_class = UpdateAccountSerializer
+    queryset = Account.active_objects.all()
 
 
 class SetNewPasswordAV(generics.GenericAPIView):

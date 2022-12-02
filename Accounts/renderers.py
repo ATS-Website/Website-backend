@@ -16,7 +16,7 @@ class CustomRenderer(JSONRenderer):
             response["status"] = "error"
             response["data"] = None
             try:
-                response["message"] = data["detail"]
+                response["message"] = data
             except KeyError:
                 response["data"] = data
                 response["message"] = "An Error ocurred"
