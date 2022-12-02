@@ -1,37 +1,39 @@
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
-from rest_framework.test import APITestCase, APIClient, RequestsClient, CoreAPIClient
+from rest_framework.test import APITestCase, APIClient, RequestsClient, CoreAPIClient, APIRequestFactory
 from requests.auth import HTTPBasicAuth
 from decouple import config
 
 from accounts.models import Account
+
 
 # Create your tests here
 
 # with open("media/work01-hover.jpg", "rb") as x:
 #     profile_picture = x.read()
 
-headers = {
-    "api-key": config("APP_API_KEY"),
-    "hash-key": config("HASH_KEY"),
-    "request-ts": config("REQUEST_TS")
-}
-
-# client = CoreAPIClient()
-# client.auth = HTTPBasicAuth("user", "pass")
-# client.headers.update(headers)
-
-
-client = RequestsClient()
-client.auth = HTTPBasicAuth('user', 'pass')
-client.headers.update({'x-test': 'true'})
+# headers = {
+#     "api-key": config("APP_API_KEY"),
+#     "hash-key": config("HASH_KEY"),
+#     "request-ts": config("REQUEST_TS")
+# }
 
 
 class TechStarTest(APITestCase):
 
+    @property
+    def request_headers(self):
+        headers = {
+            "HTTP_API_KEY": config("APP_API_KEY"),
+            "HTTP_HASH_KEY": config("HASH_KEY"),
+            "HTTP_REQUEST_TS": config("REQUEST_TS")
+        }
+        return headers
+
     def test_list_of_tech_stars(self):
+        self.client.credentials(**self.request_headers)
         url = reverse("tech_stars:tech_star_list_create")
-        # response = client.get(url)
+        response = self.client.get(url)
         self.assertEqual(response.status_code, HTTP_200_OK)
 
     # def test_create_tech_stars(self):
