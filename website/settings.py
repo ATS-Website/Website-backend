@@ -202,7 +202,6 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        # 'rest_framework.renderers.BrowsableAPIRenderer',
         'tech_stars.renderers.CustomRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

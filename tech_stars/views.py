@@ -44,12 +44,8 @@ from blogs.permissions import IsAdminOrReadOnly
 # timezone.activate(settings.TIME_ZONE)
 
 valid_days = list(range(1, 6))
-time_check = ResumptionAndClosingTime.objects.all().first()
-office_location = OfficeLocation.objects.all().first()
 
 
-# time_check = ""
-# office_location = ""
 class TechStarDocumentView(DocumentViewSet):
     document = TechStarDocument
     serializer_class = TechStarDocumentSerializer
@@ -171,6 +167,8 @@ class GenerateAttendanceQRCode(IsValidRequestAPIKey, CustomCreateAPIView):
         new_request = request.data
         latitude = float(new_request.get("latitude"))
         longitude = float(new_request.get("longitude"))
+        time_check = ResumptionAndClosingTime.objects.all().first()
+        office_location = OfficeLocation.objects.all().first()
 
         if office_location.latitude_1 < latitude < office_location.latitude_2 and \
                 office_location.longitude_1 <= longitude <= office_location.longitude_2:
@@ -208,6 +206,8 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
         new_request = request.data
         latitude = float(new_request.get("latitude"))
         longitude = float(new_request.get("longitude"))
+        time_check = ResumptionAndClosingTime.objects.all().first()
+        office_location = OfficeLocation.objects.all().first()
 
         if office_location.latitude_1 < latitude < office_location.latitude_2 and \
                 office_location.longitude_1 <= longitude <= office_location.longitude_2:
@@ -328,4 +328,11 @@ class RecentXpertOfTheWeekAPIView(IsValidRequestAPIKey, APIView):
     def get(self, request, *args, **kwargs):
         x = XpertOfTheWeek.active_objects.all().first()
         serializer = XpertOfTheWeekDetailSerializer(x, context={"request": request})
+        return Response(serializer.data, status=HTTP_200_OK)
+
+
+class TechStarAttendanceListAPIView(IsValidRequestAPIKey, APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = Attendance.active_objects.filter(tech_star_id=kwargs["pk"])
+        serializer = AttendanceSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data, status=HTTP_200_OK)

@@ -11,7 +11,7 @@ from .views import (
     TestimonialFrontpageListAPIView, XpertOfTheWeekListCreateAPIView, XpertOfTheWeekDetailUpdateDeleteAPIView,
     ReadAdminLog, WriteAdminLog, TrashedTechStarListAPIView, TrashedTechStarRestoreAPIView, TrashedTestimonialListAPIView,
     TrashedTestimonialRestoreAPIView, TrashedXpertListAPIView, TrashedXpertRestoreAPIView, TechStarDocumentView,
-    RecentXpertOfTheWeekAPIView
+    RecentXpertOfTheWeekAPIView, TechStarAttendanceListAPIView
 )
 
 
@@ -52,6 +52,8 @@ urlpatterns = [
     path("record-attendance/", RecordAttendanceAPIView.as_view(),
          name="record_attendance"),
     path("attendance-list/", AttendanceListAPIView.as_view(), name="attendance_list"),
+    path("tech-star-attendance-list/<int:pk>/", TechStarAttendanceListAPIView.as_view(), name="tech_star_attendance_list"),
+
 
     path("office-location-create/", OfficeLocationCreateAPIView.as_view(),
          name="office_location_create"),
