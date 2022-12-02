@@ -49,6 +49,11 @@ class AdminManager(BaseUserManager):
         return super().get_queryset().filter(is_admin=True)
 
 
+class AccountManager(BaseUserManager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True)
+
+
 class Account(AbstractBaseUser):
     GENDER_CHOICES = (
         ('MALE', 'MALE'),
@@ -76,6 +81,7 @@ class Account(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ["first_name", "last_name", "username", ]
     objects = MyAccountManager()
+    active_objects = AccountManager()
     admin_objects = AdminManager()
     applicant_objects = ApplicantManager()
 

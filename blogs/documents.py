@@ -138,3 +138,14 @@ class BlogArticleDocument(Document):
             # "created_at",
             # "updated_at",
         ]
+
+    def indexing(self):
+        obj = BlogArticleDocument(
+            meta={'id': self.id},
+            author=self.author,
+            created_at=self.created_at,
+            title=self.title,
+            description=self.description
+        )
+        obj.save()
+        return obj.to_dict(include_meta=True)

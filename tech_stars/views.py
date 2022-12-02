@@ -34,6 +34,7 @@ from .tasks import write_log_csv
 from .enc_dec.encryption_decryption import aes_encrypt
 
 from accounts.mixins import IsAdminOrReadOnlyMixin
+from accounts.permissions import IsValidRequestAPIKey
 
 from blogs.permissions import IsAdminOrReadOnly
 
@@ -54,7 +55,13 @@ class TechStarDocumentView(DocumentViewSet):
     serializer_class = TechStarDocumentSerializer
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
-    search_fields = ('full_name', "self_description",)
+    search_fields = {
+        "full_name": {'fuzziness': 'AUTO'},
+        "official_email": {'fuzziness': 'AUTO'},
+        "self_description": {'fuzziness': 'AUTO'},
+        "course": {'fuzziness': 'AUTO'},
+
+    }
     suggester_fields = {
         'full_name': {
             'field': 'full_name.suggest',
@@ -69,6 +76,8 @@ class TechStarDocumentView(DocumentViewSet):
             ],
         },
     }
+    multi_match_search_fields = (
+        "full_name", "official_email", "self_description")
     ordering = ('-id', 'full_name', '-date_created')
 
 
@@ -86,7 +95,7 @@ def create_attendance(tech_star, date_time, device_id):
     return serializer.data
 
 
-class TechStarListCreateAPIView(CustomListCreateAPIView):
+class TechStarListCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
     serializer_class = TechStarSerializer
     parser_classes = [FormParser, MultiPartParser]
     queryset = TechStar.active_objects.all()
@@ -98,12 +107,12 @@ class TechStarDetailsUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnlyMixin
     queryset = TechStar.active_objects.all()
 
 
-class TrashedTechStarListAPIView(IsAdminOrReadOnly, ListAPIView):
+class TrashedTechStarListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, ListAPIView):
     queryset = TechStar.inactive_objects.all()
     serializer_class = TechStarSerializer
 
 
-class TrashedTechStarRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+class TrashedTechStarRestoreAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomDestroyAPIView):
     queryset = TechStar.inactive_objects.all()
     serializer_class = TechStarDetailSerializer
 
@@ -128,12 +137,12 @@ class TestimonialDetailUpdateDeleteView(AdminOrMembershipManagerOrReadOnlyMixin,
     queryset = Testimonial.active_objects.all()
 
 
-class TrashedTestimonialListAPIView(IsAdminOrReadOnly, ListAPIView):
+class TrashedTestimonialListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, ListAPIView):
     queryset = Testimonial.inactive_objects.all()
     serializer_class = TestimonialSerializer
 
 
-class TrashedTestimonialRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+class TrashedTestimonialRestoreAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomDestroyAPIView):
     queryset = Testimonial.inactive_objects.all()
     serializer_class = TestimonialDetailSerializer
 
@@ -152,7 +161,7 @@ class ResumptionAndClosingTimeDetailsUpdateDetailAPIView(AdminOrMembershipManage
         return ResumptionAndClosingTime.objects.all().first()
 
 
-class GenerateAttendanceQRCode(CustomCreateAPIView):
+class GenerateAttendanceQRCode(IsValidRequestAPIKey, CustomCreateAPIView):
     serializer_class = BarcodeSerializer
 
     def post(self, request, *args, **kwargs):
@@ -181,7 +190,7 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
                     "secret_key": config("QR_SECRET_KEY")
                 }
 
-                qr = generate_qr(data)
+                qr = generate_qr(json.dumps(data))
                 result = self.get_serializer(qr)
 
                 return Response(result.data, status=HTTP_201_CREATED)
@@ -189,7 +198,7 @@ class GenerateAttendanceQRCode(CustomCreateAPIView):
         raise ValidationError("Out of Location Range")
 
 
-class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCreateAPIView):
+class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
     serializer_class = AttendanceSerializer
 
     def post(self, request, *args, **kwargs):
@@ -224,9 +233,15 @@ class RecordAttendanceAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomCre
                     last_attendance_date = tech_star_attendance.check_in
                     if last_attendance_date.date() == timezone.now().date():
                         if timezone.now().time() < (last_attendance_date + timezone.timedelta(minutes=30)).time():
-                            raise ValidationError("You cannot check out 10 minutes after check in!")
+                            raise ValidationError("You cannot check out 30 minutes after check in!")
 
-                        tech_star_attendance.check_out = date_time
+                        if tech_star_attendance.check_out is not None:
+                            if tech_star_attendance.check_out <= (
+                                    last_attendance_date + timezone.timedelta(minutes=30)):
+                                raise ValidationError("You cannot check out 30 minutes after check in!")
+                            tech_star_attendance.check_out = date_time
+                        else:
+                            raise ValidationError("You have already checked out")
                         if tech_star_attendance.status == "Uncompleted" and tech_star.device_id == device_id:
                             tech_star_attendance.status = "Successful"
                         elif tech_star.device_id != device_id:
@@ -247,10 +262,9 @@ class AttendanceUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRet
     serializer_class = AttendanceSerializer
 
 
-class AttendanceListAPIView(ListAPIView):
+class AttendanceListAPIView(IsValidRequestAPIKey, ListAPIView):
     queryset = Attendance.active_objects.all()
     serializer_class = AttendanceSerializer
-    permission_classes = (IsAuthenticated,)
 
 
 class OfficeLocationCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
@@ -276,17 +290,17 @@ class XpertOfTheWeekDetailUpdateDeleteAPIView(AdminOrMembershipManagerOrReadOnly
     queryset = XpertOfTheWeek.active_objects.all()
 
 
-class TrashedXpertListAPIView(IsAdminOrReadOnly, ListAPIView):
+class TrashedXpertListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, ListAPIView):
     queryset = XpertOfTheWeek.inactive_objects.all()
     serializer_class = XpertOfTheWeekSerializer
 
 
-class TrashedXpertRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+class TrashedXpertRestoreAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomDestroyAPIView):
     queryset = XpertOfTheWeek.inactive_objects.all()
     serializer_class = XpertOfTheWeekSerializer
 
 
-class WriteAdminLog(APIView):
+class WriteAdminLog(IsValidRequestAPIKey, APIView):
 
     def post(self, request, *args, **kwargs):
         # new_request = decrypt_request(request.data)
@@ -303,8 +317,15 @@ class WriteAdminLog(APIView):
         return Response("Activity logged successfully", status=HTTP_201_CREATED)
 
 
-class ReadAdminLog(ListAPIView):
+class ReadAdminLog(IsValidRequestAPIKey, ListAPIView):
     def get(self, *args, **kwargs):
         with open("admin_activity_logs.csv", "r") as x:
             read = literal_eval(json.dumps(list(csv.DictReader(x))))
             return Response(read, status=HTTP_200_OK)
+
+
+class RecentXpertOfTheWeekAPIView(IsValidRequestAPIKey, APIView):
+    def get(self, request, *args, **kwargs):
+        x = XpertOfTheWeek.active_objects.all().first()
+        serializer = XpertOfTheWeekDetailSerializer(x, context={"request": request})
+        return Response(serializer.data, status=HTTP_200_OK)

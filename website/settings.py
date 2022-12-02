@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+from corsheaders.defaults import default_headers
 from decouple import config
 import os
 from datetime import timedelta
@@ -73,6 +74,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -86,6 +88,12 @@ CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com', 'http://localhost:3000',
                         'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:8000',
                         "https://zippy-dango-7ea3fe.netlify.app"]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'request-ts',
+    'api-key',
+    'hash-key'
+]
+CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {

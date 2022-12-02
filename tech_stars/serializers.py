@@ -14,8 +14,15 @@ class TechStarDocumentSerializer(DocumentSerializer):
 
         fields = (
             'id',
-            'fullname',
+            'tech_star_id',
+            'full_name',
+            'profile_picture',
             'self_description',
+            'course',
+            'official_email',
+            'favorite_meal',
+            'favorite_quote',
+            'cohort',
             'date_created',
         )
 

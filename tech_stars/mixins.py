@@ -17,9 +17,7 @@ from .utils import write_log_csv
 
 
 class AdminOrMembershipManagerOrReadOnlyMixin:
-    pass
-    # permission_classes = (IsValidRequestAPIKey,
-    #                       IsAdminOrMembershipManagerOrReadOnly, )
+    permission_classes = (IsValidRequestAPIKey, IsAdminOrMembershipManagerOrReadOnly,)
 
 
 class CustomListCreateAPIView(ListCreateAPIView):
@@ -104,5 +102,3 @@ class CustomDestroyAPIView(generics.DestroyAPIView):
         write_log_csv(f"Restored {self.get_serializer().Meta.model.__name__}",
                       request.user.username, f"{instance} was restored")
         return Response(status=HTTP_204_NO_CONTENT)
-
-

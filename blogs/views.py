@@ -10,6 +10,7 @@ from rest_framework import generics
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.parsers import FormParser, FileUploadParser, MultiPartParser
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet, BaseDocumentViewSet
 from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
 from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
 
@@ -20,8 +21,10 @@ from .serializers import *
 from .models import *
 from . import client
 from .tasks import new_send_mail_func
+from .paginations import ResponsePagination, CustomPageNumberPagination
 
 from accounts.renderers import CustomRenderer
+from accounts.permissions import IsValidRequestAPIKey
 
 from blogs.permissions import IsAdminOrReadOnly
 
@@ -32,7 +35,7 @@ from tech_stars.mixins import (
 class NewsArticleDocumentView(DocumentViewSet):
     document = NewsArticleDocument
     serializer_class = NewsArticleDocumentSerializer
-    # pagination_class = NewsArticleDocumentPagination
+    pagination_class = CustomPageNumberPagination
 
     filter_backends = [CompoundSearchFilterBackend]
     search_fields = ('title', "intro", "image", "description",
@@ -66,9 +69,10 @@ class NewsArticleDocumentView(DocumentViewSet):
     ordering = ('-id', 'title', '-created_at')
 
 
-class BlogArticleDocumentView(DocumentViewSet):
+class BlogArticleDocumentView(DocumentViewSet, BaseDocumentViewSet):
     document = BlogArticleDocument
     serializer_class = BlogArticleDocumentSerializer
+    pagination_class = CustomPageNumberPagination
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
     search_fields = ('title', "intro", "image", "description", "author",
@@ -217,7 +221,7 @@ class TrashedNewsRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     serializer_class = NewsArticleDetailSerializer
 
 
-class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
+class NewsLetterSubscriptionListCreateAPIView(IsValidRequestAPIKey, CustomListCreateAPIView):
     queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
 

@@ -4,5 +4,4 @@ from accounts.permissions import IsValidRequestAPIKey
 
 
 class AdminOrReadOnlyMixin:
-    pass
-    # permission_classes = (IsValidRequestAPIKey, IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsValidRequestAPIKey, IsAuthenticatedOrReadOnly, )
