@@ -268,6 +268,8 @@ class NewsLetter(models.Model):
         return self.title
 
     def trunc_content(self):
+        if self.content is None:
+            return ""
         return self.content[:150]
 
 

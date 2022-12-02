@@ -46,7 +46,7 @@ class AESCipher:
                 if isinstance(value, str):
                     the_object[key] = self.decrypt(value)
                 else:
-                    the_object[key] = self.decrypt(value)
+                    the_object[key] = self.versatile_decrypt(value)
         elif isinstance(the_object, list):
             for index, value in enumerate(list):
                 the_object[index] = self.versatile_decrypt(value)

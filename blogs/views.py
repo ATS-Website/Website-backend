@@ -218,7 +218,7 @@ class TrashedNewsRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
     serializer_class = NewsArticleDetailSerializer
 
 
-class NewsLetterSubscriptionListCreateAPIView(CustomListCreateAPIView):
+class NewsLetterSubscriptionListCreateAPIView(IsValidRequestAPIKey, CustomListCreateAPIView):
     queryset = NewsLetterSubscription.active_objects.all()
     serializer_class = NewsLetterSubscriptionSerializer
 
