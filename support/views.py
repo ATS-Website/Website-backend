@@ -26,12 +26,12 @@ class FrequentlyAskedQuestionDetailsUpdateDeleteAPIView(AdminOrReadOnlyMixin, Cu
     renderer_classes = (CustomRenderer,)
 
 
-class FrequentlyAskedQuestionListAPIView(IsAdminOrReadOnly, ListAPIView):
+class FrequentlyAskedQuestionListAPIView(AdminOrReadOnlyMixin, ListAPIView):
     queryset = FrequentlyAskedQuestions.inactive_objects.all()
     serializer_class = FrequentlyAskedQuestionsSerializer
 
 
-class FrequentlyAskedQuestionRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIView):
+class FrequentlyAskedQuestionRestoreAPIView(AdminOrReadOnlyMixin, CustomDestroyAPIView):
     queryset = FrequentlyAskedQuestions.inactive_objects.all()
     serializer_class = FrequentlyAskedQuestionsSerializer
 
