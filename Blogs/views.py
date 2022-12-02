@@ -40,7 +40,7 @@ from .serializers import NewsArticleDocumentSerializer
 class NewsArticleDocumentView(DocumentViewSet):
     document = NewsArticleDocument
     serializer_class = NewsArticleDocumentSerializer
-    # pagination_class = CustomPageNumberPagination
+    pagination_class = CustomPageNumberPagination
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
     search_fields = {
@@ -88,7 +88,7 @@ class NewsArticleDocumentView(DocumentViewSet):
 class BlogArticleDocumentView(DocumentViewSet, BaseDocumentViewSet):
     document = BlogArticleDocument
     serializer_class = BlogArticleDocumentSerializer
-    # pagination_class = CustomPageNumberPagination
+    pagination_class = CustomPageNumberPagination
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
     search_fields = {
