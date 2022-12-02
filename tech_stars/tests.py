@@ -42,6 +42,7 @@ class TechStarTest(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTP_200_OK)
 
+
 class TestimonialsTest(APITestCase):
     @classmethod
     def setUp(cls):

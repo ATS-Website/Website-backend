@@ -5,8 +5,6 @@ from .serializers import FrequentlyAskedQuestionsSerializer, FrequentlyAskedQues
 from .models import FrequentlyAskedQuestions, ContactUs
 from .mixins import AdminOrReadOnlyMixin
 
-from blogs.permissions import IsAdminOrReadOnly
-
 from tech_stars.renderers import CustomRenderer
 from tech_stars.mixins import CustomListCreateAPIView, CustomRetrieveUpdateDestroyAPIView, CustomDestroyAPIView
 

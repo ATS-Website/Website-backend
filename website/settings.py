@@ -21,17 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("SECRET_KEY")
 QR_SECRET_KEY = config("QR_SECRET_KEY")
-#
-# # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = decouple.config("DEBUG", cast=bool)
 
-# SECRET_KEY = "django-insecure-ep&9526=*1u9%r(rcke7qf&wt&__)ak$*94p-h7h0&gs(b)emd"
-DEBUG = True
-# DEBUG = config("DEBUG", cast=bool, default=True)
-# ADMIN = config("ADMIN")
+DEBUG = config("DEBUG", cast=bool)
 
 
-# ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ['atsbk.afexats.com', '127.0.0.1', 'localhost', 'localhost:3000',
                  '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', ]
 
@@ -183,9 +176,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIR = os.path.join(BASE_DIR, "static")
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-# STATICFILES_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = "media/"
-# DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 # Default primary key field type
@@ -227,10 +218,6 @@ ELASTICSEARCH_DSL = {
     },
 }
 
-# ELASTICSEARCH_INDEX_NAMES = {
-#     'blogs.NewsArticle': 'news',
-#     'blogs.BlogArticle': 'blogs',
-# }
 ELASTICSEARCH_INDEX_NAMES = {
     'Blogs.NewsArticle': 'news',
     'Blogs.BlogArticle': 'blogs',
@@ -251,20 +238,11 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_TIMEZONE = "AFrica/Lagos"
 CELERY_ACCEPT_CONTENT = ["application/json"]
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
-# CLOUDINARY_STORAGE = {
-#     "CLOUD_NAME": config("CLOUD_NAME"),
-#     "API_KEY": config("CLOUD_API_KEY"),
-#     "API_SECRET": config("CLOUD_API_SECRET"),
-#     'STATIC_IMAGES_EXTENSIONS': ['jpg', 'jpe', 'jpeg', 'jpc', 'jp2', 'j2k', 'wdp', 'jxr',
-#                                  'hdp', 'png', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'ico'],
 
-# }
 
 # CELERY-BEAT
 CELERY_BEAT_SCHEDULER = 'djanga_celery_beat.schedulers:DatabaseScheduler'

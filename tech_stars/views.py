@@ -10,7 +10,6 @@ from rest_framework.views import APIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
-from rest_framework.permissions import IsAuthenticated
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
 from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
@@ -31,17 +30,12 @@ from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAP
                      )
 from .utils import generate_qr
 from .tasks import write_log_csv
-from .enc_dec.encryption_decryption import aes_encrypt
+from .enc_dec.encryption_decryption import aes_encrypt,aes_decrypt
 
-from accounts.mixins import IsAdminOrReadOnlyMixin
 from accounts.permissions import IsValidRequestAPIKey
-
-from blogs.permissions import IsAdminOrReadOnly
 
 # Create your views here.
 
-
-# timezone.activate(settings.TIME_ZONE)
 
 valid_days = list(range(1, 6))
 
@@ -163,8 +157,7 @@ class GenerateAttendanceQRCode(IsValidRequestAPIKey, CustomCreateAPIView):
     def post(self, request, *args, **kwargs):
         if timezone.now().isoweekday() not in valid_days:
             raise ValidationError("Today is not workday !")
-        # new_request = decrypt_request(request.data)
-        new_request = request.data
+        new_request = aes_decrypt(request.data)
         latitude = float(new_request.get("latitude"))
         longitude = float(new_request.get("longitude"))
         time_check = ResumptionAndClosingTime.objects.all().first()
@@ -188,7 +181,7 @@ class GenerateAttendanceQRCode(IsValidRequestAPIKey, CustomCreateAPIView):
                     "secret_key": config("QR_SECRET_KEY")
                 }
 
-                qr = generate_qr(json.dumps(data))
+                qr = generate_qr(aes_encrypt(json.dumps(data)))
                 result = self.get_serializer(qr)
 
                 return Response(result.data, status=HTTP_201_CREATED)
@@ -200,10 +193,9 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
     serializer_class = AttendanceSerializer
 
     def post(self, request, *args, **kwargs):
-        # new_request = decrypt_request(request.data)
+        new_request = aes_decrypt(request.data)
         if timezone.now().isoweekday() not in valid_days:
             raise ValidationError("Today is not workday !")
-        new_request = request.data
         latitude = float(new_request.get("latitude"))
         longitude = float(new_request.get("longitude"))
         time_check = ResumptionAndClosingTime.objects.all().first()
@@ -303,8 +295,7 @@ class TrashedXpertRestoreAPIView(AdminOrMembershipManagerOrReadOnlyMixin, Custom
 class WriteAdminLog(IsValidRequestAPIKey, APIView):
 
     def post(self, request, *args, **kwargs):
-        # new_request = decrypt_request(request.data)
-        new_request = request.data
+        new_request = aes_decrypt(request.data)
         event = new_request.get('event')
         admin = new_request.get("admin")
         message = new_request.get("message")
