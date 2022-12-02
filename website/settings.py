@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+from corsheaders.defaults import default_headers
 from decouple import config
 import os
 from datetime import timedelta
@@ -87,10 +88,10 @@ CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com', 'http://localhost:3000',
                         'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:8000',
                         "https://zippy-dango-7ea3fe.netlify.app"]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = [
-    "API-KEY",
-    "HASH-KEY",
-    "REQUEST-TS"
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'request-ts',
+    'api-key',
+    'hash-key'
 ]
 
 TEMPLATES = [
