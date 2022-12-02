@@ -73,7 +73,8 @@ class TechStarDocumentView(DocumentViewSet):
             ],
         },
     }
-    multi_match_search_fields = ("full_name", "official_email", "self_description")
+    multi_match_search_fields = (
+        "full_name", "official_email", "self_description")
     ordering = ('-id', 'full_name', '-date_created')
 
 

@@ -26,11 +26,11 @@ from .mixins import AdminOrContentManagerOrReadOnlyMixin
 from .serializers import *
 
 from .models import *
-from .paginations import ResponsePagination
+from .paginations import ResponsePagination, CustomPageNumberPagination
 from .tasks import new_send_mail_func
 
 
-from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet, BaseDocumentViewSet
 from django_elasticsearch_dsl_drf.filter_backends import CompoundSearchFilterBackend, SuggesterFilterBackend
 from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
 from .documents import NewsArticleDocument
@@ -40,8 +40,7 @@ from .serializers import NewsArticleDocumentSerializer
 class NewsArticleDocumentView(DocumentViewSet):
     document = NewsArticleDocument
     serializer_class = NewsArticleDocumentSerializer
-    # pagination_class = NewsArticleDocumentPagination
-
+    pagination_class = CustomPageNumberPagination
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
     search_fields = {
         "title": {'fuzziness': 'AUTO'},
@@ -85,10 +84,10 @@ class NewsArticleDocumentView(DocumentViewSet):
     ordering = ('-id', 'title', '-created_at')
 
 
-class BlogArticleDocumentView(DocumentViewSet, APIView):
+class BlogArticleDocumentView(DocumentViewSet, BaseDocumentViewSet):
     document = BlogArticleDocument
     serializer_class = BlogArticleDocumentSerializer
-    pagination_class = ResponsePagination
+    # pagination_class = CustomPageNumberPagination
 
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
     search_fields = {
