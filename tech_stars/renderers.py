@@ -1,4 +1,5 @@
 from rest_framework.renderers import JSONRenderer
+from .enc_dec.encryption_decryption import aes_encrypt
 
 
 class CustomRenderer(JSONRenderer):
@@ -7,7 +8,7 @@ class CustomRenderer(JSONRenderer):
         response = {
             "success": True,
             "status_code": status_code,
-            "data": data,
+            "data": aes_encrypt(data),
             "message": "Successfully"
         }
 
