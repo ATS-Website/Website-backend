@@ -44,8 +44,8 @@ from blogs.permissions import IsAdminOrReadOnly
 # timezone.activate(settings.TIME_ZONE)
 
 valid_days = list(range(1, 6))
-time_check = ResumptionAndClosingTime.objects.all().first()
-office_location = OfficeLocation.objects.all().first()
+# time_check = ResumptionAndClosingTime.objects.all().first()
+# office_location = OfficeLocation.objects.all().first()
 
 
 # time_check = ""
@@ -178,9 +178,11 @@ class GenerateAttendanceQRCode(IsValidRequestAPIKey, CustomCreateAPIView):
 
                 email = new_request.get("email")
                 try:
-                    tech_star = TechStar.active_objects.get(official_email=email)
+                    tech_star = TechStar.active_objects.get(
+                        official_email=email)
                 except:
-                    raise ValidationError("Tech Star with this email doesn't exist !")
+                    raise ValidationError(
+                        "Tech Star with this email doesn't exist !")
 
                 date_time = new_request.get("date_time")
 
@@ -218,7 +220,8 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
                 device_id = new_request.get("device_id")
 
                 try:
-                    tech_star = TechStar.active_objects.get(official_email=email)
+                    tech_star = TechStar.active_objects.get(
+                        official_email=email)
                 except:
                     raise ValidationError("Tech Star Does Not Exist !")
 
@@ -233,7 +236,8 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
                     last_attendance_date = tech_star_attendance.check_in
                     if last_attendance_date.date() == timezone.now().date():
                         if timezone.now().time() < (last_attendance_date + timezone.timedelta(minutes=30)).time():
-                            raise ValidationError("You cannot check out 10 minutes after check in!")
+                            raise ValidationError(
+                                "You cannot check out 10 minutes after check in!")
 
                         tech_star_attendance.check_out = date_time
                         if tech_star_attendance.status == "Uncompleted" and tech_star.device_id == device_id:
@@ -243,7 +247,8 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
                         tech_star_attendance.save()
                         attendance = self.get_serializer(tech_star_attendance)
                         return Response(attendance.data, status=HTTP_201_CREATED)
-                    attendance = create_attendance(tech_star, date_time, device_id)
+                    attendance = create_attendance(
+                        tech_star, date_time, device_id)
                     return Response(attendance, status=HTTP_201_CREATED)
                 attendance = create_attendance(tech_star, date_time, device_id)
                 return Response(attendance, status=HTTP_201_CREATED)

@@ -70,7 +70,8 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
                 first_name=first_name, last_name=last_name, username=username,
                 gender=gender, email=email, password=password)
             try:
-                profile = Profile.objects.create(account=account, avatar=avatar, position=position)
+                profile = Profile.objects.create(
+                    account=account, avatar=avatar, position=position)
             except:
                 account.delete()
                 return Response({"message": "Kindly check the avatar and position sent"}, status=status.HTTP_400_BAD_REQUEST)
@@ -88,37 +89,37 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class VerifyEmail(APIView):
-    # serializer_class = VerifyEmailSerializer
-    token_param_config = openapi.Parameter(
-        'token', in_=openapi.IN_QUERY, description="Description", type=openapi.TYPE_STRING)
+# class VerifyEmail(APIView):
+#     # serializer_class = VerifyEmailSerializer
+#     token_param_config = openapi.Parameter(
+#         'token', in_=openapi.IN_QUERY, description="Description", type=openapi.TYPE_STRING)
 
-    @swagger_auto_schema(manual_parameters=[token_param_config])
-    def get(self, request, *args, **kwargs):
-        token = request.GET.get('token')
-        try:
-            payload = jwt.decode(token, secret_key=settings.SECRET_KEY)
-            account = Account.objects.get(id=payload.get('user_id'))
+#     @swagger_auto_schema(manual_parameters=[token_param_config])
+#     def get(self, request, *args, **kwargs):
+#         token = request.GET.get('token')
+#         try:
+#             payload = jwt.decode(token, secret_key=settings.SECRET_KEY)
+#             account = Account.objects.get(id=payload.get('user_id'))
 
-            if not account.is_active:
-                account.is_active = True
-                account.save()
-                return Response({
-                    "message": " Account Successfully activated!",
-                    "status": "success",
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    "message": " Account already activated!",
-                    "status": "success",
-                }, status=status.HTTP_200_OK)
+#             if not account.is_active:
+#                 account.is_active = True
+#                 account.save()
+#                 return Response({
+#                     "message": " Account Successfully activated!",
+#                     "status": "success",
+#                 }, status=status.HTTP_200_OK)
+#             else:
+#                 return Response({
+#                     "message": " Account already activated!",
+#                     "status": "success",
+#                 }, status=status.HTTP_200_OK)
 
-        except jwt.ExpiredSignatureError as e:
-            print(e)
-            return Response({"error": f"Activation expired:{e}", "status": "fail", },
-                            status=status.HTTP_400_BAD_REQUEST)
-        except jwt.exceptions.DecodeError as e:
-            return Response({"error": f"Invalid token: {e}", "status": "success", }, status=status.HTTP_400_BAD_REQUEST)
+#         except jwt.ExpiredSignatureError as e:
+#             print(e)
+#             return Response({"error": f"Activation expired:{e}", "status": "fail", },
+#                             status=status.HTTP_400_BAD_REQUEST)
+#         except jwt.exceptions.DecodeError as e:
+#             return Response({"error": f"Invalid token: {e}", "status": "success", }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileRetrieveAPIView(generics.RetrieveAPIView):
@@ -151,32 +152,32 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
             return Response({"message": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
 
 
-# class ProfileRetrieveAPIView(generics.RetrieveAPIView):
-#     permission_classes = (AllowAny,)
-#     queryset = Profile.objects.all()
-#     renderer_classes = (CustomRenderer,)
-#     serializer_class = ProfileSerializer
-#
-#     def retrieve(self, request, pk, *args, **kwargs):
-#         try:
-#             profile = Profile.objects.filter(account__pk=pk).first()
-#             print(profile)
-#             serializer = self.serializer_class(profile, data=request.data)
-#             if serializer.is_valid():
-#                 profile = serializer.validated_data.get('profile', {})
-#                 print(profile.account.email)
-#             data = {
-#                 "username": "",
-#                 "bio": profile.position,
-#                 "image": profile.avatar.url if profile.avatar.url else profile.avatar,
-#                 "status": "success",
-#             }
-#
-#             return Response(data, status=status.HTTP_200_OK)
-#
-#         except Profile.DoesNotExist as e:
-#             print("Error", e)
-#             return Response({"message": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
+class ProfileRetrieveAPIView(generics.RetrieveAPIView):
+    permission_classes = (AllowAny,)
+    queryset = Profile.objects.all()
+    renderer_classes = (CustomRenderer,)
+    serializer_class = ProfileSerializer
+
+    def retrieve(self, request, pk, *args, **kwargs):
+        try:
+            profile = Profile.objects.filter(account__pk=pk).first()
+            print(profile)
+            serializer = self.serializer_class(profile, data=request.data)
+            if serializer.is_valid():
+                profile = serializer.validated_data.get('profile', {})
+                print(profile.account.email)
+            data = {
+                "username": "",
+                "bio": profile.position,
+                "image": profile.avatar.url if profile.avatar.url else profile.avatar,
+                "status": "success",
+            }
+
+            return Response(data, status=status.HTTP_200_OK)
+
+        except Profile.DoesNotExist as e:
+            print("Error", e)
+            return Response({"message": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AccountsRetrieveAV(generics.ListAPIView):
@@ -205,7 +206,7 @@ class ForgotPassordAV(APIView):
             if Account.objects.filter(email__iexact=lower_email).exists():
                 account = Account.objects.get(email=lower_email)
                 uuidb64 = urlsafe_base64_encode(
-                    str(account.id).encode('utf-8'))
+                    smart_bytes(account.id).encode('utf-8'))
                 token = PasswordResetTokenGenerator().make_token(account)
                 current_site = get_current_site(
                     request).domain

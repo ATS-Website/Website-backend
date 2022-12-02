@@ -126,27 +126,27 @@ WSGI_APPLICATION = 'website.wsgi.application'
 #
 #     }
 # }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': "Website",
-#         'USER': "postgres",
-#         'PASSWORD': 'root',
-#         'PORT': '5432',
-#         'HOST': 'localhost',
-#
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ATS_Website',
-        'USER': 'Django_ATS',
-        'PASSWORD': "1234567890",
+        'NAME': "Websites",
+        'USER': "postgres",
+        'PASSWORD': 'root',
         'PORT': '5432',
         'HOST': 'localhost',
+
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'ATS_Website',
+#         'USER': 'Django_ATS',
+#         'PASSWORD': "1234567890",
+#         'PORT': '5432',
+#         'HOST': 'localhost',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
