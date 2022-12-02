@@ -10,7 +10,8 @@ from .views import (
     AttendanceListAPIView, OfficeLocationCreateAPIView, OfficeLocationDetailsUpdateAPIView,
     TestimonialFrontpageListAPIView, XpertOfTheWeekListCreateAPIView, XpertOfTheWeekDetailUpdateDeleteAPIView,
     ReadAdminLog, WriteAdminLog, TrashedTechStarListAPIView, TrashedTechStarRestoreAPIView, TrashedTestimonialListAPIView,
-    TrashedTestimonialRestoreAPIView, TrashedXpertListAPIView, TrashedXpertRestoreAPIView, TechStarDocumentView, RecentXpertOfTheWeekAPIView
+    TrashedTestimonialRestoreAPIView, TrashedXpertListAPIView, TrashedXpertRestoreAPIView, TechStarDocumentView,
+    RecentXpertOfTheWeekAPIView
 )
 
 
@@ -67,6 +68,7 @@ urlpatterns = [
          TrashedXpertRestoreAPIView.as_view(), name="xpert_trash_restore"),
 
     path("recent-xpert-of-the-week/", RecentXpertOfTheWeekAPIView.as_view(), name="recent_xpert_of_the_week"),
+
 
     path("read-admin-log/", ReadAdminLog.as_view(), name="read_admin_log"),
     path("write-admin-log/", WriteAdminLog.as_view(), name="write_admin_log")

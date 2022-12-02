@@ -89,8 +89,6 @@ new = {'full_name': 'P8in3dmAqDUidUMiVJXiAekiYzOzcyGaYuFmUW+qitY=',
 
 print(aes_decrypt(new))
 
-
-# with open("media/work01-hover.jpg", "rb") as x:
-#     profile_picture = x.read()
-#
-# print(profile_picture)
+# from django.shortcuts import reverse
+# url = reverse("tech_stars:tech_star_list_create")
+# print(url)

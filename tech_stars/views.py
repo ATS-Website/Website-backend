@@ -265,7 +265,6 @@ class AttendanceUpdateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomRet
 class AttendanceListAPIView(IsValidRequestAPIKey, ListAPIView):
     queryset = Attendance.active_objects.all()
     serializer_class = AttendanceSerializer
-    permission_classes = (IsAuthenticated,)
 
 
 class OfficeLocationCreateAPIView(AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAPIView):
