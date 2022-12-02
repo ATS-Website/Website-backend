@@ -253,8 +253,7 @@ class LikeSerializer(ModelSerializer):
         blog_article = validated_data.get("blog_article")
         ip = validated_data.get("ip_address")
 
-        view = Likes.active_objects.get_or_create(
-            blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
+        view = Likes.active_objects.get_or_create(blog_article=BlogArticle.active_objects.get(id=blog_article.id))[0]
 
         if ip not in view.ip_address:
             view.ip_address.append(ip)
