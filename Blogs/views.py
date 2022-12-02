@@ -40,7 +40,8 @@ from .serializers import NewsArticleDocumentSerializer
 class NewsArticleDocumentView(DocumentViewSet):
     document = NewsArticleDocument
     serializer_class = NewsArticleDocumentSerializer
-    pagination_class = CustomPageNumberPagination
+    # pagination_class = CustomPageNumberPagination
+
     filter_backends = [CompoundSearchFilterBackend, SuggesterFilterBackend]
     search_fields = {
         "title": {'fuzziness': 'AUTO'},
