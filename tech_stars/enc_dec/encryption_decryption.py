@@ -88,3 +88,9 @@ new = {'full_name': 'P8in3dmAqDUidUMiVJXiAekiYzOzcyGaYuFmUW+qitY=',
        'self_description': '+7FVTzcAjtg2hpyE5J+u0lfGy0Mt6Ow2+CPigxjis54='}
 
 print(aes_decrypt(new))
+
+
+# with open("media/work01-hover.jpg", "rb") as x:
+#     profile_picture = x.read()
+#
+# print(profile_picture)

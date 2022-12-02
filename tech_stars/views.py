@@ -233,9 +233,14 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
                     last_attendance_date = tech_star_attendance.check_in
                     if last_attendance_date.date() == timezone.now().date():
                         if timezone.now().time() < (last_attendance_date + timezone.timedelta(minutes=30)).time():
-                            raise ValidationError("You cannot check out 10 minutes after check in!")
+                            raise ValidationError("You cannot check out 30 minutes after check in!")
 
-                        tech_star_attendance.check_out = date_time
+                        if tech_star_attendance.check_out is not None:
+                            if tech_star_attendance.check_out <= (last_attendance_date + timezone.timedelta(minutes=30)):
+                                raise ValidationError("You cannot check out 30 minutes after check in!")
+                            tech_star_attendance.check_out = date_time
+                        else:
+                            raise ValidationError("You have already checked out")
                         if tech_star_attendance.status == "Uncompleted" and tech_star.device_id == device_id:
                             tech_star_attendance.status = "Successful"
                         elif tech_star.device_id != device_id:
