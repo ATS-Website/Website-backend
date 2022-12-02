@@ -1,19 +1,17 @@
-from base64 import urlsafe_b64decode
+from base64 import urlsafe_b64decode, urlsafe_base64_decode
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.translation import gettext_lazy as _
 from ..models import Account
 from rest_framework import HTTP_HEADER_ENCODING, authentication
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from ..models import Account
+
 
 
 class LoginSerializer(TokenObtainPairSerializer):
@@ -101,45 +99,6 @@ class RegisterationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already in use")
         return lower_email
 
-
-# class TechStarSerializer(serializers.ModelSerializer):
-#     email = serializers.EmailField(required=True)
-#     password = serializers.CharField(
-#         write_only=True, required=True, validators=[validate_password])
-#     confirm_password = serializers.CharField(write_only=True, required=True)
-
-#     class Meta:
-#         model = TechStar
-#         fields = ('username', "first_name", "last_name",
-#                   'email',)
-
-#     def validate_email(self, value):
-#         lower_email = value.lower()
-#         if TechStar.objects.filter(email__iexact=lower_email).exists():
-#             raise serializers.ValidationError(
-#                 "A TechStar with this email already exist"
-#             )
-#         if 'afexnigeria.com' not in lower_email.split('@')[1]:
-#             raise serializers.ValidationError(
-#                 "This email is not a valid TechStar email format"
-#             )
-#         return value
-
-#     def update(self, instance, validated_data):
-#         password = validated_data.pop("password", None)
-#         account = super().update(instance, validated_data)
-#         if password is not None:
-#             account.set_password(password)
-#             account.save()
-#         return account
-
-
-# class LoginTechStarSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         fields = ('email', 'password',)
-#         model = TechStar
-
-
 class ChangePasswordSerializer(serializers.ModelSerializer):
     new_password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password])
@@ -172,10 +131,3 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         return instance
 
 
-# class TechStarUpdate(serializer.ModelSerializer):
-#     email = serializers.EmailField(required=True)
-#     password = serializers.CharField(max_length=100)
-
-#     class Meta:
-#         fields = ("email",)
-#         model = TechStar

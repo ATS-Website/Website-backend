@@ -133,11 +133,12 @@ WSGI_APPLICATION = 'website.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ATS_Website',
-        'USER': 'Django_ATS',
-        'PASSWORD': "1234567890",
-        'PORT': '5432',
-        'HOST': 'localhost',
+        'NAME':  config("DB_NAME"),
+        'USER': config("DB_USER"),
+        'PASSWORD': config("DB_PASSWORD"),
+        'PORT': config("DB_PORT"),
+        'HOST': config("DB_HOST"),
+
     }
 }
 
