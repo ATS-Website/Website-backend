@@ -27,7 +27,7 @@ from .mixins import IsAdminOrReadOnlyMixin
 from .permissions import IsValidRequestAPIKey
 
 from tech_stars.utils import write_log_csv
-from tech_stars.mixins import CustomRetrieveUpdateAPIView
+from tech_stars.mixins import CustomRetrieveUpdateAPIView, CustomRetrieveUpdateDestroyAPIView
 
 
 class LogoutView(APIView):
@@ -54,6 +54,7 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         avatar = request.FILES["profile_picture"]
+        position = request.data.get("position")
         serializer = RegisterationSerializer(data=request.data)
         data = {}
         print(serializer.is_valid(), "dd")
@@ -64,7 +65,6 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
             email = serializer.validated_data.get("email")
             gender = serializer.validated_data.get("gender")
             password = serializer.validated_data.get("password")
-            position = serializer.validated_data.get("position")
             # confirm_password = serializer.validated_data.get("password2")
             account = Account.objects.create_user(
                 first_name=first_name, last_name=last_name, username=username,
@@ -286,6 +286,12 @@ class AccountRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
                       request.user.username, f"{message_obj} was updated")
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AccountRetrieveUpdateDeleteAV(CustomRetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAdmin,)
+    serializer_class = UpdateAccountSerializer
+    queryset = Account.active_objects.all()
 
 
 class SetNewPasswordAV(generics.GenericAPIView):

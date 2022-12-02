@@ -30,6 +30,8 @@ urlpatterns = [
          name='update-profile'),
     path('me/', views.AccountRetrieveUpdateAPIView.as_view(), name='me'),
     path('all', views.AccountsRetrieveAV.as_view(), name='admins'),
+    path('delete-account/<int:pk>',
+         views.AccountRetrieveUpdateDeleteAV.as_view(), name="delete-account"),
     path('toggle-content-manager/<int:pk>', views.ToggleContentManagerAV.as_view(),
          name='toggle-content-manager'),
     path('toggle-membership-manager/<int:pk>',

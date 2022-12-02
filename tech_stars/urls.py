@@ -72,3 +72,5 @@ urlpatterns = [
 
 
 ]
+
+urlpatterns += router.urls
