@@ -93,6 +93,7 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'api-key',
     'hash-key'
 ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
