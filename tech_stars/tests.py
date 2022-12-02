@@ -1,12 +1,12 @@
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase, APIClient, RequestsClient
+from requests.auth import HTTPBasicAuth
 from decouple import config
 
 from accounts.models import Account
 
 # Create your tests here
-client = APIClient()
 
 with open("media/work01-hover.jpg", "rb") as x:
     profile_picture = x.read()
@@ -16,6 +16,10 @@ headers = {
     "hash-key": config("HASH_KEY"),
     "request-ts": config("REQUEST_TS")
 }
+
+client = RequestsClient()
+client.auth = HTTPBasicAuth("user", "pass")
+client.headers.update(headers)
 
 
 class TechStarTest(APITestCase):

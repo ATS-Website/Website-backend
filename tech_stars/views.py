@@ -236,7 +236,8 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
                             raise ValidationError("You cannot check out 30 minutes after check in!")
 
                         if tech_star_attendance.check_out is not None:
-                            if tech_star_attendance.check_out <= (last_attendance_date + timezone.timedelta(minutes=30)):
+                            if tech_star_attendance.check_out <= (
+                                    last_attendance_date + timezone.timedelta(minutes=30)):
                                 raise ValidationError("You cannot check out 30 minutes after check in!")
                             tech_star_attendance.check_out = date_time
                         else:
@@ -322,3 +323,10 @@ class ReadAdminLog(IsValidRequestAPIKey, ListAPIView):
         with open("admin_activity_logs.csv", "r") as x:
             read = literal_eval(json.dumps(list(csv.DictReader(x))))
             return Response(read, status=HTTP_200_OK)
+
+
+class RecentXpertOfTheWeekAPIView(IsValidRequestAPIKey, APIView):
+    def get(self, request, *args, **kwargs):
+        x = XpertOfTheWeek.active_objects.all().first()
+        serializer = XpertOfTheWeekDetailSerializer(x, context={"request": request})
+        return Response(serializer.data, status=HTTP_200_OK)
