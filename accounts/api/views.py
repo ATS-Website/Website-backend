@@ -1,5 +1,3 @@
-
-
 from accounts.api.renderers import CustomRenderer
 from accounts.api.serializers import RegisterationSerializer, ResetPasswordSerializer
 from accounts.api.utils import Utils
@@ -78,38 +76,6 @@ class RegistrationView(generics.CreateAPIView):
         data["status"] = "success"
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-
-# class CreateTechStarView(generics.CreateAPIView):
-#     serializer_class = TechStarSerializer
-#     permission_classes = [IsAdmin]
-#     renderer_classes = [CustomRenderer]
-
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(data=request.data)
-#         data = {}
-#         if serializer.is_valid():
-#             username = serializer.validated_data.get("username")
-#             first_name = serializer.validated_data.get("first_name")
-#             last_name = serializer.validated_data.get("last_name")
-#             email = serializer.validated_data.get("email")
-#             gender = serializer.validated_data.get("gender")
-#             password = serializer.validated_data.get("password")
-#             # confirm_password = serializer.validated_data.get("password2")
-#             account = Account.objects.create_user(
-#                 first_name=first_name, last_name=last_name, username=username, gender=gender, email=email, password=password)
-#             data["status"] = "success"
-#             data["username"] = account.username
-#             data["email"] = account.email
-#             refresh_token = RefreshToken.for_user(account)
-#             data["refresh_token"] = str(refresh_token)
-#             data["access_token"] = str(refresh_token.access_token)
-
-#             return Response(data, status=status.HTTP_201_CREATED)
-#         data["error"] = serializer.errors
-#         data["status"] = "success"
-#         return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-
 class VerifyEmail(APIView):
     # serializer_class = VerifyEmailSerializer
     token_param_config = openapi.Parameter(
@@ -152,37 +118,6 @@ class AccountsRetrieveAV(generics.ListAPIView):
             return super(AccountsRetrieveAV, self).get_queryset()
         return self.queryset.filter(username=user.username)
 
-
-# class TechStarRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
-#     queryset = Account.objects.all()
-#     permission_classes = (IsAuthenticated,)
-#     serializer_class = UpdateUserSerializer
-
-#     def retrieve(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(self.request.user)
-#         print(serializer)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
-#     def update(self, request, *args, **kwargs):
-#         serializer_data = request.data.get('user', {})
-#         user_data = request.data.get('user', {})
-
-#         serializer_data = {
-#             'username': user_data.get('username', request.user.username),
-#             'email': user_data.get('email', request.user.email),
-#             'profile': {
-#                 'bio': user_data.get('bio', request.user.profile.bio),
-#                 'image': user_data.get('image', request.user.profile.image)
-#             }
-#         }
-
-#         serializer = self.serializer_class(
-#             request.user, data=serializer_data, partial=True
-#         )
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-
-#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ForgotPassordAV(APIView):
