@@ -38,7 +38,6 @@ class CustomListCreateAPIView(ListCreateAPIView):
 class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
-        # new_request = decrypt_request(request.data)
         new_request = request.data
         partial = kwargs.pop('partial', False)
         instance = self.get_object()

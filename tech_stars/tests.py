@@ -9,15 +9,6 @@ from accounts.models import Account
 
 # Create your tests here
 
-# with open("media/work01-hover.jpg", "rb") as x:
-#     profile_picture = x.read()
-
-# headers = {
-#     "api-key": config("APP_API_KEY"),
-#     "hash-key": config("HASH_KEY"),
-#     "request-ts": config("REQUEST_TS")
-# }
-
 
 class TechStarTest(APITestCase):
 

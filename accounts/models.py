@@ -6,12 +6,9 @@ from django.utils.text import slugify
 from django.contrib.auth.hashers import make_password
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
-
-# from .validators import UnicodeUsernameValidators
 from tech_stars.validators import validate_image_size
 
 # Create your models here.
-
 
 class MyAccountManager(BaseUserManager):
     def create_user(self, first_name, last_name, username, email, gender, password=None):
@@ -21,7 +18,6 @@ class MyAccountManager(BaseUserManager):
             raise ValueError("User must have an email address")
         user = self.model(username=username, first_name=first_name,
                           last_name=last_name, email=self.normalize_email(email))
-        # user.password = make_password(password)
         user.set_password(password)
         user.gender = gender
         user.save(using=self._db)
