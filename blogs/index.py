@@ -7,8 +7,6 @@ from blogs.models import BlogArticle, NewsArticle
 # Create your views here.
 
 
-# def is_blog_published(self):
-#     return self.is_published
 
 
 @register(BlogArticle)

@@ -6,8 +6,6 @@ from django_elasticsearch_dsl.registries import registry
 
 from .models import NewsArticle, BlogArticle
 
-# Product = get_model('catalogue', 'product')
-
 
 @registry.register_document
 class NewsArticleDocument(Document):

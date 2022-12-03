@@ -28,6 +28,7 @@ from .permissions import IsValidRequestAPIKey
 
 from tech_stars.utils import write_log_csv
 from tech_stars.mixins import CustomRetrieveUpdateAPIView, CustomRetrieveUpdateDestroyAPIView
+from tech_stars.enc_dec.encryption_decryption import aes_decrypt
 
 
 class LogoutView(APIView):
@@ -49,13 +50,13 @@ class ChangePasswordAV(IsValidRequestAPIKey, CustomRetrieveUpdateAPIView):
 
 class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
     serializer_class = RegisterationSerializer
-    # permission_classes = [IsAdmin]
     renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
     def post(self, request, *args, **kwargs):
+        new_request = aes_decrypt(request.data)
         avatar = request.FILES["profile_picture"]
-        position = request.data.get("position")
-        serializer = RegisterationSerializer(data=request.data)
+        position = new_request.get("position")
+        serializer = RegisterationSerializer(data=new_request)
         data = {}
         print(serializer.is_valid(), "dd")
         if serializer.is_valid():
@@ -151,34 +152,6 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
             return Response({"message": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
 
 
-# class ProfileRetrieveAPIView(generics.RetrieveAPIView):
-#     permission_classes = (AllowAny,)
-#     queryset = Profile.objects.all()
-#     renderer_classes = (CustomRenderer,)
-#     serializer_class = ProfileSerializer
-#
-#     def retrieve(self, request, pk, *args, **kwargs):
-#         try:
-#             profile = Profile.objects.filter(account__pk=pk).first()
-#             print(profile)
-#             serializer = self.serializer_class(profile, data=request.data)
-#             if serializer.is_valid():
-#                 profile = serializer.validated_data.get('profile', {})
-#                 print(profile.account.email)
-#             data = {
-#                 "username": "",
-#                 "bio": profile.position,
-#                 "image": profile.avatar.url if profile.avatar.url else profile.avatar,
-#                 "status": "success",
-#             }
-#
-#             return Response(data, status=status.HTTP_200_OK)
-#
-#         except Profile.DoesNotExist as e:
-#             print("Error", e)
-#             return Response({"message": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
-
-
 class AccountsRetrieveAV(generics.ListAPIView):
     queryset = Account.objects.select_related("profile").all()
     serializer_class = UserSerializer
@@ -195,13 +168,10 @@ class ForgotPassordAV(APIView):
     serializer_class = ResetPasswordSerializer
 
     def post(self, request, *args, **kwargs):
-        print("here")
-        serializer = self.serializer_class(data=request.data)
-        print(serializer.is_valid())
-        print(serializer.errors)
+        new_request = aes_decrypt(request.data)
+        serializer = self.serializer_class(data=new_request)
         if serializer.is_valid():
             lower_email = serializer.validated_data.get("email").lower()
-            print(lower_email)
             if Account.objects.filter(email__iexact=lower_email).exists():
                 account = Account.objects.get(email=lower_email)
                 uuidb64 = urlsafe_base64_encode(
@@ -265,7 +235,7 @@ class AccountRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         # serializer_data = request.data.get('user', {})
-        user_data = request.data.get('user', {})
+        user_data = aes_decrypt(request.data).get('user', {})
         print(user_data)
 
         serializer_data = {
@@ -299,7 +269,7 @@ class SetNewPasswordAV(generics.GenericAPIView):
     renderer_classes = [CustomRenderer]
 
     def patch(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=aes_decrypt(request.data))
         serializer.is_valid(raise_exception=True)
         return Response({"status": "success", "message": "Password was successfully reset"}, status=status.HTTP_200_OK)
 

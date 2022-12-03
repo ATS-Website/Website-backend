@@ -29,4 +29,3 @@ def delete_document(sender, **kwargs):
             print(instances)
             for _instance in instances:
                 registry.update(_instance)
-        

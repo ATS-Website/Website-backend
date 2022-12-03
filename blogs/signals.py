@@ -14,9 +14,6 @@ def update_document(sender, **kwargs):
     model_name = sender._meta.model_name
     print(model_name, "1")
     instance = kwargs['instance']
-    # print(dir(instance), "3")
-    # for i in inspect.getmembers(instance):
-    #     print(i, "a")
 
     if app_label == 'Blogs':
         if model_name == 'author':

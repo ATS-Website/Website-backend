@@ -46,16 +46,6 @@ urlpatterns = [
     path('trash-comment-restore/<int:pk>',
          TrashedCommentRestoreAPIView.as_view(), name='trash_comment_restore'),
 
-
-    #     path('tag', TagListCreateAPIView.as_view(), name='tag-list'),
-    #     path("tag/<int:pk>", TagDetailUpdateDeleteAPIView.as_view(),
-    #          name="tag_detail_update_delete"),
-    #     path('blogs/<int:pk>', BlogArticleRetrieveUpdateDeleteAPIView.as_view(), name="blog_detail_update"),
-    #     path("blogs-comments/<int:pk>", BlogArticleCommentListAPIView.as_view(), name="blog_comments"),
-
-    #     path('comment', CommentListCreateAPIView.as_view(), name="comment_list_create"),
-    #     path('comment/<int:pk>', CommentDetailsUpdateDeleteAPIView.as_view(), name='comment_detail_update_delete'),
-
     path('author', AuthorListCreateAPIView.as_view(),
          name="author_list_create"),
     path('author/<int:pk>',

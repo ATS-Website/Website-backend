@@ -1,18 +1,13 @@
-import json
-
-from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, \
     RetrieveUpdateAPIView
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from accounts.permissions import IsValidRequestAPIKey
 
 from .permissions import IsAdminOrMembershipManagerOrReadOnly
-# from .utils import decrypt_request
+from .enc_dec.encryption_decryption import aes_decrypt
 from .utils import write_log_csv
 
 
@@ -23,8 +18,7 @@ class AdminOrMembershipManagerOrReadOnlyMixin:
 class CustomListCreateAPIView(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
-        # new_request = decrypt_request(request.data)
-        new_request = request.data
+        new_request = aes_decrypt(request.data)
         serializer = self.get_serializer(data=new_request)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -38,7 +32,7 @@ class CustomListCreateAPIView(ListCreateAPIView):
 class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
-        new_request = request.data
+        new_request = aes_decrypt(request.data)
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(
@@ -64,8 +58,7 @@ class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class CustomCreateAPIView(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
-        # new_request = decrypt_request(request.data)
-        new_request = request.data
+        new_request = aes_decrypt(request.data)
         serializer = self.get_serializer(data=new_request)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -79,8 +72,7 @@ class CustomCreateAPIView(CreateAPIView):
 class CustomRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
-        # new_request = decrypt_request(request.data)
-        new_request = request.data
+        new_request = aes_decrypt(request.data)
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(

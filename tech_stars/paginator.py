@@ -1,5 +1,3 @@
-from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination, CursorPagination
-from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
 
