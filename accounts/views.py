@@ -28,6 +28,7 @@ from .permissions import IsValidRequestAPIKey
 
 from tech_stars.utils import write_log_csv
 from tech_stars.mixins import CustomRetrieveUpdateAPIView, CustomRetrieveUpdateDestroyAPIView
+from tech_stars.enc_dec.encryption_decryption import aes_decrypt
 
 
 class LogoutView(APIView):
@@ -53,9 +54,11 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
 
-        serializer = RegisterationSerializer(data=request.data)
+        # serializer = RegisterationSerializer(data=request.data)
+        new_request = aes_decrypt(request.data)
+        serializer = RegisterationSerializer(data=new_request)
         data = {}
-        print(serializer.is_valid(), "dd")
+
         if serializer.is_valid():
             username = serializer.validated_data.get("username")
             first_name = serializer.validated_data.get("first_name")
@@ -67,14 +70,13 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
             account = Account.objects.create_user(
                 first_name=first_name, last_name=last_name, username=username,
                 gender=gender, email=email, password=password)
-
             data["status"] = "success"
             data["username"] = account.username
             data["email"] = account.email
             refresh_token = RefreshToken.for_user(account)
             data["refresh_token"] = str(refresh_token)
             data["access_token"] = str(refresh_token.access_token)
-            data["profile_picture"] =account.profile.avatar.url
+            data["profile_picture"] = account.profile.avatar.url
             data["position"] = account.profile.position
             return Response(data, status=status.HTTP_201_CREATED)
         data["error"] = serializer.errors
@@ -126,11 +128,10 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
             profile = Profile.objects.select_related('account').get(
                 account__pk=pk
             )
-            print(profile)
             serializer = self.serializer_class(profile, data=request.data)
             if serializer.is_valid():
                 profile = serializer.validated_data.get('profile', {})
-                print(profile.account.email)
+
             data = {
                 "username": profile.account.username,
                 "bio": profile.position,
@@ -154,11 +155,10 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
     def retrieve(self, request, pk, *args, **kwargs):
         try:
             profile = Profile.objects.filter(account__pk=pk).first()
-            print(profile)
             serializer = self.serializer_class(profile, data=request.data)
             if serializer.is_valid():
                 profile = serializer.validated_data.get('profile', {})
-                print(profile.account.email)
+
             data = {
                 "username": "",
                 "bio": profile.position,
@@ -189,13 +189,10 @@ class ForgotPassordAV(APIView):
     serializer_class = ResetPasswordSerializer
 
     def post(self, request, *args, **kwargs):
-        print("here")
-        serializer = self.serializer_class(data=request.data)
-        print(serializer.is_valid())
-        print(serializer.errors)
+        new_request = aes_decrypt(request.data)
+        serializer = self.serializer_class(data=new_request)
         if serializer.is_valid():
             lower_email = serializer.validated_data.get("email").lower()
-            print(lower_email)
             if Account.objects.filter(email__iexact=lower_email).exists():
                 account = Account.objects.get(email=lower_email)
                 uuidb64 = urlsafe_base64_encode(
@@ -203,7 +200,7 @@ class ForgotPassordAV(APIView):
                 token = PasswordResetTokenGenerator().make_token(account)
                 current_site = get_current_site(
                     request).domain
-                print(current_site)
+
                 relative_path = reverse(
                     "reset-passwords", kwargs={"uuidb64": uuidb64, "token": token})
 
@@ -233,6 +230,7 @@ class ResetPassordAV(APIView):
             account = Account.objects.get(id=id)
             if not PasswordResetTokenGenerator().check_token(account, token):
                 return Response({"status": "fail", "message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+            # Suppose to send frontend change-password template but it isn't ready yet
             return Response(
                 {"status": "success", "message": "Your  credentials  have been validated", "uuidb64": uuidb64,
                  "token": token}, status=status.HTTP_400_BAD_REQUEST)
@@ -259,8 +257,7 @@ class AccountRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         # serializer_data = request.data.get('user', {})
-        user_data = request.data.get('user', {})
-        print(user_data)
+        user_data = aes_decrypt(request.data).get('user', {})
 
         serializer_data = {
             'username': user_data.get('username', request.user.username),
@@ -293,7 +290,7 @@ class SetNewPasswordAV(generics.GenericAPIView):
     renderer_classes = [CustomRenderer]
 
     def patch(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=aes_decrypt(request.data))
         serializer.is_valid(raise_exception=True)
         return Response({"status": "success", "message": "Password was successfully reset"}, status=status.HTTP_200_OK)
 

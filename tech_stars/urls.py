@@ -10,7 +10,8 @@ from .views import (
     AttendanceListAPIView, OfficeLocationCreateAPIView, OfficeLocationDetailsUpdateAPIView,
     TestimonialFrontpageListAPIView, XpertOfTheWeekListCreateAPIView, XpertOfTheWeekDetailUpdateDeleteAPIView,
     ReadAdminLog, WriteAdminLog, TrashedTechStarListAPIView, TrashedTechStarRestoreAPIView, TrashedTestimonialListAPIView,
-    TrashedTestimonialRestoreAPIView, TrashedXpertListAPIView, TrashedXpertRestoreAPIView, TechStarDocumentView
+    TrashedTestimonialRestoreAPIView, TrashedXpertListAPIView, TrashedXpertRestoreAPIView, TechStarDocumentView,
+    RecentXpertOfTheWeekAPIView, TechStarAttendanceListAPIView
 )
 
 
@@ -51,6 +52,8 @@ urlpatterns = [
     path("record-attendance/", RecordAttendanceAPIView.as_view(),
          name="record_attendance"),
     path("attendance-list/", AttendanceListAPIView.as_view(), name="attendance_list"),
+    path("tech-star-attendance-list/<int:pk>/", TechStarAttendanceListAPIView.as_view(), name="tech_star_attendance_list"),
+
 
     path("office-location-create/", OfficeLocationCreateAPIView.as_view(),
          name="office_location_create"),
@@ -65,6 +68,9 @@ urlpatterns = [
     path('xpert-trash/', TrashedXpertListAPIView.as_view(), name="xpert_trash"),
     path('xpert-trash-restore/<int:pk>/',
          TrashedXpertRestoreAPIView.as_view(), name="xpert_trash_restore"),
+
+    path("recent-xpert-of-the-week/", RecentXpertOfTheWeekAPIView.as_view(), name="recent_xpert_of_the_week"),
+
 
     path("read-admin-log/", ReadAdminLog.as_view(), name="read_admin_log"),
     path("write-admin-log/", WriteAdminLog.as_view(), name="write_admin_log")

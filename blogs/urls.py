@@ -19,8 +19,8 @@ from blogs.views import (AuthorListCreateAPIView, AuthorRetrieveUpdateAPIView,
 
 app_name = 'blogs'
 
+# ElasticSearch endpoints
 router = routers.SimpleRouter(trailing_slash=False)
-
 router.register(r'news-search', views.NewsArticleDocumentView,
                 basename='article-search')
 router.register(r'blog-search', views.NewsArticleDocumentView,
@@ -107,7 +107,7 @@ urlpatterns = [
 
 
 
-
+    # Algolia search Endpoints
     path('search-blog/', SearchBlogView.as_view(), name="search-blog"),
     path('search-news/', SearchNewsView.as_view(), name="search-news"),
 ]

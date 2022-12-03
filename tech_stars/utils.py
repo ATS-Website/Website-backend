@@ -114,7 +114,6 @@ def write_server_logs(url: str, status_code: str, request_body=""):
             complete_write.writerow(data)
 
 
-def decrypt_request(enc_dict):
-    enc = enc_dict.get("data")[0]
-    print(json.loads(aes_decrypt(enc)))
-    return json.loads(aes_decrypt(enc))
+# def decrypt_request(enc_dict):
+#     enc = enc_dict.get("data")[0]
+#     return json.loads(aes_decrypt(enc))

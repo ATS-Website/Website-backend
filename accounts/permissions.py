@@ -38,6 +38,4 @@ class IsValidRequestAPIKey(BasePermission):
         except:
             return False
         hash = hashlib.sha256(to_hash.encode('utf8')).hexdigest()
-        # print(hash)
-
         return hash == hash_key

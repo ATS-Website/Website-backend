@@ -50,22 +50,6 @@ class Author(models.Model):
 # BLOGS
 
 
-# class Tag(models.Model):
-#     name = models.CharField(
-#         max_length=15, help_text="Enter a suitable tag to help find the post", )
-#     is_active = models.BooleanField(default=True)
-#
-#     objects = models.Manager()
-#     active_objects = ActiveManager()
-#     inactive_objects = InActiveManager()
-#
-#     def __str__(self):
-#         return self.name
-
-
-# BLOGS
-
-
 class BlogArticle(models.Model):
     title = models.CharField(max_length=250, blank=False, null=False)
     description = models.TextField(null=True)

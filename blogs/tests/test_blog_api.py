@@ -22,13 +22,7 @@ def create_blog(**params):
     return BlogArticle.objects.create(**params)
 
 
-# //private - User modify
 
-class PublicBlogApiTests(TestCase):
-    """Test the accounts API(public)"""
-
-    def setUp(self):
-        self.client = APIClient()
 
 
 class PrivateBlogsAPITest(TestCase):
@@ -48,8 +42,14 @@ class PrivateBlogsAPITest(TestCase):
         }
         res = self.client.post(CREATE_BLOG_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        blog = BlogArticle.objects.get(**res.data)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
 
     def test_retrieve_blog_success(self):
         """Test Retrieving"""
+
+
+class PublicBlogApiTests(TestCase):
+    """Test the accounts API(public)"""
+
+    def setUp(self):
+        self.client = APIClient()

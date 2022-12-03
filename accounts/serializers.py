@@ -1,10 +1,8 @@
-from base64 import urlsafe_b64decode
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.translation import gettext_lazy as _
 from .models import Account
@@ -20,7 +18,7 @@ class LoginSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        # Add custom claims
+        # Adding custom claims and perms
         token['username'] = user.username
         token['email'] = user.email
         token["is_superadmin"] = user.is_superadmin
@@ -61,7 +59,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_avatar(self, obj):
         if obj.avatar:
             return obj.avatar.url
-
         return 'https://static.productionready.io/images/smiley-cyrus.jpg'
 
 

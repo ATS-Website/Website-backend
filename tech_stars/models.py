@@ -1,11 +1,8 @@
-from accounts.models import Account
-from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_image_file_extension
-import datetime
 from phonenumber_field.modelfields import PhoneNumberField
+
 from .validators import validate_image_size
 
 

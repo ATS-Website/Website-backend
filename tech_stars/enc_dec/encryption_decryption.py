@@ -1,6 +1,5 @@
 import decimal
 import json
-
 from Crypto.Cipher import AES
 from base64 import b64encode, b64decode
 from decouple import config
@@ -70,21 +69,19 @@ def aes_encrypt(keyword):
 def aes_decrypt(keyword):
     return AESCipher(key, iv).versatile_decrypt(keyword)
 
+#
+# look = {
+#     "full_name": "John Doe",
+#     "official_email": "loko873n@afexnigeria.com",
+#     "self_description": "No Fear!",
+# }
+# test = aes_encrypt(look)
+# print(test)
+#
+# new = {'full_name': 'P8in3dmAqDUidUMiVJXiAekiYzOzcyGaYuFmUW+qitY=',
+#        'official_email': 'pKuF/hhPBcYzc/YDbKgzMV/DmzBUgqdZZLD0Y3s2KNo=',
+#        'self_description': '+7FVTzcAjtg2hpyE5J+u0lfGy0Mt6Ow2+CPigxjis54='}
+#
+# print(aes_decrypt(new))
 
-look = {
-    "full_name": "John Doe",
-    "official_email": "loko873n@afexnigeria.com",
-    "self_description": "No Fear!",
-}
-test = aes_encrypt(look)
-print(test)
-
-# testst = aes_decrypt(
-#     "qLiaHhtouPPj8F7S6tGHCyG6/E5PmyjlBRN8sxJDfOTVo7VF3mUCaTdoHye/dYDBGOg98rkcpPJ0UTLsQVsIMnlGScolsrpCJjEkjzJ5JpVwNcg6H3GZvLznhztEc7fj39CzcR3sySbGlivdEkyrkEx9aUjacAZ+e1drTFJT4uE=")
-# print
-
-new = {'full_name': 'P8in3dmAqDUidUMiVJXiAekiYzOzcyGaYuFmUW+qitY=',
-       'official_email': 'pKuF/hhPBcYzc/YDbKgzMV/DmzBUgqdZZLD0Y3s2KNo=',
-       'self_description': '+7FVTzcAjtg2hpyE5J+u0lfGy0Mt6Ow2+CPigxjis54='}
-
-print(aes_decrypt(new))
+#
