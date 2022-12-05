@@ -188,7 +188,7 @@ class GenerateAttendanceQRCode(IsValidRequestAPIKey, CustomCreateAPIView):
                     "secret_key": config("QR_SECRET_KEY")
                 }
 
-                qr = generate_qr(json.dumps(data))
+                qr = generate_qr(json.dumps(aes_encrypt(data)))
                 result = self.get_serializer(qr)
 
                 return Response(result.data, status=HTTP_201_CREATED)
