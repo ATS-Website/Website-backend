@@ -71,11 +71,13 @@ def aes_decrypt(keyword):
     return AESCipher(key, iv).versatile_decrypt(keyword)
 
 
-look = {
-    "full_name": "John Doe",
-    "official_email": "loko873n@afexnigeria.com",
-    "self_description": "No Fear!",
-}
+# look = {
+#     "email": "John Doe",
+#     "official_email": "loko873n@afexnigeria.com",
+#     "self_description": "No Fear!",
+# }
+
+look = {"email": "sazubuine@afexnigeria.com", "date_time": "2022-11-28T09:06:52.827Z", "device_id": "RP1A.200720.011", "longitude": "3.9320336", "latitude": "7.4035462"}
 test = aes_encrypt(look)
 print(test)
 

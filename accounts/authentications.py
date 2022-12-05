@@ -17,7 +17,7 @@ class RequestAuthentication(BaseAuthentication):
             print(APP_API_KEY)
         except:
             raise AuthenticationFailed('Missing API key ')
-        # try:
+            # try:
             # request_ts = request.META['HTTP_REQUEST_TS']
             request_ts = time.now()
         # except:

@@ -16,7 +16,6 @@ from rest_framework import generics, status
 from rest_framework.renderers import BrowsableAPIRenderer
 from django.conf import settings
 
-from .renderers import CustomRenderer
 from .serializers import ResetPasswordSerializer, UpdateAccountSerializer, \
     ProfileSerializer, LoginSerializer, RegisterationSerializer, ChangePasswordSerializer, UserSerializer, \
     SetNewPasswordSerializer
@@ -28,6 +27,7 @@ from .permissions import IsValidRequestAPIKey
 
 from tech_stars.utils import write_log_csv
 from tech_stars.mixins import CustomRetrieveUpdateAPIView, CustomRetrieveUpdateDestroyAPIView
+from tech_stars.renderers import CustomRenderer
 
 
 class LogoutView(APIView):
@@ -38,7 +38,7 @@ class LogoutView(APIView):
 
 class LoginView(IsValidRequestAPIKey, TokenObtainPairView):
     serializer_class = LoginSerializer
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
+    # renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
 class ChangePasswordAV(IsValidRequestAPIKey, CustomRetrieveUpdateAPIView):
@@ -49,8 +49,8 @@ class ChangePasswordAV(IsValidRequestAPIKey, CustomRetrieveUpdateAPIView):
 
 class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
     serializer_class = RegisterationSerializer
+
     # permission_classes = [IsAdmin]
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
     def post(self, request, *args, **kwargs):
         avatar = request.FILES["profile_picture"]
@@ -73,7 +73,8 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
                 profile = Profile.objects.create(account=account, avatar=avatar, position=position)
             except:
                 account.delete()
-                return Response({"message": "Kindly check the avatar and position sent"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Kindly check the avatar and position sent"},
+                                status=status.HTTP_400_BAD_REQUEST)
             data["status"] = "success"
             data["username"] = account.username
             data["email"] = account.email
@@ -124,7 +125,7 @@ class VerifyEmail(APIView):
 class ProfileRetrieveAPIView(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
     queryset = Profile.objects.select_related("account")
-    renderer_classes = (CustomRenderer,)
+    # renderer_classes = (CustomRenderer,)
     serializer_class = ProfileSerializer
 
     def retrieve(self, request, pk, *args, **kwargs):
@@ -140,7 +141,7 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
             data = {
                 "username": profile.account.username,
                 "bio": profile.position,
-                "image":  profile.avatar.url if profile.avatar.url else profile.avatar,
+                "image": profile.avatar.url if profile.avatar.url else profile.avatar,
                 "status": "success",
             }
 
