@@ -33,8 +33,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ['atsbk.afexats.com', '127.0.0.1', 'localhost', 'localhost:3000',
-                 '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', ]
-
+                 '127.0.0.1:3000', 'localhost:8000', '127.0.0.1:8000', 'localhost:5432']
 
 INSTALLED_APPS = [
     # "daphne",
@@ -67,7 +66,6 @@ INSTALLED_APPS = [
     # 'cloudinary',
 
 ]
-
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -237,7 +235,6 @@ ELASTICSEARCH_INDEX_NAMES = {
     'Tech_Stars.Tech_Star': "techstars"
 }
 
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool)
@@ -268,7 +265,6 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 
 # CELERY-BEAT
 CELERY_BEAT_SCHEDULER = 'djanga_celery_beat.schedulers:DatabaseScheduler'
-
 
 PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
