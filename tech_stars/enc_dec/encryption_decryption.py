@@ -89,10 +89,5 @@ new = {'full_name': 'P8in3dmAqDUidUMiVJXiAekiYzOzcyGaYuFmUW+qitY=',
        'official_email': 'pKuF/hhPBcYzc/YDbKgzMV/DmzBUgqdZZLD0Y3s2KNo=',
        'self_description': '+7FVTzcAjtg2hpyE5J+u0lfGy0Mt6Ow2+CPigxjis54='}
 
-print(aes_decrypt(new))
+print(aes_decrypt("XAaH2f93y8EYWm+x2ZEta1fWSGAp+etcwhC33QdF8/P3QKYQrQ997VeZTmEowLPGpVkFigJVbw2VyBD/jyuY8Q=="))
 
-# from django.shortcuts import reverse
-# url = reverse("tech_stars:tech_star_list_create")
-# print(url)
-# hello = AESCipher("HmYOKQj7ZzF8cbeswYY9uLqbfMSUS2tI6Pz45zjylOM=",  "PL2LON7ZBLXq4a32le+FCQ==").versatile_decrypt("YrAgmp4r9hMS+1K+M7feUd8xVlnZHTUxLxJoK8vTcXXrNIIuAa97257eWfAmm1Xf")
-# print(hello)

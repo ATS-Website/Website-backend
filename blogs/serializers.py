@@ -287,7 +287,10 @@ class AlbumSerializer(ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ("name", "description", "images", "url")
+        fields = ("name", "description", "images", "url", "active_images")
+        extra_kwargs = {
+            "active_images": {"read_only": True}
+        }
 
     def create(self, validated_data):
         images = self.context.get("view").request.FILES
