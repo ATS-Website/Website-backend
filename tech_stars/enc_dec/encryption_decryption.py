@@ -94,3 +94,5 @@ print(aes_decrypt(new))
 # from django.shortcuts import reverse
 # url = reverse("tech_stars:tech_star_list_create")
 # print(url)
+# hello = AESCipher("HmYOKQj7ZzF8cbeswYY9uLqbfMSUS2tI6Pz45zjylOM=",  "PL2LON7ZBLXq4a32le+FCQ==").versatile_decrypt("YrAgmp4r9hMS+1K+M7feUd8xVlnZHTUxLxJoK8vTcXXrNIIuAa97257eWfAmm1Xf")
+# print(hello)

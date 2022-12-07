@@ -15,7 +15,7 @@ class IsAdmin(IsAdminUser):
         return bool(request.user.is_superadmin and request.user.is_authenticated)
 
 
-class IsValidRequestAPIKey(BaseAuthentication):
+class IsValidRequestAPIKey(BasePermission):
 
     def has_permission(self, request, view):
         try:
