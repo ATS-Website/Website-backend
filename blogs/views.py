@@ -23,7 +23,6 @@ from . import client
 from .tasks import new_send_mail_func
 from .paginations import ResponsePagination, CustomPageNumberPagination
 
-from accounts.renderers import CustomRenderer
 from accounts.permissions import IsValidRequestAPIKey
 
 from blogs.permissions import IsAdminOrReadOnly
@@ -107,7 +106,6 @@ class BlogArticleDocumentView(DocumentViewSet, BaseDocumentViewSet):
 
 
 class SearchBlogView(generics.ListAPIView):
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
     def get(self, request, *args, **kwargs):
         query = request.GET.get("q")
@@ -123,7 +121,7 @@ class SearchBlogView(generics.ListAPIView):
 
 
 class SearchNewsView(generics.ListAPIView):
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
+
 
     def get(self, request, *args, **kwargs):
         query = request.GET.get("q")
@@ -139,7 +137,6 @@ class SearchNewsView(generics.ListAPIView):
 class BlogArticleListCreateAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomListCreateAPIView):
     queryset = BlogArticle.active_objects.all()
     serializer_class = BlogArticleSerializer
-    renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
 class BlogArticleRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin, CustomRetrieveUpdateDestroyAPIView):
@@ -233,7 +230,7 @@ class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrR
 
 
 class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
-    renderer_classes = [CustomRenderer]
+
 
     def get_object(self):
         return {x.email: x.email for x in NewsLetterSubscription.active_objects.all()}
@@ -270,7 +267,7 @@ class NewsLetterDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
 
 
 class BlogArticleCommentListAPIView(APIView):
-    renderer_classes = (CustomRenderer,)
+
 
     def get(self, request, *args, **kwargs):
         queryset = Comment.active_objects.filter(blog_article_id=kwargs["pk"])

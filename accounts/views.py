@@ -38,7 +38,6 @@ class LogoutView(APIView):
 
 class LoginView(IsValidRequestAPIKey, TokenObtainPairView):
     serializer_class = LoginSerializer
-    # renderer_classes = [CustomRenderer, BrowsableAPIRenderer]
 
 
 class ChangePasswordAV(IsValidRequestAPIKey, CustomRetrieveUpdateAPIView):
@@ -125,7 +124,6 @@ class VerifyEmail(APIView):
 class ProfileRetrieveAPIView(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
     queryset = Profile.objects.select_related("account")
-    # renderer_classes = (CustomRenderer,)
     serializer_class = ProfileSerializer
 
     def retrieve(self, request, pk, *args, **kwargs):
@@ -155,7 +153,6 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
 # class ProfileRetrieveAPIView(generics.RetrieveAPIView):
 #     permission_classes = (AllowAny,)
 #     queryset = Profile.objects.all()
-#     renderer_classes = (CustomRenderer,)
 #     serializer_class = ProfileSerializer
 #
 #     def retrieve(self, request, pk, *args, **kwargs):
@@ -183,7 +180,6 @@ class ProfileRetrieveAPIView(generics.RetrieveAPIView):
 class AccountsRetrieveAV(generics.ListAPIView):
     queryset = Account.objects.select_related("profile").all()
     serializer_class = UserSerializer
-    renderer_classes = (CustomRenderer,)
 
     def get_queryset(self):
         user = self.request.user
@@ -232,7 +228,6 @@ class ForgotPassordAV(APIView):
 
 class ResetPassordAV(APIView):
     serializer_class = ResetPasswordSerializer
-    renderer_classes = [CustomRenderer]
 
     def get(self, request, uuidb64, token):
         try:
@@ -250,14 +245,12 @@ class ResetPassordAV(APIView):
 class UpdateProfileView(generics.UpdateAPIView):
     queryset = Account.objects.all()
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CustomRenderer,)
     serializer_class = UpdateAccountSerializer
 
 
 class AccountRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = Account.objects.all()
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CustomRenderer,)
     serializer_class = UpdateAccountSerializer
 
     def retrieve(self, request, *args, **kwargs):
@@ -297,7 +290,6 @@ class AccountRetrieveUpdateDeleteAV(CustomRetrieveUpdateDestroyAPIView):
 
 class SetNewPasswordAV(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
-    renderer_classes = [CustomRenderer]
 
     def patch(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -306,7 +298,6 @@ class SetNewPasswordAV(generics.GenericAPIView):
 
 
 class ToggleContentManagerAV(APIView):
-    renderer_classes = [CustomRenderer]
 
     def get(self, request, *args, **kwargs):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
@@ -315,7 +306,6 @@ class ToggleContentManagerAV(APIView):
 
 
 class ToggleMembershipManagerAV(APIView):
-    renderer_classes = [CustomRenderer]
 
     def get(self, request, *args, **kwargs):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
@@ -324,7 +314,6 @@ class ToggleMembershipManagerAV(APIView):
 
 
 class ToggleAssessmentManagerAV(APIView):
-    renderer_classes = [CustomRenderer]
 
     def get(self, request, *args, **kwargs):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
@@ -333,8 +322,6 @@ class ToggleAssessmentManagerAV(APIView):
 
 
 class ToggleApplicationManagerAV(APIView):
-    renderer_classes = [CustomRenderer]
-
     def get(self, request, *args, **kwargs):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
         account.is_application_manager = not account.is_application_manager

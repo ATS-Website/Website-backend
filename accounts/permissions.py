@@ -1,5 +1,5 @@
-from rest_framework.permissions import BasePermission
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import  AuthenticationFailed
 from decouple import config
 from time import time
 import hashlib
@@ -15,21 +15,21 @@ class IsAdmin(IsAdminUser):
         return bool(request.user.is_superadmin and request.user.is_authenticated)
 
 
-class IsValidRequestAPIKey(BasePermission):
+class IsValidRequestAPIKey(BaseAuthentication):
 
     def has_permission(self, request, view):
         try:
             hash_key = request.META['HTTP_HASH_KEY']
         except:
-            raise PermissionDenied('Missing Hash Key')
+            raise AuthenticationFailed('Missing Hash Key')
         try:
             APP_API_KEY = request.META['HTTP_API_KEY']
         except:
-            raise PermissionDenied('Missing API key ')
+            raise AuthenticationFailed('Missing API key ')
         try:
             request_ts = request.META['HTTP_REQUEST_TS']
         except:
-            raise PermissionDenied('Missing Request Timestamp ')
+            raise AuthenticationFailed('Missing Request Timestamp ')
 
         app_api_key = config('APP_API_KEY')
         app_secret_key = config('APP_SECRET_KEY')
