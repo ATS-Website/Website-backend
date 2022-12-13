@@ -71,31 +71,4 @@ def aes_decrypt(keyword):
     return AESCipher(key, iv).versatile_decrypt(keyword)
 
 
-# look = {
-#     "email": "John Doe",
-#     "official_email": "loko873n@afexnigeria.com",
-#     "self_description": "No Fear!",
-# }
 
-# look = {"email": "sazubuine@afexnigeria.com", "date_time": "2022-11-28T09:06:52.827Z", "device_id": "RP1A.200720.011", "longitude": "3.9320336", "latitude": "7.4035462"}
-# test = aes_encrypt(look)
-# print(test)
-
-# testst = aes_decrypt(
-#     "qLiaHhtouPPj8F7S6tGHCyG6/E5PmyjlBRN8sxJDfOTVo7VF3mUCaTdoHye/dYDBGOg98rkcpPJ0UTLsQVsIMnlGScolsrpCJjEkjzJ5JpVwNcg6H3GZvLznhztEc7fj39CzcR3sySbGlivdEkyrkEx9aUjacAZ+e1drTFJT4uE=")
-# print
-
-# new = {'full_name': 'P8in3dmAqDUidUMiVJXiAekiYzOzcyGaYuFmUW+qitY=',
-#        'official_email': 'pKuF/hhPBcYzc/YDbKgzMV/DmzBUgqdZZLD0Y3s2KNo=',
-#        'self_description': '+7FVTzcAjtg2hpyE5J+u0lfGy0Mt6Ow2+CPigxjis54='}
-
-
-new = {
-    "email": "N1aeh+wNVBH5k6Cu9aR98zfMfQv7bKawdl6z3T7KNqU=",
-    "date_time": "kYTECjzNWn86IL0f0I7MUxrvdL8OWYPZD9YfOxn3UGo=",
-    "device_id": "RbMQ/agoVQpHh6ABEly6lg==",
-    "longitude": "3gVTjOKvCakqY6cl4t3caA==",
-    "latitude": "Pw7jR0uw01sf3f1gMGIWGg=="
-}
-# print(aes_decrypt("XAaH2f93y8EYWm+x2ZEta1fWSGAp+etcwhC33QdF8/P3QKYQrQ997VeZTmEowLPGpVkFigJVbw2VyBD/jyuY8Q=="))
-print(aes_decrypt(new))

@@ -302,6 +302,7 @@ class ToggleContentManagerAV(APIView):
     def get(self, request, *args, **kwargs):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
         account.is_content_manager = not account.is_content_manager
+        account.save()
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
 
 
@@ -310,6 +311,7 @@ class ToggleMembershipManagerAV(APIView):
     def get(self, request, *args, **kwargs):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
         account.is_membership_manager = not account.is_membership_manager
+        account.save()
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
 
 
@@ -318,6 +320,7 @@ class ToggleAssessmentManagerAV(APIView):
     def get(self, request, *args, **kwargs):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
         account.is_assessment_manager = not account.is_assessment_manager
+        account.save()
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
 
 
@@ -325,4 +328,5 @@ class ToggleApplicationManagerAV(APIView):
     def get(self, request, *args, **kwargs):
         account = Account.objects.filter(pk=kwargs.get("pk")).first()
         account.is_application_manager = not account.is_application_manager
+        account.save()
         return Response({"message": f"{account.username} was successfully updated"}, status=status.HTTP_200_OK)
