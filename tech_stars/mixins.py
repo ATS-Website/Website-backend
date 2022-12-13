@@ -46,8 +46,6 @@ class CustomRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         message_obj = serializer.data.get((list(serializer.data.keys())[1]))
-        print(message_obj)
-        print((list(serializer.data.keys())[1]))
         write_log_csv(f"Updated {self.get_serializer().Meta.model.__name__}",
                       request.user.username, f"{message_obj} was updated")
         return Response(serializer.data, status=HTTP_201_CREATED)

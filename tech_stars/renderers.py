@@ -9,8 +9,7 @@ class CustomRenderer(JSONRenderer):
             response = {
                 "success": True,
                 "status_code": status_code,
-                # "data": aes_encrypt(data)
-                "data": data,
+                "data": aes_encrypt(data),
                 "message": "Successfully"
             }
 
