@@ -122,7 +122,6 @@ class SearchBlogView(generics.ListAPIView):
 
 class SearchNewsView(generics.ListAPIView):
 
-
     def get(self, request, *args, **kwargs):
         query = request.GET.get("q")
         # tag = request.GET.get("tag") or None
@@ -231,7 +230,6 @@ class NewsLetterSubscriptionRetrieveUpdateDeleteAPIView(AdminOrContentManagerOrR
 
 class SendNewsLetter(AdminOrContentManagerOrReadOnlyMixin, APIView):
 
-
     def get_object(self):
         return {x.email: x.email for x in NewsLetterSubscription.active_objects.all()}
 
@@ -267,7 +265,6 @@ class NewsLetterDetailsUpdateDeleteAPIView(AdminOrContentManagerOrReadOnlyMixin,
 
 
 class BlogArticleCommentListAPIView(APIView):
-
 
     def get(self, request, *args, **kwargs):
         queryset = Comment.active_objects.filter(blog_article_id=kwargs["pk"])

@@ -27,6 +27,7 @@ from .permissions import IsValidRequestAPIKey
 
 from tech_stars.utils import write_log_csv
 from tech_stars.mixins import CustomRetrieveUpdateAPIView, CustomRetrieveUpdateDestroyAPIView
+from tech_stars.enc_dec.encryption_decryption import aes_decrypt
 from tech_stars.renderers import CustomRenderer
 
 
@@ -52,11 +53,11 @@ class RegistrationView(IsAdminOrReadOnlyMixin, generics.CreateAPIView):
     # permission_classes = [IsAdmin]
 
     def post(self, request, *args, **kwargs):
+        new_request = aes_decrypt(request.data)
         avatar = request.FILES["profile_picture"]
-        position = request.data.get("position")
-        serializer = RegisterationSerializer(data=request.data)
+        position = new_request.get("position")
+        serializer = RegisterationSerializer(data=new_request)
         data = {}
-        print(serializer.is_valid(), "dd")
         if serializer.is_valid():
             username = serializer.validated_data.get("username")
             first_name = serializer.validated_data.get("first_name")
@@ -192,13 +193,10 @@ class ForgotPassordAV(APIView):
     serializer_class = ResetPasswordSerializer
 
     def post(self, request, *args, **kwargs):
-        print("here")
-        serializer = self.serializer_class(data=request.data)
-        print(serializer.is_valid())
-        print(serializer.errors)
+        new_request = aes_decrypt(request.data)
+        serializer = self.serializer_class(data=new_request)
         if serializer.is_valid():
             lower_email = serializer.validated_data.get("email").lower()
-            print(lower_email)
             if Account.objects.filter(email__iexact=lower_email).exists():
                 account = Account.objects.get(email=lower_email)
                 uuidb64 = urlsafe_base64_encode(
@@ -259,7 +257,8 @@ class AccountRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         # serializer_data = request.data.get('user', {})
-        user_data = request.data.get('user', {})
+        new_request = aes_decrypt(request.data)
+        user_data = new_request.get('user', {})
         print(user_data)
 
         serializer_data = {
@@ -292,7 +291,8 @@ class SetNewPasswordAV(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
 
     def patch(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
+        new_request = aes_decrypt(request.data)
+        serializer = self.serializer_class(data=new_request)
         serializer.is_valid(raise_exception=True)
         return Response({"status": "success", "message": "Password was successfully reset"}, status=status.HTTP_200_OK)
 

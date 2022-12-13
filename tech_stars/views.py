@@ -31,7 +31,7 @@ from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAP
                      )
 from .utils import generate_qr
 from .tasks import write_log_csv
-from .enc_dec.encryption_decryption import aes_encrypt
+from .enc_dec.encryption_decryption import aes_encrypt, aes_decrypt
 
 from accounts.mixins import IsAdminOrReadOnlyMixin
 from accounts.permissions import IsValidRequestAPIKey
@@ -122,9 +122,8 @@ class TestimonialFrontpageListAPIView(AdminOrMembershipManagerOrReadOnlyMixin, L
     serializer_class = TestimonialFrontpageSerializer
 
     def get(self, request, *args, **kwargs):
-        testimonial = list(Testimonial.active_objects.all())
-        random.shuffle(testimonial)
-        serializer = self.get_serializer(testimonial[:5], many=True)
+        testimonial = Testimonial.active_objects.all().order_by("?")[:5]
+        serializer = self.get_serializer(testimonial, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
 
 
@@ -163,8 +162,7 @@ class GenerateAttendanceQRCode(IsValidRequestAPIKey, CustomCreateAPIView):
     def post(self, request, *args, **kwargs):
         if timezone.now().isoweekday() not in valid_days:
             raise ValidationError("Today is not workday !")
-        # new_request = decrypt_request(request.data)
-        new_request = request.data
+        new_request = aes_decrypt(request.data)
         latitude = float(new_request.get("latitude"))
         longitude = float(new_request.get("longitude"))
         time_check = ResumptionAndClosingTime.objects.all().first()
@@ -200,10 +198,9 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
     serializer_class = AttendanceSerializer
 
     def post(self, request, *args, **kwargs):
-        # new_request = decrypt_request(request.data)
+        new_request = aes_decrypt(request.data)
         if timezone.now().isoweekday() not in valid_days:
             raise ValidationError("Today is not workday !")
-        new_request = request.data
         latitude = float(new_request.get("latitude"))
         longitude = float(new_request.get("longitude"))
         time_check = ResumptionAndClosingTime.objects.all().first()
@@ -303,8 +300,7 @@ class TrashedXpertRestoreAPIView(AdminOrMembershipManagerOrReadOnlyMixin, Custom
 class WriteAdminLog(IsValidRequestAPIKey, APIView):
 
     def post(self, request, *args, **kwargs):
-        # new_request = decrypt_request(request.data)
-        new_request = request.data
+        new_request = aes_decrypt(request.data)
         event = new_request.get('event')
         admin = new_request.get("admin")
         message = new_request.get("message")
