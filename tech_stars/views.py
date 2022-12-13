@@ -30,7 +30,7 @@ from .mixins import (AdminOrMembershipManagerOrReadOnlyMixin, CustomListCreateAP
                      )
 from .utils import generate_qr
 from .tasks import write_log_csv
-from .enc_dec.encryption_decryption import aes_encrypt,aes_decrypt
+from .enc_dec.encryption_decryption import aes_encrypt, aes_decrypt
 
 from accounts.permissions import IsValidRequestAPIKey
 
@@ -228,15 +228,18 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
                     last_attendance_date = tech_star_attendance.check_in
                     if last_attendance_date.date() == timezone.now().date():
                         if timezone.now().time() < (last_attendance_date + timezone.timedelta(minutes=30)).time():
-                            raise ValidationError("You cannot check out 30 minutes after check in!")
+                            raise ValidationError(
+                                "You cannot check out 30 minutes after check in!")
 
                         if tech_star_attendance.check_out is not None:
                             if tech_star_attendance.check_out <= (
                                     last_attendance_date + timezone.timedelta(minutes=30)):
-                                raise ValidationError("You cannot check out 30 minutes after check in!")
+                                raise ValidationError(
+                                    "You cannot check out 30 minutes after check in!")
                             tech_star_attendance.check_out = date_time
                         else:
-                            raise ValidationError("You have already checked out")
+                            raise ValidationError(
+                                "You have already checked out")
                         if tech_star_attendance.status == "Uncompleted" and tech_star.device_id == device_id:
                             tech_star_attendance.status = "Successful"
                         elif tech_star.device_id != device_id:
@@ -322,12 +325,14 @@ class ReadAdminLog(IsValidRequestAPIKey, ListAPIView):
 class RecentXpertOfTheWeekAPIView(IsValidRequestAPIKey, APIView):
     def get(self, request, *args, **kwargs):
         x = XpertOfTheWeek.active_objects.all().first()
-        serializer = XpertOfTheWeekDetailSerializer(x, context={"request": request})
+        serializer = XpertOfTheWeekDetailSerializer(
+            x, context={"request": request})
         return Response(serializer.data, status=HTTP_200_OK)
 
 
 class TechStarAttendanceListAPIView(IsValidRequestAPIKey, APIView):
     def get(self, request, *args, **kwargs):
         queryset = Attendance.active_objects.filter(tech_star_id=kwargs["pk"])
-        serializer = AttendanceSerializer(queryset, many=True, context={"request": request})
+        serializer = AttendanceSerializer(
+            queryset, many=True, context={"request": request})
         return Response(serializer.data, status=HTTP_200_OK)
