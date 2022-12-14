@@ -208,15 +208,15 @@ class ForgotPassordAV(APIView):
                 relative_path = reverse(
                     "reset-passwords", kwargs={"uuidb64": uuidb64, "token": token})
 
-                abs_url = "http://" + current_site + relative_path
+                abs_url = request.scheme + "://" + current_site + relative_path
 
                 mail_subject = "Please Reset your Account Password"
                 message = "Hi" + account.username + "," + \
-                          " Please Use the Link below to reset your account passwors:" + "" + abs_url
+                          " Please Use the Link below to reset your account password:" + "" + abs_url
 
                 Utils.send_email.delay(mail_subject, message, account.email)
                 return Response({"status": "success",
-                                 "message": "We have sent a password-reset link to the email you provided.Please check and reset  "},
+                                 "message": "We have sent a password-reset link to the email you provided. Please check and reset  "},
                                 status=status.HTTP_200_OK)
             return Response({"status": "error", "message": "The email provided doesn't exist in our records"},
                             status=status.HTTP_400_BAD_REQUEST)

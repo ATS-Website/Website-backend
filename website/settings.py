@@ -84,7 +84,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'website.urls'
 CORS_ALLOWED_ORIGINS = ['http://atsbk.afexats.com', 'http://localhost:3000',
                         'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:8000',
-                        "https://zippy-dango-7ea3fe.netlify.app"]
+                        "https://zippy-dango-7ea3fe.netlify.app", "https://afex-web-project.netlify.app"]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'request-ts',

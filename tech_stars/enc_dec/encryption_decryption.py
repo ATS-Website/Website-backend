@@ -71,4 +71,19 @@ def aes_decrypt(keyword):
     return AESCipher(key, iv).versatile_decrypt(keyword)
 
 
+data = {
+    "date_time": "2022-12-12 08:13",
+    "email": "sazubuine@afexnigeria.com",
+    "latitude": "7.892345655",
+    "longitude": "3.98736254"
+}
+
+
+enc = aes_encrypt(data)
+print(enc)
+
+
+dec = aes_decrypt(data)
+print(dec)
+
 
