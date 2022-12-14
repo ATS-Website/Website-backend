@@ -16,12 +16,12 @@ class AESCipher:
 
     def encrypt(self, data):
         cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
-        return b64encode(cipher.encrypt(pad(data.encode(), self.block_size))).decode()
+        return b64encode(cipher.encrypt(pad(data.encode(), AES.block_size))).decode()
 
     def decrypt(self, data):
         cipher_text = b64decode(data.encode())
         cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
-        return unpad(cipher.decrypt(cipher_text), self.block_size).decode()
+        return unpad(cipher.decrypt(cipher_text), AES.block_size).decode()
 
     def versatile_encrypt(self, the_object):
         if isinstance(the_object, dict):
