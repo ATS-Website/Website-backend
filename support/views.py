@@ -7,6 +7,8 @@ from .mixins import AdminOrReadOnlyMixin
 
 from blogs.permissions import IsAdminOrReadOnly
 
+from accounts.permissions import IsValidRequestAPIKey
+
 from tech_stars.renderers import CustomRenderer
 from tech_stars.mixins import CustomListCreateAPIView, CustomRetrieveUpdateDestroyAPIView, CustomDestroyAPIView
 
@@ -36,7 +38,7 @@ class FrequentlyAskedQuestionRestoreAPIView(IsAdminOrReadOnly, CustomDestroyAPIV
     serializer_class = FrequentlyAskedQuestionsSerializer
 
 
-class ContactUsListCreateAPIView(AdminOrReadOnlyMixin, CustomListCreateAPIView):
+class ContactUsListCreateAPIView(IsValidRequestAPIKey, CustomListCreateAPIView):
     queryset = ContactUs.active_objects.all()
     serializer_class = ContactUsSerializer
     renderer_classes = (CustomRenderer,)
