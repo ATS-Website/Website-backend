@@ -45,7 +45,8 @@ class TechStarSerializer(ModelSerializer):
             "cohort",
             "phone_number",
             "official_email",
-            "url"
+            "url",
+            "tech_star_profile_picture"
 
         )
         extra_kwargs = {
@@ -53,7 +54,8 @@ class TechStarSerializer(ModelSerializer):
             "self_description": {"write_only": True},
             "favorite_meal": {"write_only": True},
             "favorite_quote": {"write_only": True},
-            "phone_number": {"write_only": True}
+            "phone_number": {"write_only": True},
+            "tech_star_profile_picture": {"read_only": True}
         }
 
     def create(self, validated_data):
@@ -61,7 +63,6 @@ class TechStarSerializer(ModelSerializer):
 
         if tech_star is not None:
             get_id = int(str(tech_star.tech_star_id).split("-")[-1]) + 1
-            print(get_id)
 
             id2string = f"ATS-{str(get_id).zfill(4)}"
 
@@ -91,7 +92,7 @@ class TechStarDetailSerializer(ModelSerializer):
             "official_email",
         )
         extra_kwargs = {
-            "tech_star_id": {"read_only": True}
+            "tech_star_id": {"read_only": True},
         }
 
 
@@ -154,10 +155,15 @@ class AttendanceSerializer(ModelSerializer):
         fields = (
             "id",
             "status",
+            "tech_star_full_name",
             "tech_star",
             "check_in",
             "check_out",
         )
+
+        extra_kwargs = {
+            "tech_star_full_name": {"read_only": True}
+        }
 
 
 class OfficeLocationSerializer(ModelSerializer):

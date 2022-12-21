@@ -36,8 +36,6 @@ from .enc_dec.encryption_decryption import aes_encrypt, aes_decrypt
 from accounts.mixins import IsAdminOrReadOnlyMixin
 from accounts.permissions import IsValidRequestAPIKey
 
-from blogs.permissions import IsAdminOrReadOnly
-
 # Create your views here.
 
 

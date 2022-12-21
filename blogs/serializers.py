@@ -83,9 +83,13 @@ class BlogArticleSerializer(ModelSerializer):
         model = BlogArticle
         fields = ['id', 'title', 'intro', 'description',
                   'created_at', 'author', 'url', 'image', "min_read", "author_fullname", "author_image",
+                  "likes_count", "comment_count", "views_count"
                   ]
         extra_kwargs = {
-            "author": {"write_only": True}
+            "author": {"write_only": True},
+            "likes_count": {"read_only": True},
+            "comment_count": {"read_only": True},
+            "views_count": {"read_only": True}
         }
 
     def get_url(self, obj):

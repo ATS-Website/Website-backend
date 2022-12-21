@@ -53,7 +53,7 @@ class TechStar(models.Model):
         return self.tech_star.full_name
 
     def tech_star_profile_picture(self):
-        return self.tech_star.profile_picture
+        return self.tech_star.profile_picture.url
 
     def tech_star_course(self):
         return self.tech_star.course
@@ -85,6 +85,9 @@ class Attendance(models.Model):
 
     class Meta:
         ordering = ("-date_created",)
+
+    def tech_star_full_name(self):
+        return self.tech_star.full_name
 
 
 class Testimonial(models.Model):
