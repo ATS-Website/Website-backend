@@ -50,16 +50,16 @@ class TechStar(models.Model):
     inactive_objects = InActiveManager()
 
     def tech_star_full_name(self):
-        return self.tech_star.full_name
+        return self.full_name
 
     def tech_star_profile_picture(self):
-        return self.tech_star.profile_picture.url
+        return self.profile_picture.url
 
     def tech_star_course(self):
-        return self.tech_star.course
+        return self.course
 
     def tech_star_cohort(self):
-        return self.tech_star.cohort
+        return self.cohort
 
     def __str__(self):
         return self.full_name
