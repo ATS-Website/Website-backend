@@ -231,9 +231,9 @@ class RecordAttendanceAPIView(IsValidRequestAPIKey, CustomCreateAPIView):
                             raise ValidationError("You cannot check out 30 minutes after check in!")
 
                         if tech_star_attendance.check_out is not None:
-                            if tech_star_attendance.check_out <= (
-                                    last_attendance_date + timezone.timedelta(minutes=30)):
-                                raise ValidationError("You cannot check out 30 minutes after check in!")
+                            # if tech_star_attendance.check_out <= (
+                            #         last_attendance_date + timezone.timedelta(minutes=30)):
+                            #     raise ValidationError("You cannot check out 30 minutes after check in!")
                             tech_star_attendance.check_out = date_time
                         else:
                             raise ValidationError("You have already checked out")
